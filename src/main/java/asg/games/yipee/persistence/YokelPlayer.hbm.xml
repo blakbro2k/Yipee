@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"
+    [<!ENTITY AbstractYokelObject SYSTEM "classpath://asg/games/yokel/persistence/AbstractYokelObject.hbm.xml">]>
+<hibernate-mapping>
+    <class name="asg.games.yokel.objects.YokelPlayer" table="YT_PLAYER" dynamic-insert="true" dynamic-update="true">
+        &AbstractYokelObject;
+
+        <property name="rating" type = "int" />
+        <property name="icon" type = "int" />
+
+    </class>
+</hibernate-mapping>

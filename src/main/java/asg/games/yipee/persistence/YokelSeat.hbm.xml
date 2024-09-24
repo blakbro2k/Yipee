@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd"
+    [<!ENTITY AbstractYokelObject SYSTEM "classpath://asg/games/yokel/persistence/AbstractYokelObject.hbm.xml">]>
+<hibernate-mapping>
+    <class name="asg.games.yokel.objects.YokelSeat" table="YT_SEAT">
+        &AbstractYokelObject;
+
+        <property name="seatedPlayer" type="net.asg.games.yokel.persistence.YokelPlayerType">
+            <column name="seated_player" />
+        </property>
+        <property name="parent" type="string">
+            <column name="parent_table" sql-type="VARCHAR(20)" />
+        </property>
+        <property name="isSeatReady" type="boolean">
+            <column name="isSeatReady" />
+        </property>
+    </class>
+</hibernate-mapping>
