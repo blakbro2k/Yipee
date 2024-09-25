@@ -1,15 +1,12 @@
 package asg.games.yipee.tools;
 
+import asg.games.yipee.objects.YokelPlayer;
+import asg.games.yipee.objects.YokelRoom;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.File;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.StreamSupport;
 
 public class Util {
@@ -25,13 +22,9 @@ public class Util {
 
     private final static String LEFT_CURLY_BRACET_HTML = "&#123;";
     private final static String RIGHTT_CURLY_BRACET_HTML = "&#125;";
-    //private final static Json json = new Json();
+    private final static ObjectMapper json = new ObjectMapper();
 
-    public static long getMillis() {
-        return ZonedDateTime.now().toInstant().toEpochMilli();
-    }
-
-    public static int getNextTableName(YokelRoom yokelRoom) {
+    public static int getNextTableName(final YokelRoom yokelRoom) {
         int tableIndex = -1;
         if(yokelRoom != null) {
             List<Integer> tables = yokelRoom.getAllTableIndexes();
@@ -55,6 +48,29 @@ public class Util {
         return tableIndex;
     }
 
+    public static int getNextTableNumber(final YokelRoom yokelRoom) {
+        int tableIndex = -1;
+        if (yokelRoom != null) {
+            List<Integer> tables = yokelRoom.getAllTableIndexes();
+            int size = sizeOf(tables);
+            if (size > 0) {
+                int[] indices = new int[size];
+                for (int i = 0; i < size; i++) {
+                    indices[i] = tables.get(i);
+                }
+                Arrays.sort(indices);
+                int max = indices[size - 1];
+                int num = findMissingNumber(indices, max);
+                if(num == -1) {
+                    return max + 1;
+                }
+                return num;
+            } else if(size == 0) {
+                return 1;
+            }
+        }
+        return tableIndex;
+    }
 
     /**
      * Function to find the missing number in a array
@@ -87,25 +103,32 @@ public class Util {
 
 
 
-    public static Collection<String> arrayToList(String[] o) {
+    public static <T> Collection<T> arrayToList(T[] o) {
         //int size = o.length;
-        List<String> array = new LinkedList<String>();
+        List<T> array = new LinkedList<>();
+        array.addAll(Arrays.asList(o));
 
-        for (String s : o) {
-            array.add(s);
-        }
         return array;
     }
 
-    public static <T> Iterable<T> safeIterable(Iterable<T> collection, boolean newArray){
+    public static <T> Iterable<T> safeIterable(Iterable<T> collection){
+        return safeIterable(collection, false);
+    }
+
+    public static <T> Iterable<T> safeIterableArray(T[] collection){
+        return safeIterable(arrayToList(collection), false);
+    }
+
+    public static <T> Iterable<T> safeIterable(final Iterable<T> collection, boolean newArray){
         if(collection != null){
-            return newArray? GdxArrays.newArray(collection) : collection;
+            //TODO: fix hard code
+            return newArray? new ArrayList<>() : collection;
         } else {
             return Collections.emptyList();
         }
     }
 
-    public static <T> List<T> iterableToList(Iterable<T> iterable) {
+    public static <T> List<T> iterableToList(final Iterable<T> iterable) {
         List<T> returnList = new ArrayList<T>();
         if(iterable != null) {
             for(T o : iterable) {
@@ -133,18 +156,48 @@ public class Util {
     }
 
 
-    public static <Type> ObjectMap.Values<Type> getMapValues(ObjectMap<?, Type> objectMap) {
-        return new ObjectMap.Values<>(objectMap);
+   public static <T> Collection<Object> getMapValues(Map<T, Object> map) {
+        return map == null ? Collections.emptyList() : map.values();
     }
 
-    public static <Type> ObjectMap.Keys<Type> getMapKeys(ObjectMap<Type, ?> objectMap) {
-        return new ObjectMap.Keys<>(objectMap);
+    public static Collection<String> getMapKeys(Map<?, Object> map) {
+        return map == null ? Collections.emptyList() : toStringList(map.keySet());
     }
 
-
+    private static Collection<String> toStringList(Collection<?> collection) {
+        List<String> strings = new ArrayList<>();
+        for(Object o : safeIterable(collection)) {
+            if(o != null) {
+                strings.add(o.toString());
+            }
+        }
+        return strings;
+    }
 
     public static int sizeOf(Iterable<Integer> collection) {
         return collection == null ? -1 : (int) StreamSupport.stream(collection.spliterator(), false).count();
+    }
+
+    public static <T> int size(Collection<T> collection) {
+        int size = -1;
+        if(collection != null) {
+            size = collection.size();
+        }
+        return size;
+    }
+
+    public static void clearArrays(final Collection<?>... arrays) {
+        if(arrays != null) {
+            for (final Collection<?> array : arrays) {
+                clearArray(array);
+            }
+        }
+    }
+
+    public static void clearArray(final Collection<?> array) {
+        if(array != null) {
+            array.clear();
+        }
     }
 
     public static class IDGenerator {
@@ -209,7 +262,7 @@ public class Util {
         return array == null || array.length < 1;
     }
 
-    public static <T> String[] toStringArray(Collection<T> collection) {
+    public static <T> String[] toStringArray(List<T> collection) {
         if(collection != null){
             int size = collection.size();
             String[] c2 = new String[size];
@@ -232,20 +285,20 @@ public class Util {
      * @return
      */
     //@NotNull
-   /* public static <T> Array.ArrayIterable<T> toIterable(Array<T> array){
-        if(isArrayEmpty(array)){
-            return new Array.ArrayIterable<>(array);
+   public static <T> Iterable<T> toIterable(Collection<T> collection){
+        if(isEmpty(collection)){
+            return Collections.emptyList();
         }
-        return new Array.ArrayIterable<>(GdxArrays.newArray());
-    }*/
+        return collection.stream().toList();
+    }
 
-    /*public static String getJsonString(Object o){
-        return json.toJson(o);
-    }*/
+    public static String getJsonString(Object o) throws JsonProcessingException {
+        return json.writeValueAsString(o);
+    }
 
-    /*public static <T> T getObjectFromJsonString(Class<T> type, String jsonStr){
-        return json.fromJson(type, jsonStr);
-    }*/
+    public static <T> T getObjectFromJsonString(Class<T> type, String jsonStr) throws JsonProcessingException {
+        return json.readValue(jsonStr, type);
+    }
 
     public static String jsonToString(String str){
         return replace(replace(str, "{",LEFT_CURLY_BRACET_HTML),"}", RIGHTT_CURLY_BRACET_HTML);

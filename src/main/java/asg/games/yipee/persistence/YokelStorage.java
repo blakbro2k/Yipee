@@ -1,14 +1,13 @@
 package asg.games.yipee.persistence;
 
-import com.badlogic.gdx.utils.ObjectMap;
+import asg.games.yipee.game.GameManager;
+import asg.games.yipee.objects.YokelPlayer;
+import asg.games.yipee.objects.YokelRoom;
+import asg.games.yipee.objects.YokelSeat;
+import asg.games.yipee.objects.YokelTable;
 
+import java.util.Collection;
 import java.util.List;
-
-import asg.games.yokel.managers.GameManager;
-import asg.games.yokel.objects.YokelPlayer;
-import asg.games.yokel.objects.YokelRoom;
-import asg.games.yokel.objects.YokelSeat;
-import asg.games.yokel.objects.YokelTable;
 
 /** Interface for Yokel Object Resource Storage.
  * @author blakbro2k */
@@ -69,7 +68,7 @@ public interface YokelStorage {
     GameManager getGame(String gameId) throws Exception;
 
     /** Get all active GameManager objects from the store. */
-    ObjectMap.Values<GameManager> getAllGames() throws Exception;
+    Collection<GameManager> getAllGames() throws Exception;
 
     /** Save all given GameManger objects into store. */
     void putAllGames(Iterable<GameManager> games) throws Exception;

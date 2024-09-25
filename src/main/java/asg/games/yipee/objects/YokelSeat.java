@@ -1,12 +1,8 @@
 package asg.games.yipee.objects;
 
-import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
+import asg.games.yipee.tools.Util;
 
 import java.util.Objects;
-
-import asg.games.yokel.utils.YokelUtilities;
 
 /**
  * Created by Blakbro2k on 1/28/2018.
@@ -61,7 +57,7 @@ public class YokelSeat extends AbstractYokelObject implements Disposable {
     }
 
     public int getSeatNumber(){
-        return Integer.parseInt(YokelUtilities.split(getName(),ATTR_SEAT_NUM_SEPARATOR)[1]);
+        return Integer.parseInt(Util.split(getName(),ATTR_SEAT_NUM_SEPARATOR)[1]);
     }
 
     @Override
@@ -79,7 +75,7 @@ public class YokelSeat extends AbstractYokelObject implements Disposable {
         this.tableId = tableId;
     }
 
-    @Override
+    /*@Override
     public void write(Json json) {
         super.write(json);
         if (json != null) {
@@ -99,7 +95,7 @@ public class YokelSeat extends AbstractYokelObject implements Disposable {
             isSeatReady = json.readValue("isSeatReady", Boolean.class, jsonValue);
             seatedPlayer = json.readValue("seatedPlayer", YokelPlayer.class, jsonValue);
         }
-    }
+    }*/
 
     @Override
     public boolean equals(Object o) {

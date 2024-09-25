@@ -1,17 +1,15 @@
 package asg.games.yipee.objects;
 
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
+import asg.games.yipee.tools.Util;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.Objects;
-
-import asg.games.yokel.utils.YokelUtilities;
 
 /**
  * Created by Blakbro2k on 1/28/2018.
  */
 
-public class YokelPlayer extends AbstractYokelObject implements Copyable<YokelPlayer>, Json.Serializable {
+public class YokelPlayer extends AbstractYokelObject implements Copyable<YokelPlayer> {
     public final static int DEFAULT_RATING_NUMBER = 1500;
     public final static YokelPlayer BLANK_PLAYER = new YokelPlayer("", DEFAULT_RATING_NUMBER, 0);
 
@@ -21,9 +19,9 @@ public class YokelPlayer extends AbstractYokelObject implements Copyable<YokelPl
     //Empty Constructor required for Json.Serializable
     public YokelPlayer(){}
 
-    public YokelPlayer(Class<YokelPlayer> clazz, String data){
+    public YokelPlayer(Class<YokelPlayer> clazz, String data) throws JsonProcessingException {
         super();
-        YokelPlayer temp = YokelUtilities.getObjectFromJsonString(clazz, data);
+        YokelPlayer temp = Util.getObjectFromJsonString(clazz, data);
         if(temp != null) {
             setId(temp.getId());
             setName(temp.getName());
@@ -87,7 +85,7 @@ public class YokelPlayer extends AbstractYokelObject implements Copyable<YokelPl
         copy.setIcon(this.icon);
         return copy;
     }
-
+/*
     @Override
     public void write(Json json) {
         super.write(json);
@@ -104,7 +102,7 @@ public class YokelPlayer extends AbstractYokelObject implements Copyable<YokelPl
             rating = json.readValue("rating", Integer.class, jsonValue);
             icon = json.readValue("icon", Integer.class, jsonValue);
         }
-    }
+    }*/
 
     @Override
     public boolean equals(Object o) {

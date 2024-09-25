@@ -1,8 +1,8 @@
 package asg.games.yipee.persistence;
 
-import com.badlogic.gdx.utils.ObjectMap;
+import asg.games.yipee.objects.YokelPlayer;
 
-import asg.games.yokel.objects.YokelPlayer;
+import java.util.List;
 
 public interface ClientPlayerController {
     /** Player Controls
@@ -21,7 +21,7 @@ public interface ClientPlayerController {
     YokelPlayer getRegisteredPlayer(YokelPlayer player);
 
     /** Gets all registered players. */
-    ObjectMap.Values<YokelPlayer> getAllRegisteredPlayers();
+    List<YokelPlayer> getAllRegisteredPlayers();
 
     /** Check if client id is registered **/
     boolean isClientRegistered(String clientId);

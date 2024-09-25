@@ -1,5 +1,6 @@
 package asg.games.yipee.persistence;
 
+import asg.games.yipee.objects.YokelObject;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
@@ -10,15 +11,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import asg.games.yokel.objects.YokelObject;
-
 abstract class YokelUserType implements UserType {
     protected static final int SQL_TYPE = Types.VARCHAR;
 
-    @Override
-    public int[] sqlTypes() {
+    /*public int[] sqlTypes() {
         return new int[]{SQL_TYPE};
-    }
+    }*/
 
     @Override
     public boolean equals(Object x, Object y) throws HibernateException {
@@ -38,8 +36,8 @@ abstract class YokelUserType implements UserType {
         return x == null ? 0 : x.hashCode();
     }
 
-    @Override
-    public abstract Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner) throws HibernateException, SQLException;
+    //@Override
+    //public abstract Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner) throws HibernateException, SQLException;
 
     @Override
     public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session) throws HibernateException, SQLException {

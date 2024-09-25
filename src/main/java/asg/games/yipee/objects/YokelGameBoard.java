@@ -1,17 +1,14 @@
 package asg.games.yipee.objects;
 
-import asg.games.yipee.objects.AbstractYokelObject;
+import asg.games.yipee.tools.RandomUtil;
 import asg.games.yipee.tools.TimeUtils;
-import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.Queue;
-import com.badlogic.gdx.utils.TimeUtils;
+import asg.games.yipee.tools.Util;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 import java.util.Vector;
-
-import asg.games.yokel.utils.RandomUtil;
-import asg.games.yokel.utils.YokelUtilities;
 
 /**
  * Represents the game board.
@@ -84,8 +81,8 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
     private boolean fastDown;
     private Queue<Integer> powers;
     private Queue<Integer> specialPieces;
-    Queue<YokelBrokenBlock> brokenCells = new Queue<>();
-    Queue<YokelBlockMove> cellsToDrop = new Queue<>();
+    Queue<YokelBrokenBlock> brokenCells = new LinkedList<>();
+    Queue<YokelBlockMove> cellsToDrop = new LinkedList<>();
 
 
     private int yahooDuration, brokenBlockCount = 0;
@@ -103,8 +100,8 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
     public YokelGameBoard(long seed) {
         cells = new int[MAX_ROWS][MAX_COLS];
         ids = new boolean[128];
-        powers = new Queue<>();
-        specialPieces = new Queue<>();
+        powers = new LinkedList<>();
+        specialPieces = new LinkedList<>();
         gameClock = new YokelClock();
         reset(seed);
         setGameState();
@@ -168,7 +165,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         this.isPartnerRight = b;
     }
 
-    static class TestRandomBlockArray extends RandomUtil.RandomNumberArray {
+    public static class TestRandomBlockArray extends RandomUtil.RandomNumberArray {
         int[] testRandomNumbers;
 
         public TestRandomBlockArray(int byteLength, long seed, int maxValue) {
@@ -629,7 +626,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
                         releaseID(YokelBlockEval.getID(cells[row][col]));
                     incrementBreakCount(YokelBlockEval.getCellFlag(cells[row][col]));
                     addPowerToQueue(cells[row][col]);
-                    brokenCells.addLast(new YokelBrokenBlock(YokelBlockEval.getCellFlag(cells[row][col]), row, col));
+                    brokenCells.offer(new YokelBrokenBlock(YokelBlockEval.getCellFlag(cells[row][col]), row, col));
                 } else {
                     cells[index][col] = cells[row][col];
                     index++;
@@ -1472,7 +1469,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
                 // incremented when a cell is to be broken.
                 if (!isCellBroken(x, y)) {
                     if (targetRows[x] != y && getPieceValue(x, y) != MAX_COLS) {
-                        cellsToDrop.addLast(new YokelBlockMove(cells[y][x], YokelBlockEval.getCellFlag(cells[y][x]), x, y, targetRows[x]));
+                        cellsToDrop.offer(new YokelBlockMove(cells[y][x], YokelBlockEval.getCellFlag(cells[y][x]), x, y, targetRows[x]));
                     }
                     targetRows[x]++;
                 }
@@ -1705,7 +1702,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
             System.out.println("}}###}}blockAnimationTimer=" + blockAnimationTimer);
             */
 
-            if (brokenBlockCount > 0 || cellsToDrop.size > 0 || blockAnimationTimer < 1) {
+            if (brokenBlockCount > 0 || Util.size(cellsToDrop) > 0 || blockAnimationTimer < 1) {
                 //System.out.println("}}}}drop cell block");
                 //Reset Piece Set
                 state.setIsPieceSet(false);
@@ -1718,10 +1715,10 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
                 if (blockAnimationTimer == 1) {
                     //System.out.println("}}}}Animation = 1");
                     handleBrokenCellDrops();
-                    if (cellsToDrop.size > 0) {
+                    if (Util.size(cellsToDrop) > 0) {
                         blockAnimationTimer -= 0.049;
                         //Clear dropped cell while animating
-                        for (YokelBlockMove move : YokelUtilities.safeIterable(cellsToDrop)) {
+                        for (YokelBlockMove move : Util.safeIterable(cellsToDrop)) {
                             if (move != null) {
                                 clearCell(move.getRow(), move.getCol());
                             }
@@ -1736,7 +1733,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
                     } else {
                         //System.out.println("}}}}reset broken Cells");
                         //Put moved cell back now that animation is complete
-                        for (YokelBlockMove move : YokelUtilities.safeIterable(cellsToDrop)) {
+                        for (YokelBlockMove move : Util.safeIterable(cellsToDrop)) {
                             if (move != null) {
                                 setCell(move.getRow(), move.getCol(), move.getCellID());
                             }
@@ -1924,7 +1921,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
     }
 
     public int peekSpecialQueue() {
-        return specialPieces.first();
+        return specialPieces.peek();
     }
 
     public void addSpecialPiece(int piece) {
@@ -1932,15 +1929,15 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
             System.out.println("Assertion Error: invalid special block: " + piece);
             return;
         }
-        specialPieces.addLast(piece);
+        specialPieces.offer(piece);
     }
 
     public void getNewNextPiece() {
         int isSpecial = 0;
 
         //Pop a special next piece if it exists
-        if (!YokelUtilities.isEmpty(specialPieces)) {
-            isSpecial = specialPieces.removeFirst();
+        if (!Util.isEmpty(specialPieces)) {
+            isSpecial = specialPieces.poll();
         }
 
         if (nextPiece == null) {
@@ -2022,7 +2019,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
             int intensity = YokelBlockEval.getPowerFlag(block);
             block = YokelBlockEval.removeBrokenFlag(block);
             //logger.debug("intensity=" + intensity);
-            powers.addFirst(YokelBlockEval.addPowerBlockFlag(YokelBlockEval.setPowerFlag(block, intensity)));
+            powers.offer(YokelBlockEval.addPowerBlockFlag(YokelBlockEval.setPowerFlag(block, intensity)));
         }
         //logger.debug("current queue=" + powers);
         //logger.debug("Exit addPowerToQueue()");
@@ -2031,8 +2028,8 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
 
     public int popPowerFromQueue() {
         int powerBlock = -1;
-        if (!YokelUtilities.isEmpty(powers)) {
-            powerBlock = powers.removeFirst();
+        if (!Util.isEmpty(powers)) {
+            powerBlock = powers.poll();
         }
         return powerBlock;
     }

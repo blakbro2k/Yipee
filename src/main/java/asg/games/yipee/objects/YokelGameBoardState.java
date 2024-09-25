@@ -1,9 +1,8 @@
 package asg.games.yipee.objects;
 
 
-import com.badlogic.gdx.utils.Queue;
-
 import java.util.Arrays;
+import java.util.Queue;
 
 public class YokelGameBoardState extends AbstractYokelObject {
     private long serverGameStartTime = 0;

@@ -1,16 +1,12 @@
 package asg.games.yipee.objects;
 
-import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
-
 import java.util.Objects;
 
 /**
  * Created by Blakbro2k on 12/29/2017.
  */
 
-public class YokelBlock extends AbstractYokelObject implements Json.Serializable, Disposable {
+public class YokelBlock extends AbstractYokelObject implements Disposable {
     /* Retrieves power "level"
      * - Even represents defensive powers ( 2, 4, 6 )
      * - Odd represents attack powers ( 3, 5, 7 )
@@ -143,7 +139,7 @@ public class YokelBlock extends AbstractYokelObject implements Json.Serializable
         //Logger.trace("Exit hasPower()={}", powerIntensity > 0);
         return powerIntensity > 0;
     }
-
+/*
     @Override
     public void write(Json json) {
         if(json != null) {
@@ -164,7 +160,7 @@ public class YokelBlock extends AbstractYokelObject implements Json.Serializable
             blockType = json.readValue("blockType", Integer.class, jsonValue);
             powerIntensity = json.readValue("powerIntensity", Integer.class, jsonValue);
         }
-    }
+    }*/
 
     @Override
     public boolean equals(Object o) {

@@ -1,12 +1,11 @@
 package asg.games.yipee.persistence;
 
+import asg.games.yipee.objects.YokelObject;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.UUIDGenerator;
 
 import java.io.Serializable;
-
-import asg.games.yokel.objects.YokelObject;
 
 public class IdGenerator extends UUIDGenerator {
 

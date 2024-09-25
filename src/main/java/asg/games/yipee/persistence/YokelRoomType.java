@@ -1,12 +1,11 @@
 package asg.games.yipee.persistence;
 
+import asg.games.yipee.objects.YokelRoom;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import asg.games.yokel.objects.YokelRoom;
 
 public class YokelRoomType extends YokelUserType {
     @Override

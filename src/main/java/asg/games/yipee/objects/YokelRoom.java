@@ -1,20 +1,13 @@
 package asg.games.yipee.objects;
 
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.OrderedMap;
-import com.github.czyzby.kiwi.util.gdx.collection.GdxArrays;
-import com.github.czyzby.kiwi.util.gdx.collection.GdxMaps;
+import asg.games.yipee.persistence.YokelStorageAdapter;
+import asg.games.yipee.tools.Util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-
-import asg.games.yokel.persistence.YokelStorageAdapter;
-import asg.games.yokel.utils.YokelUtilities;
-
 /**
  * Created by Blakbro2k on 1/28/2018.
  */
@@ -25,8 +18,8 @@ public class YokelRoom extends AbstractYokelObject implements YokelObjectJPAVisi
     public static final String INTERMEDIATE_LOUNGE = "Intermediate";
     public static final String ADVANCED_LOUNGE = "Advanced";
 
-    private Array<YokelPlayer> players = GdxArrays.newArray();
-    private ObjectMap<Integer, YokelTable> tables = GdxMaps.newObjectMap();
+    private List<YokelPlayer> players = new ArrayList<>();
+    private Map<Integer, YokelTable> tables = new HashMap<>();
 
     private String loungeName = "_NoTableName";
 
@@ -43,43 +36,43 @@ public class YokelRoom extends AbstractYokelObject implements YokelObjectJPAVisi
         setLoungeName(loungeName);
     }
 
-    public Array<YokelTable> getAllTables() {
-        return YokelUtilities.getMapValues(tables).toArray();
+    public List<YokelTable> getAllTables() {
+        return Util.getMapValues(tables);
     }
 
-    public Array<Integer> getAllTableIndexes() {
-        return YokelUtilities.getMapKeys(tables).toArray();
+    public List<Integer> getAllTableIndexes() {
+        return Util.getMapKeys(tables);
     }
 
-    public void setAllTables(ObjectMap<Integer, YokelTable> tables) {
+    public void setAllTables(Map<Integer, YokelTable> tables) {
         this.tables = tables;
     }
 
-    public Array<YokelPlayer> getAllPlayers() {
+    public List<YokelPlayer> getAllPlayers() {
         return players;
     }
 
-    public void setAllPlayers(Array<YokelPlayer> players) {
+    public void setAllPlayers(List<YokelPlayer> players) {
         this.players = players;
     }
 
     public void joinRoom(YokelPlayer player) {
-        if (player != null && !players.contains(player, false)) {
+        if (player != null && !players.contains(player)) {
             players.add(player);
         }
     }
 
     public void leaveRoom(YokelPlayer player) {
-        players.removeValue(player, false);
+        players.remove(player);
     }
 
     public YokelTable addTable() {
         return addTable(null);
     }
 
-    public YokelTable addTable(OrderedMap<String, Object> arguments) {
+    public YokelTable addTable(Map<String, Object> arguments) {
         YokelTable table;
-        int tableNumber = YokelUtilities.getNextTableNumber(this);
+        int tableNumber = Util.getNextTableNumber(this);
 
         if (arguments != null) {
             table = new YokelTable(getId(), tableNumber, arguments);
@@ -108,7 +101,7 @@ public class YokelRoom extends AbstractYokelObject implements YokelObjectJPAVisi
 
     @Override
     public void dispose() {
-        YokelUtilities.clearArrays(players);
+        Util.clearArrays(players);
         if (tables != null) {
             tables.clear();
         }
@@ -135,14 +128,14 @@ public class YokelRoom extends AbstractYokelObject implements YokelObjectJPAVisi
     public void visitSave(YokelStorageAdapter adapter) {
         try {
             if (adapter != null) {
-                adapter.putAllTables(YokelUtilities.getMapValues(tables));
+                adapter.putAllTables(Util.getMapValues(tables));
                 adapter.putAllPlayers(players);
             }
         } catch (Exception e) {
-            throw new GdxRuntimeException("Issue visiting save for " + this.getClass().getSimpleName(), e);
+            throw new RuntimeException("Issue visiting save for " + this.getClass().getSimpleName(), e);
         }
     }
-
+/*
     @Override
     public void write(Json json) {
         super.write(json);
@@ -162,7 +155,7 @@ public class YokelRoom extends AbstractYokelObject implements YokelObjectJPAVisi
             //need to add manually to preserve order
             ObjectMap<Object, Object> tablesJson = json.readValue("tables", ObjectMap.class, jsonValue);
             if (tablesJson != null) {
-                for (Object keyStringObj : YokelUtilities.getMapKeys(tablesJson)) {
+                for (Object keyStringObj : Util.getMapKeys(tablesJson)) {
                     if (keyStringObj instanceof String) {
                         int key = Integer.parseInt(keyStringObj.toString());
                         Object o = tablesJson.get(keyStringObj);
@@ -173,7 +166,7 @@ public class YokelRoom extends AbstractYokelObject implements YokelObjectJPAVisi
                 }
             }
         }
-    }
+    }*/
 
     @Override
     public boolean equals(Object o) {

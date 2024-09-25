@@ -1,5 +1,6 @@
 package asg.games.yipee.persistence;
 
+import asg.games.yipee.objects.YokelTable;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 

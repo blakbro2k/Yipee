@@ -1,17 +1,17 @@
 package asg.games.yipee.objects;
 
-import com.badlogic.gdx.utils.OrderedMap;
-import com.github.czyzby.kiwi.util.gdx.collection.GdxMaps;
+import java.util.HashMap;
+import java.util.Map;
 
 @Deprecated
-public class YokelLounge extends AbstractYokelObject {
+public class YokelLounge extends AbstractYokelObject implements Disposable{
     public static final String SOCIAL_GROUP = "Social";
     public static final String BEGINNER_GROUP = "Beginner";
     public static final String INTERMEDIATE_GROUP = "Intermediate";
     public static final String ADVANCED_GROUP = "Advanced";
     public static final String DEFAULT_LOUNGE = "Default";
 
-    final private OrderedMap<String, YokelRoom> rooms = GdxMaps.newOrderedMap();
+    final private Map<String, YokelRoom> rooms = new HashMap<>();
 
     //Empty Constructor required for Json.Serializable
     public YokelLounge(){}
@@ -26,7 +26,7 @@ public class YokelLounge extends AbstractYokelObject {
         rooms.put(room.getName(), room);
     }
 
-    public OrderedMap<String, YokelRoom> getAllRooms(){
+    public Map<String, YokelRoom> getAllRooms(){
         return rooms;
     }
 

@@ -1,8 +1,5 @@
 package asg.games.yipee.objects;
 
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
-
 import java.util.Objects;
 
 public class YokelBoardPair extends AbstractYokelObject {
@@ -33,7 +30,7 @@ public class YokelBoardPair extends AbstractYokelObject {
     public YokelGameBoard getRightBoard() {
         return rightBoard;
     }
-
+/*
     @Override
     public void write(Json json) {
         if (json != null) {
@@ -54,7 +51,7 @@ public class YokelBoardPair extends AbstractYokelObject {
             leftBoard = json.readValue("leftBoard", YokelGameBoard.class, jsonValue);
             rightBoard = json.readValue("rightBoard", YokelGameBoard.class, jsonValue);
         }
-    }
+    }*/
 
     @Override
     public boolean equals(Object o) {

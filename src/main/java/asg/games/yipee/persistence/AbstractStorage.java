@@ -1,13 +1,11 @@
 package asg.games.yipee.persistence;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import asg.games.yipee.objects.AbstractYokelObject;
 import asg.games.yipee.objects.YokelObject;
-import asg.games.yokel.objects.AbstractYokelObject;
-import asg.games.yokel.objects.YokelObject;
-import asg.games.yokel.utils.YokelUtilities;
+import asg.games.yipee.tools.Util;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public abstract class AbstractStorage implements Storage {
     private final static String STORAGE_NAME_METHOD = "getName";
@@ -31,7 +29,7 @@ public abstract class AbstractStorage implements Storage {
     @Override
     abstract public void rollBackTransactions();
 
-    String getNameOrIdFromInstance(Object o, boolean getName) {
+    protected String getNameOrIdFromInstance(Object o, boolean getName) {
         Object var;
         try {
             Class<?> c = getClassFromSuper(AbstractYokelObject.class, o);
@@ -41,7 +39,7 @@ public abstract class AbstractStorage implements Storage {
         } catch(NoSuchMethodException | InvocationTargetException | IllegalAccessException e){
             throw new RuntimeException(e);
         }
-        return YokelUtilities.otos(var);
+        return Util.otos(var);
     }
 
     public Class<?> getClassFromSuper(Class<?> klass, Object o){

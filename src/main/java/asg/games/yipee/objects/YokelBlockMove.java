@@ -1,8 +1,5 @@
 package asg.games.yipee.objects;
 
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
-
 import java.util.Objects;
 
 public class YokelBlockMove extends AbstractYokelObject {
@@ -16,7 +13,7 @@ public class YokelBlockMove extends AbstractYokelObject {
     public YokelBlockMove() {
     }
 
-    YokelBlockMove(int cellID, int block, int x, int y, int targetRow) {
+    public YokelBlockMove(int cellID, int block, int x, int y, int targetRow) {
         setBlock(block);
         setCellID(cellID);
         this.col = x;
@@ -39,7 +36,7 @@ public class YokelBlockMove extends AbstractYokelObject {
     public int getBlock() {
         return block;
     }
-
+/*
     @Override
     public void write(Json json) {
         if (json != null) {
@@ -62,7 +59,7 @@ public class YokelBlockMove extends AbstractYokelObject {
             y = json.readValue("y", Integer.class, jsonValue);
             targetRow = json.readValue("targetRow", Integer.class, jsonValue);
         }
-    }
+    }*/
 
     @Override
     public boolean equals(Object o) {

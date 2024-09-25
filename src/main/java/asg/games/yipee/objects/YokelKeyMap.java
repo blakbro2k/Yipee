@@ -1,6 +1,6 @@
 package asg.games.yipee.objects;
 
-import com.badlogic.gdx.Input;
+import asg.games.yipee.tools.Input;
 
 public class YokelKeyMap {
     private final int[] keyMap = {
@@ -131,5 +131,6 @@ public class YokelKeyMap {
     public void setTarget8(int key){
         keyMap[12] = key;
     }
+
 
 }

@@ -1,14 +1,33 @@
-package asg.games.yippe.tools;
+package asg.games.yipee.tools;
+/*******************************************************************************
+ * Copyright 2011 See AUTHORS file.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
+/**
+ * Provides the methods necessary to have deterministic random blocks given a common seed
+ * <p>
+ *
+ * @since 1.0
+ * @author Blakbro2k on 12/29/2017
+ */
 public class RandomUtil {
-    /**
-     * Created by Blakbro2k on 12/29/2017.
-     */
 
     public static final int ATTACK_SECTION = 6;
     public static final int SECTION_GROUP_NUM = 6;
@@ -47,7 +66,7 @@ public class RandomUtil {
         //private static final long f = (1L << 48) - 1L;
 
         public RandomNumber() {
-            this(System.currentTimeMillis());
+            this(TimeUtils.millis());
         }
 
         public RandomNumber(long l) {

@@ -1,8 +1,6 @@
 package asg.games.yipee.objects;
 
 import asg.games.yipee.tools.TimeUtils;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
 
 import java.util.Objects;
 
@@ -54,7 +52,7 @@ public class YokelClock extends AbstractYokelObject {
     public boolean isRunning() {
         return this.isRunning;
     }
-
+/*
     @Override
     public void write(Json json) {
         if (json != null) {
@@ -71,7 +69,7 @@ public class YokelClock extends AbstractYokelObject {
             start = json.readValue("start", Long.class, jsonValue);
             isRunning = json.readValue("isRunning", Boolean.class, jsonValue);
         }
-    }
+    }*/
 
     @Override
     public boolean equals(Object o) {

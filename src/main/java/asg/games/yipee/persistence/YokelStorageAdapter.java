@@ -1,6 +1,6 @@
 package asg.games.yipee.persistence;
 
-import com.badlogic.gdx.utils.Disposable;
+import asg.games.yipee.objects.Disposable;
 
 public interface YokelStorageAdapter extends YokelStorage, ClientPlayerController, Disposable {
 }

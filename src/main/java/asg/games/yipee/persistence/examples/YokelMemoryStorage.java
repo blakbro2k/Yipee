@@ -1,43 +1,44 @@
-package asg.games.yipee.persistence;
+package asg.games.yipee.persistence.examples;
 
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.OrderedMap;
-import com.github.czyzby.kiwi.util.gdx.collection.GdxArrays;
+import asg.games.yipee.game.GameManager;
+import asg.games.yipee.objects.YokelObject;
+import asg.games.yipee.objects.YokelPlayer;
+import asg.games.yipee.objects.YokelRoom;
+import asg.games.yipee.objects.YokelSeat;
+import asg.games.yipee.objects.YokelTable;
+import asg.games.yipee.persistence.YokelStorageAdapter;
+import asg.games.yipee.tools.Util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
-
-import asg.games.yokel.managers.GameManager;
-import asg.games.yokel.objects.YokelObject;
-import asg.games.yokel.objects.YokelPlayer;
-import asg.games.yokel.objects.YokelRoom;
-import asg.games.yokel.objects.YokelSeat;
-import asg.games.yokel.objects.YokelTable;
-import asg.games.yokel.utils.YokelUtilities;
+import java.util.Map;
+import java.util.SortedMap;
 
 public class YokelMemoryStorage extends MemoryStorage implements YokelStorageAdapter {
     //<"lounge name", room object>
-    private OrderedMap<String, String> clients;
+    private Map<String, String> clients;
     //<"player id", player object>
-    private OrderedMap<String, YokelPlayer> registeredPlayers;
+    private Map<String, YokelPlayer> registeredPlayers;
     //<"table name", gameManager>
-    private OrderedMap<String, GameManager> games;
+    private Map<String, GameManager> games;
     //<"player id", room object>
-    private OrderedMap<String, Array<String>> room_idx;
+    private Map<String, List<String>> room_idx;
     //<"player id", room object>
-    private OrderedMap<String, Array<String>> table_idx;
+    private Map<String, List<String>> table_idx;
     //<"player id", room object>
-    private OrderedMap<String, Array<String>> seat_idx;
+    private Map<String, List<String>> seat_idx;
 
 
     public YokelMemoryStorage(){
         super();
-        room_idx = new OrderedMap<>();
-        table_idx = new OrderedMap<>();
-        seat_idx = new OrderedMap<>();
-        registeredPlayers = new OrderedMap<>();
-        games = new OrderedMap<>();
-        clients = new OrderedMap<>();
+        room_idx = new HashMap<>();
+        table_idx = new HashMap<>();
+        seat_idx = new HashMap<>();
+        registeredPlayers = new HashMap<>();
+        games = new HashMap<>();
+        clients = new HashMap<>();
     }
 
     @Override
@@ -66,8 +67,8 @@ public class YokelMemoryStorage extends MemoryStorage implements YokelStorageAda
 
 
     @Override
-    public ObjectMap.Values<YokelPlayer> getAllRegisteredPlayers() {
-        return YokelUtilities.getMapValues(registeredPlayers);
+    public Collection<YokelPlayer> getAllRegisteredPlayers() {
+        return Util.getMapValues(registeredPlayers);
     }
 
     private String getPlayerIdFromClient(String clientId){
@@ -180,8 +181,8 @@ public class YokelMemoryStorage extends MemoryStorage implements YokelStorageAda
     }
 
     @Override
-    public ObjectMap.Values<GameManager> getAllGames() {
-        return YokelUtilities.getMapValues(games);
+    public Collection<Object> getAllGames() {
+        return Util.getMapValues(games);
     }
 
     @Override
@@ -262,10 +263,10 @@ public class YokelMemoryStorage extends MemoryStorage implements YokelStorageAda
         }
     }
 
-    private void setIndex(OrderedMap<String, Array<String>> idx, String playerIndex, String objectIndex) {
-        Array<String> values = idx.get(playerIndex);
+    private void setIndex(Map<String, List<String>> idx, String playerIndex, String objectIndex) {
+        List<String> values = idx.get(playerIndex);
         if(values == null){
-            values = GdxArrays.newArray();
+            values = new ArrayList<>();
         }
         values.add(objectIndex);
         idx.put(playerIndex, values);
@@ -273,8 +274,8 @@ public class YokelMemoryStorage extends MemoryStorage implements YokelStorageAda
 
     private void removeFromAllSeats(String playerId){
         if(playerId != null){
-            Array<String> seats = seat_idx.get(playerId);
-            for(String seatId : YokelUtilities.safeIterable(seats)){
+            List<String> seats = seat_idx.get(playerId);
+            for(String seatId : Util.safeIterable(seats)){
                 if(seatId != null){
                     YokelSeat seat = get(YokelSeat.class, seatId);
                     if(seat != null){

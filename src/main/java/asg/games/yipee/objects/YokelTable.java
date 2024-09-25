@@ -1,19 +1,15 @@
 package asg.games.yipee.objects;
 
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.OrderedMap;
-import com.github.czyzby.kiwi.util.gdx.collection.GdxArrays;
+import asg.games.yipee.persistence.YokelStorageAdapter;
+import asg.games.yipee.tools.Util;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
-import asg.games.yokel.persistence.YokelStorageAdapter;
-import asg.games.yokel.utils.YokelUtilities;
-
-public class YokelTable extends AbstractYokelObject implements YokelObjectJPAVisitor, Copyable<YokelTable>, Disposable, Json.Serializable {
+public class YokelTable extends AbstractYokelObject implements YokelObjectJPAVisitor, Copyable<YokelTable>, Disposable {
     public static final String ARG_TYPE = "type";
     public static final String ARG_RATED = "rated";
     public static final String ENUM_VALUE_PRIVATE = "PRIVATE";
@@ -36,8 +32,8 @@ public class YokelTable extends AbstractYokelObject implements YokelObjectJPAVis
     }
 
     private ACCESS_TYPE accessType = ACCESS_TYPE.PUBLIC;
-    private Array<YokelSeat> seats = GdxArrays.newArray();
-    private Array<YokelPlayer> watchers = GdxArrays.newArray();
+    private List<YokelSeat> seats = new LinkedList<>();
+    private List<YokelPlayer> watchers = new ArrayList<>();
     private boolean isRated = false;
     private boolean isSoundOn = true;
     private String roomId;
@@ -50,12 +46,12 @@ public class YokelTable extends AbstractYokelObject implements YokelObjectJPAVis
         this(roomId, nameNumber, null);
     }
 
-    public YokelTable(String roomId, int nameNumber, OrderedMap<String, Object> arguments) {
+    public YokelTable(String roomId, int nameNumber, Map<String, Object> arguments) {
         this.roomId = roomId;
         initialize(nameNumber, arguments);
     }
 
-    private void initialize(int nameNumber, OrderedMap<String, Object> arguments) {
+    private void initialize(int nameNumber, Map<String, Object> arguments) {
         setTableName(nameNumber);
         setUpSeats();
         setUpArguments(arguments);
@@ -67,12 +63,12 @@ public class YokelTable extends AbstractYokelObject implements YokelObjectJPAVis
 
     public int getTableNumber() {
         System.out.println(getName());
-        return Integer.parseInt(YokelUtilities.split(getName(), ATT_NAME_PREPEND)[1]);
+        return Integer.parseInt(Util.split(getName(), ATT_NAME_PREPEND)[1]);
     }
 
-    private void setUpArguments(OrderedMap<String, Object> arguments) {
+    private void setUpArguments(Map<String, Object> arguments) {
         if (arguments != null) {
-            for (String key : YokelUtilities.getMapKeys(arguments)) {
+            for (String key : Util.getMapKeys(arguments)) {
                 if (key != null) {
                     Object o = arguments.get(key);
                     processArg(key, o);
@@ -86,10 +82,10 @@ public class YokelTable extends AbstractYokelObject implements YokelObjectJPAVis
 
     private void processArg(String arg, Object value) {
         if (arg != null && value != null) {
-            if (YokelUtilities.equalsIgnoreCase(ARG_TYPE, arg)) {
-                setAccessType(YokelUtilities.otos(value));
-            } else if (YokelUtilities.equalsIgnoreCase(ARG_RATED, arg)) {
-                setRated(YokelUtilities.otob(value));
+            if (Util.equalsIgnoreCase(ARG_TYPE, arg)) {
+                setAccessType(Util.otos(value));
+            } else if (Util.equalsIgnoreCase(ARG_RATED, arg)) {
+                setRated(Util.otob(value));
             }
         }
     }
@@ -99,9 +95,9 @@ public class YokelTable extends AbstractYokelObject implements YokelObjectJPAVis
     }
 
     public void setAccessType(String accessType) {
-        if (YokelUtilities.equalsIgnoreCase(ACCESS_TYPE.PRIVATE.toString(), accessType)) {
+        if (Util.equalsIgnoreCase(ACCESS_TYPE.PRIVATE.toString(), accessType)) {
             setAccessType(ACCESS_TYPE.PRIVATE);
-        } else if (YokelUtilities.equalsIgnoreCase(ACCESS_TYPE.PROTECTED.toString(), accessType)) {
+        } else if (Util.equalsIgnoreCase(ACCESS_TYPE.PROTECTED.toString(), accessType)) {
             setAccessType(ACCESS_TYPE.PROTECTED);
         } else {
             setAccessType(ACCESS_TYPE.PUBLIC);
@@ -170,18 +166,18 @@ public class YokelTable extends AbstractYokelObject implements YokelObjectJPAVis
     }
 
     public void makeAllTablesUnready() {
-        for (YokelSeat seat : YokelUtilities.safeIterable(seats)) {
+        for (YokelSeat seat : Util.safeIterable(seats)) {
             if (seat != null) {
                 seat.setSeatReady(false);
             }
         }
     }
 
-    public Array<YokelSeat> getSeats() {
+    public List<YokelSeat> getSeats() {
         return seats;
     }
 
-    public void setSeats(Array<YokelSeat> seats) {
+    public void setSeats(List<YokelSeat> seats) {
         this.seats = seats;
     }
 
@@ -205,21 +201,21 @@ public class YokelTable extends AbstractYokelObject implements YokelObjectJPAVis
 
     public void removeWatcher(YokelPlayer player) {
         if (player != null) {
-            watchers.removeValue(player, true);
+            watchers.remove(player);
         }
     }
 
-    private void setWatchers(Array<YokelPlayer> watchers) {
+    private void setWatchers(List<YokelPlayer> watchers) {
         this.watchers = watchers;
     }
 
-    public Array<YokelPlayer> getWatchers() {
+    public List<YokelPlayer> getWatchers() {
         return watchers;
     }
 
     @Override
     public void dispose() {
-        YokelUtilities.clearArrays(seats, watchers);
+        Util.clearArrays(seats, watchers);
     }
 
     @Override
@@ -251,10 +247,10 @@ public class YokelTable extends AbstractYokelObject implements YokelObjectJPAVis
                 adapter.putAllSeats(seats);
             }
         } catch (Exception e) {
-            throw new GdxRuntimeException("Issue visiting save for " + this.getClass().getSimpleName() + ": ", e);
+            throw new RuntimeException("Issue visiting save for " + this.getClass().getSimpleName() + ": ", e);
         }
     }
-
+/*
     @Override
     public void write(Json json) {
         super.write(json);
@@ -280,7 +276,7 @@ public class YokelTable extends AbstractYokelObject implements YokelObjectJPAVis
             seats = json.readValue("seats", Array.class, jsonValue);
             watchers = json.readValue("watchers", Array.class, jsonValue);
         }
-    }
+    }*/
 
     @Override
     public boolean equals(Object o) {

@@ -1,12 +1,25 @@
 package asg.games.yipee.game;
 
+import asg.games.yipee.objects.YokelBlock;
+import asg.games.yipee.objects.YokelBlockEval;
 import asg.games.yipee.objects.YokelGameBoard;
+import asg.games.yipee.objects.YokelGameBoardState;
+import asg.games.yipee.objects.YokelPiece;
 import asg.games.yipee.objects.YokelPlayer;
+import asg.games.yipee.objects.YokelSeat;
 import asg.games.yipee.objects.YokelTable;
-import asg.games.yipee.persistence.Disposable;
+import asg.games.yipee.objects.Disposable;
+import asg.games.yipee.server.ServerGameState;
+import asg.games.yipee.tools.MathUtils;
+import asg.games.yipee.tools.Util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -15,7 +28,7 @@ public class GameManager implements Disposable {
     private YokelTable table;
     private final YokelGameBoard[] gameBoards = new YokelGameBoard[8];
     private final Vector[] boardCellsToDrop = new Vector[8];
-    private final Array<YokelPlayer> winners = GdxArrays.newArray();
+    private final List<YokelPlayer> winners = new ArrayList<>();
     private boolean isGameRunning, wasPieceJustSet, showGameOver, hasGameStarted = false;
     private long seed = 1L;
 
@@ -98,13 +111,13 @@ public class GameManager implements Disposable {
     }
 
     public YokelGameBoard getGameBoard(int i){
-        if(i < 0 || i > 8) throw new GdxRuntimeException("Invalid Gameboard index: " + i);
+        if(i < 0 || i > 8) throw new RuntimeException("Invalid Gameboard index: " + i);
         return gameBoards[i];
     }
 
-    public ObjectMap<Integer, YokelGameBoard> getActiveGameBoards(){
+    public Map<Integer, YokelGameBoard> getActiveGameBoards(){
         //TODO: Should be a persisted map in the object, not new everytime
-        ObjectMap<Integer, YokelGameBoard> returnBoards = GdxMaps.newObjectMap();
+        Map<Integer, YokelGameBoard> returnBoards = new HashMap<>();
         int index = 0;
         for(YokelGameBoard board : gameBoards){
             if(board != null && board.hasGameStarted() && !board.hasPlayerDied()){
@@ -177,7 +190,7 @@ public class GameManager implements Disposable {
             //pop next power
             while(amount-- > 0){
                 if(!powers.isEmpty()){
-                    powerStack.push(powers.removeFirst());
+                    powerStack.push(powers.poll());
                 }
             }
         }
@@ -187,7 +200,7 @@ public class GameManager implements Disposable {
     private void handleAttackGivenAttack(int target, int attackBlock){
         //Get all active boards
         if(attackBlock != YokelBlock.CLEAR_BLOCK){
-            ObjectMap<Integer, YokelGameBoard> activeBoards = getActiveGameBoards();
+            Map<Integer, YokelGameBoard> activeBoards = getActiveGameBoards();
             YokelGameBoard gameBoard = activeBoards.get(target);
 
             if(gameBoard != null){
@@ -234,14 +247,14 @@ public class GameManager implements Disposable {
             int block = blocks.pop();
             int partnerIndex = (currentBoardSeat % 2 == 0)? currentBoardSeat + 1 : currentBoardSeat - 1;
 
-            Array<Integer> boardIndexes = GdxArrays.newArray();
+            List<Integer> boardIndexes = new ArrayList<>();
             for(int i = 0; i < 8; i++){
                 boardIndexes.add(i);
             }
 
             //Offensive should only hit random enemies.
             //Defensive should only hit you and your partner.
-            Iterator<Integer> iter = YokelUtilities.getArrayIterator(boardIndexes);
+            Iterator<Integer> iter = Util.getArrayIterator(boardIndexes);
             while(iter.hasNext()){
                 int x = iter.next();
 
@@ -256,9 +269,9 @@ public class GameManager implements Disposable {
                 }
             }
 
-            ObjectMap<Integer, YokelGameBoard> activeGameboards = getActiveGameBoards();
-            Array<Integer> activeBoards = YokelUtilities.getMapKeys(activeGameboards).toArray();
-            Iterator<Integer> active = YokelUtilities.getArrayIterator(boardIndexes);
+            Map<Integer, YokelGameBoard> activeGameboards = getActiveGameBoards();
+            List<Integer> activeBoards = Util.getMapKeys(activeGameboards).toArray();
+            Iterator<Integer> active = Util.getArrayIterator(boardIndexes);
 
             while(active.hasNext()){
                 int a = active.next();
@@ -267,11 +280,11 @@ public class GameManager implements Disposable {
                 }
             }
 
-            YokelUtilities.flushIterator(iter);
-            YokelUtilities.flushIterator(YokelUtilities.getArrayIterator(activeBoards));
-            YokelUtilities.flushIterator(active);
+            Util.flushIterator(iter);
+            Util.flushIterator(Util.getArrayIterator(activeBoards));
+            Util.flushIterator(active);
 
-            int index = MathUtils.random(boardIndexes.size - 1);
+            int index = MathUtils.random(Util.size(boardIndexes) - 1);
             handleAttackGivenAttack(boardIndexes.get(index), block);
         }
     }
@@ -376,7 +389,7 @@ public class GameManager implements Disposable {
         }
     }
 
-    public Array<YokelPlayer> getWinners(){
+    public List<YokelPlayer> getWinners(){
         return winners;
     }
 
@@ -389,7 +402,7 @@ public class GameManager implements Disposable {
 
     //TODO: Remove test methods
     public void testMedusa(int target) {
-        ObjectMap<Integer, YokelGameBoard> activeBoards = getActiveGameBoards();
+        Map<Integer, YokelGameBoard> activeBoards = getActiveGameBoards();
         YokelGameBoard gameBoard = activeBoards.get(target);
 
         if(gameBoard != null){
@@ -399,7 +412,7 @@ public class GameManager implements Disposable {
     }
 
     public void testMidas(int target) {
-        ObjectMap<Integer, YokelGameBoard> activeBoards = getActiveGameBoards();
+        Map<Integer, YokelGameBoard> activeBoards = getActiveGameBoards();
         YokelGameBoard gameBoard = activeBoards.get(target);
 
         if(gameBoard != null){
@@ -419,7 +432,7 @@ public class GameManager implements Disposable {
         for (int[] inner : cells) {
             System.out.println(Arrays.toString(inner));
         }
-        Gdx.app.exit();
+        //Gdx.app.exit();
     }
 
     @Override

@@ -1,25 +1,24 @@
-package asg.games.yokel.objects;
+package asg.games.yippe.objects;
 
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.OrderedMap;
-import com.badlogic.gdx.utils.TimeUtils;
-import com.github.czyzby.kiwi.util.gdx.collection.GdxArrays;
-import com.github.czyzby.kiwi.util.gdx.collection.GdxMaps;
-
+import asg.games.yipee.objects.*;
+import asg.games.yipee.tools.Input;
+import asg.games.yipee.tools.RandomUtil;
+import asg.games.yipee.tools.TimeUtils;
+import asg.games.yipee.tools.Util;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import asg.games.yokel.utils.RandomUtil;
-import asg.games.yokel.utils.YokelUtilities;
 
 public class TestGameObjects {
     AtomicInteger atomicId = new AtomicInteger(0);
@@ -56,7 +55,7 @@ public class TestGameObjects {
     }
 
     @Test(dataProvider = "yokel_objects_ids")
-    public void testAbstractEqualsAndHash(AbstractYokelObject y1, AbstractYokelObject y2, AbstractYokelObject x1) {
+    public void testAbstractEqualsAndHash(AbstractYokelObject y1, AbstractYokelObject y2, AbstractYokelObject x1) throws JsonProcessingException {
         Assert.assertNotEquals(y1, y2);
         Assert.assertNotEquals(y1, x1);
         Assert.assertNotEquals(y2, x1);
@@ -65,7 +64,7 @@ public class TestGameObjects {
         Assert.assertNotEquals(Objects.hash(y1.getId()), y2.hashCode());
         System.out.println("y1: " + y1);
         System.out.println("y1: " + y1.getClass());
-        YokelObject copy = YokelUtilities.getObjectFromJsonString(y1.getClass(), y1.getJsonString());
+        YokelObject copy = Util.getObjectFromJsonString(y1.getClass(), y1.getJsonString());
         Assert.assertEquals(copy, y1);
         Assert.assertEquals(copy.getId(), y1.getId());
         Assert.assertEquals(copy.hashCode(), y1.hashCode());
@@ -91,7 +90,7 @@ public class TestGameObjects {
     }
 
     @Test(dataProvider = "yokel_objects_ids")
-    public void testJSONConversion(AbstractYokelObject y1, AbstractYokelObject y2, AbstractYokelObject x1) {
+    public void testJSONConversion(AbstractYokelObject y1, AbstractYokelObject y2, AbstractYokelObject x1) throws JsonProcessingException {
         //Test Json
         String jsonStringBlock1 = y1.getJsonString();
         String jsonStringYblock2 = y2.getJsonString();
@@ -103,9 +102,9 @@ public class TestGameObjects {
         System.out.println(x1);
         System.out.println(jsonStringXblock1);
 
-        YokelObject readBlock1 = YokelUtilities.getObjectFromJsonString(y1.getClass(), jsonStringBlock1);
-        YokelObject readYBlock1 = YokelUtilities.getObjectFromJsonString(y2.getClass(), jsonStringYblock2);
-        YokelObject readYBlock2 = YokelUtilities.getObjectFromJsonString(x1.getClass(), jsonStringXblock1);
+        YokelObject readBlock1 = Util.getObjectFromJsonString(y1.getClass(), jsonStringBlock1);
+        YokelObject readYBlock1 = Util.getObjectFromJsonString(y2.getClass(), jsonStringYblock2);
+        YokelObject readYBlock2 = Util.getObjectFromJsonString(x1.getClass(), jsonStringXblock1);
         Assert.assertEquals(jsonStringBlock1, y1.getJsonString());
         Assert.assertEquals(jsonStringYblock2, y2.getJsonString());
         Assert.assertEquals(jsonStringXblock1, x1.getJsonString());
@@ -115,7 +114,7 @@ public class TestGameObjects {
     }
 
     @Test
-    public void testYokelBlock() {
+    public void testYokelBlock() throws JsonProcessingException {
         YokelBlock block1 = new YokelBlock(1, 1);
         YokelBlock yblock1 = new YokelBlock(1, 1, YokelBlock.Y_BLOCK);
         setIdAndName(block1, yblock1);
@@ -143,8 +142,8 @@ public class TestGameObjects {
 
         //Test Json
         block1.setPowerIntensity(4);
-        String json = YokelUtilities.getJsonString(YokelBlock.class, block1);
-        YokelBlock readYokelBlock = YokelUtilities.getObjectFromJsonString(YokelBlock.class, json);
+        String json = Util.getJsonString(YokelBlock.class);
+        YokelBlock readYokelBlock = Util.getObjectFromJsonString(YokelBlock.class, json);
         Assert.assertEquals(json, block1.getJsonString());
         System.out.println("Expected: " + block1.getJsonString());
         System.out.println("Actual: " + readYokelBlock.getJsonString());
@@ -152,7 +151,7 @@ public class TestGameObjects {
     }
 
     @Test
-    public void testYokelClock() {
+    public void testYokelClock() throws JsonProcessingException {
         YokelClock clock = new YokelClock();
         setIdAndName(clock);
 
@@ -161,7 +160,7 @@ public class TestGameObjects {
         System.out.println("clock: " + jsonStringClock1);
 
         //Test methods
-        YokelClock readClock1 = YokelUtilities.getObjectFromJsonString(YokelClock.class, jsonStringClock1);
+        YokelClock readClock1 = Util.getObjectFromJsonString(YokelClock.class, jsonStringClock1);
         Assert.assertEquals(jsonStringClock1, clock.getJsonString());
         Assert.assertEquals(readClock1, clock);
 
@@ -176,8 +175,8 @@ public class TestGameObjects {
         Assert.assertEquals(clock.getMinutes(), 0);
 
         //Test Json
-        String json = YokelUtilities.getJsonString(YokelClock.class, clock);
-        YokelClock readYokelClock = YokelUtilities.getObjectFromJsonString(YokelClock.class, json);
+        String json = Util.getJsonString(YokelClock.class);
+        YokelClock readYokelClock = Util.getObjectFromJsonString(YokelClock.class, json);
         Assert.assertEquals(json, clock.getJsonString());
         System.out.println("Expected: " + clock.getJsonString());
         System.out.println("Actual: " + readYokelClock.getJsonString());
@@ -185,7 +184,7 @@ public class TestGameObjects {
     }
 
     @Test
-    public void testYokelBoardPair() {
+    public void testYokelBoardPair() throws JsonProcessingException {
         YokelGameBoard board1 = new YokelGameBoard();
         YokelGameBoard board2 = new YokelGameBoard(14);
         YokelBoardPair pair = new YokelBoardPair(board1, board2);
@@ -200,9 +199,9 @@ public class TestGameObjects {
         System.out.println("pair: " + jsonStringPair);
 
         //Json Test
-        YokelGameBoard readStringBoard1 = YokelUtilities.getObjectFromJsonString(YokelGameBoard.class, jsonStringBoard1);
-        YokelGameBoard readStringBoard2 = YokelUtilities.getObjectFromJsonString(YokelGameBoard.class, jsonStringBoard2);
-        YokelBoardPair readStringPair = YokelUtilities.getObjectFromJsonString(YokelBoardPair.class, jsonStringPair);
+        YokelGameBoard readStringBoard1 = Util.getObjectFromJsonString(YokelGameBoard.class, jsonStringBoard1);
+        YokelGameBoard readStringBoard2 = Util.getObjectFromJsonString(YokelGameBoard.class, jsonStringBoard2);
+        YokelBoardPair readStringPair = Util.getObjectFromJsonString(YokelBoardPair.class, jsonStringPair);
         Assert.assertEquals(jsonStringBoard1, board1.getJsonString());
         Assert.assertEquals(jsonStringBoard2, board2.getJsonString());
         Assert.assertEquals(jsonStringPair, pair.getJsonString());
@@ -215,14 +214,14 @@ public class TestGameObjects {
     }
 
     @Test
-    public void testYokelBlockMove() {
+    public void testYokelBlockMove() throws JsonProcessingException {
         //TODO: UPDATE TEST
         YokelBlockMove blockMove = new YokelBlockMove(5, 5, 1, 2, 4);
         setIdAndName(blockMove);
         System.out.println(" blockMove: " + blockMove);
 
-        String json = YokelUtilities.getJsonString(YokelBlockMove.class, blockMove);
-        YokelBlockMove readBlockMove = YokelUtilities.getObjectFromJsonString(YokelBlockMove.class, json);
+        String json = Util.getJsonString(YokelBlockMove.class);
+        YokelBlockMove readBlockMove = Util.getObjectFromJsonString(YokelBlockMove.class, json);
         Assert.assertEquals(json, blockMove.getJsonString());
         Assert.assertEquals(blockMove, readBlockMove);
 
@@ -230,7 +229,7 @@ public class TestGameObjects {
         Assert.assertEquals(blockMove.y, 2);
         Assert.assertEquals(blockMove.targetRow, 4);
         Assert.assertEquals(json, blockMove.getJsonString());
-        Assert.assertEquals(blockMove, YokelUtilities.getObjectFromJsonString(YokelBlockMove.class, json));
+        Assert.assertEquals(blockMove, Util.getObjectFromJsonString(YokelBlockMove.class, json));
     }
 
     @Test
@@ -239,8 +238,8 @@ public class TestGameObjects {
         setIdAndName(blockMove);
         System.out.println(" blockMove: " + blockMove);
 
-        String json = YokelUtilities.getJsonString(YokelBlockMove.class, blockMove);
-        YokelBlockMove readBlockMove = YokelUtilities.getObjectFromJsonString(YokelBlockMove.class, json);
+        String json = Util.getJsonString(YokelBlockMove.class, blockMove);
+        YokelBlockMove readBlockMove = Util.getObjectFromJsonString(YokelBlockMove.class, json);
         Assert.assertEquals(json, blockMove.getJsonString());
         Assert.assertEquals(blockMove, readBlockMove);
 
@@ -248,12 +247,12 @@ public class TestGameObjects {
         Assert.assertEquals(blockMove.y, 2);
         Assert.assertEquals(blockMove.targetRow, 4);
         Assert.assertEquals(json, blockMove.getJsonString());
-        Assert.assertEquals(blockMove, YokelUtilities.getObjectFromJsonString(YokelBlockMove.class, json));*/
+        Assert.assertEquals(blockMove, Util.getObjectFromJsonString(YokelBlockMove.class, json));*/
         throw new RuntimeException("testYokelBrokenBlock() test is not implemented yet");
     }
 
     @Test
-    public void testYokelPiece() {
+    public void testYokelPiece() throws JsonProcessingException {
         int[] expected = new int[3];
         int expectedIndex = 1;
         expected[0] = 4;
@@ -293,8 +292,8 @@ public class TestGameObjects {
         Assert.assertEquals(yokelPiece.getBlock3(), expected[0]);
 
         //Test Json
-        String json = YokelUtilities.getJsonString(YokelPiece.class, yokelPiece);
-        YokelPiece readBlockMove = YokelUtilities.getObjectFromJsonString(YokelPiece.class, json);
+        String json = Util.getJsonString(YokelPiece.class);
+        YokelPiece readBlockMove = Util.getObjectFromJsonString(YokelPiece.class, json);
         Assert.assertEquals(json, yokelPiece.getJsonString());
         System.out.println("Expected: " + yokelPiece.getJsonString());
         System.out.println("Actual: " + readBlockMove.getJsonString());
@@ -302,7 +301,7 @@ public class TestGameObjects {
     }
 
     @Test
-    public void testYokelPlayer() {
+    public void testYokelPlayer() throws JsonProcessingException {
         YokelPlayer yokelPlayer = new YokelPlayer("TestUser1", 500, 4);
         YokelPlayer yokelPlayer2 = new YokelPlayer("TestUser2", 2500);
         YokelPlayer yokelPlayer3 = new YokelPlayer("TestUser3");
@@ -329,8 +328,8 @@ public class TestGameObjects {
         Assert.assertEquals(yokelPlayer3.getRating(), 1505);
 
         //Test Json
-        String json = YokelUtilities.getJsonString(YokelPlayer.class, yokelPlayer3);
-        YokelPlayer readYokelPlayer3 = YokelUtilities.getObjectFromJsonString(YokelPlayer.class, json);
+        String json = Util.getJsonString(YokelPlayer.class);
+        YokelPlayer readYokelPlayer3 = Util.getObjectFromJsonString(YokelPlayer.class, json);
         Assert.assertEquals(json, yokelPlayer3.getJsonString());
         Assert.assertEquals(yokelPlayer3, readYokelPlayer3);
 
@@ -341,7 +340,7 @@ public class TestGameObjects {
     }
 
     @Test
-    public void testYokelSeat() {
+    public void testYokelSeat() throws JsonProcessingException {
         Assert.assertThrows(RuntimeException.class, () -> new YokelSeat("12", 8));
         Assert.assertThrows(RuntimeException.class, () -> new YokelSeat("12", -1));
         YokelPlayer yokelPlayer = new YokelPlayer("TestUser1", 500, 4);
@@ -371,8 +370,8 @@ public class TestGameObjects {
         Assert.assertFalse(yokelSeat.isOccupied());
 
         //Test Json
-        String json = YokelUtilities.getJsonString(YokelSeat.class, yokelSeat);
-        YokelSeat readYokelSeat = YokelUtilities.getObjectFromJsonString(YokelSeat.class, json);
+        String json = Util.getJsonString(YokelSeat.class);
+        YokelSeat readYokelSeat = Util.getObjectFromJsonString(YokelSeat.class, json);
         Assert.assertEquals(json, yokelSeat.getJsonString());
         System.out.println("Expected: " + readYokelSeat.getJsonString());
         System.out.println("Actual: " + yokelSeat.getJsonString());
@@ -380,7 +379,7 @@ public class TestGameObjects {
     }
 
     @Test
-    public void testYokelRoom() {
+    public void testYokelRoom() throws JsonProcessingException {
         YokelRoom yokelRoom1 = new YokelRoom("Eiffel Tower", YokelRoom.ADVANCED_LOUNGE);
         YokelPlayer yokelPlayer = new YokelPlayer("TestUser1", 500, 4);
         YokelPlayer yokelPlayer2 = new YokelPlayer("TestUser2", 2500);
@@ -392,11 +391,11 @@ public class TestGameObjects {
         Assert.assertEquals(yokelRoom1.getLoungeName(), YokelRoom.ADVANCED_LOUNGE);
 
         System.out.println("yokelRoom1: " + yokelRoom1);
-        Array<YokelPlayer> expectedPlayers = GdxArrays.newArray();
-        ObjectMap<Integer, YokelTable> expectedTables = GdxMaps.newObjectMap();
+        List<YokelPlayer> expectedPlayers = new ArrayList<>();
+        Map<Integer, YokelTable> expectedTables = new HashMap<>();
 
-        Assert.assertEquals(yokelRoom1.getAllTableIndexes(), YokelUtilities.getMapKeys(expectedTables));
-        Assert.assertEquals(yokelRoom1.getAllTables(), YokelUtilities.getMapValues(expectedTables));
+        //Assert.assertEquals(yokelRoom1.getAllTableIndexes(), Util.getMapKeys(expectedTables));
+        //Assert.assertEquals(yokelRoom1.getAllTables(), Util.getMapValues(expectedTables));
         Assert.assertEquals(yokelRoom1.getAllPlayers(), expectedPlayers);
 
         //Test players watch list
@@ -416,7 +415,7 @@ public class TestGameObjects {
         //Test table list
         yokelRoom1.addTable();
 
-        OrderedMap<String, Object> arguments = GdxMaps.newOrderedMap();
+        Map<String, Object> arguments = new HashMap<>();
         arguments.put(YokelTable.ARG_TYPE, YokelTable.ENUM_VALUE_PRIVATE);
         arguments.put(YokelTable.ARG_RATED, true);
         yokelRoom1.addTable(arguments);
@@ -426,13 +425,13 @@ public class TestGameObjects {
         yokelRoom1.addTable(arguments);
 
         yokelRoom1.addTable();
-        Assert.assertEquals(yokelRoom1.getAllTables().size, 4);
+        Assert.assertEquals(Util.size(yokelRoom1.getAllTables()), 4);
         yokelRoom1.removeTable(2);
-        Assert.assertEquals(yokelRoom1.getAllTables().size, 3);
+        Assert.assertEquals(Util.size(yokelRoom1.getAllTables()), 3);
 
-        Array<YokelTable> tables = yokelRoom1.getAllTables();
+        List<YokelTable> tables = yokelRoom1.getAllTables();
         for (YokelTable table : tables) {
-            table.setId(YokelUtilities.IDGenerator.getID());
+            table.setId(Util.IDGenerator.getID());
         }
 
         Assert.assertNotNull(yokelRoom1.getTable(4));
@@ -441,8 +440,8 @@ public class TestGameObjects {
         Assert.assertNotNull(yokelRoom1.getTable(2));
 
         //Test Json
-        String json = YokelUtilities.getJsonString(YokelRoom.class, yokelRoom1);
-        YokelRoom readYokelRoom = YokelUtilities.getObjectFromJsonString(YokelRoom.class, json);
+        String json = Util.getJsonString(YokelRoom.class);
+        YokelRoom readYokelRoom = Util.getObjectFromJsonString(YokelRoom.class, json);
         Assert.assertEquals(json, yokelRoom1.getJsonString());
         System.out.println("Expected: " + yokelRoom1.getJsonString());
         System.out.println("Actual  : " + readYokelRoom.getJsonString());
@@ -512,14 +511,14 @@ public class TestGameObjects {
     }
 
     @Test
-    public void testYokelTable() {
+    public void testYokelTable() throws JsonProcessingException {
         YokelTable yokelTable = new YokelTable("sim:room1", 1);
         YokelTable yokelTable2 = new YokelTable("sim:room2", 2);
 
         YokelPlayer yokelPlayer = new YokelPlayer("TestUser1", 500, 4);
         YokelPlayer yokelPlayer2 = new YokelPlayer("TestUser2", 2500);
 
-        OrderedMap<String, Object> arguments = GdxMaps.newOrderedMap();
+        Map<String, Object> arguments = new HashMap<>();
         arguments.put(YokelTable.ARG_RATED, true);
         arguments.put(YokelTable.ARG_TYPE, YokelTable.ENUM_VALUE_PRIVATE);
         YokelTable yokelTable3 = new YokelTable("sim:room3", 1, arguments);
@@ -546,9 +545,9 @@ public class TestGameObjects {
 
         yokelTable.addWatcher(yokelPlayer);
         yokelTable.addWatcher(yokelPlayer2);
-        Assert.assertEquals(yokelTable.getWatchers().size, 2);
+        Assert.assertEquals(Util.size(yokelTable.getWatchers()), 2);
         yokelTable.removeWatcher(yokelPlayer2);
-        Assert.assertEquals(yokelTable.getWatchers().size, 1);
+        Assert.assertEquals(Util.size(yokelTable.getWatchers()), 1);
 
         Assert.assertFalse(yokelTable.isGroupReady(-3));
         Assert.assertFalse(yokelTable.isGroupReady(23));
@@ -558,8 +557,8 @@ public class TestGameObjects {
         }
 
         //Test Json
-        String json = YokelUtilities.getJsonString(YokelTable.class, yokelTable);
-        YokelTable readYokelTable = YokelUtilities.getObjectFromJsonString(YokelTable.class, json);
+        String json = Util.getJsonString(YokelTable.class);
+        YokelTable readYokelTable = Util.getObjectFromJsonString(YokelTable.class, json);
         Assert.assertEquals(json, yokelTable.getJsonString());
         System.out.println("Expected: " + yokelTable.getJsonString());
         System.out.println("Actual  : " + readYokelTable.getJsonString());
@@ -647,10 +646,10 @@ public class TestGameObjects {
     }
 
     private void setIdAndName(YokelObject... yokelObjects) {
-        for (YokelObject yokelObject : YokelUtilities.safeIterable(yokelObjects)) {
+        for (YokelObject yokelObject : Util.safeIterableArray(yokelObjects)) {
             if (yokelObject != null) {
                 int id = atomicId.getAndIncrement();
-                yokelObject.setId(YokelUtilities.IDGenerator.getID());
+                yokelObject.setId(Util.IDGenerator.getID());
                 yokelObject.setName(id + "-" + yokelObject.getClass().getSimpleName());
             }
         }

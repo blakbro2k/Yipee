@@ -1,13 +1,14 @@
-package asg.games.yokel.objects;
+package asg.games.yippe.objects;
 
-import com.badlogic.gdx.utils.TimeUtils;
-
+import asg.games.yipee.objects.YokelGameBoard;
+import asg.games.yipee.objects.YokelGameBoardState;
+import asg.games.yipee.server.ServerGameState;
+import asg.games.yipee.tools.TimeUtils;
 import org.testng.annotations.Test;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import asg.games.yokel.server.ServerGameState;
 
 public class TestGameBoard {
 

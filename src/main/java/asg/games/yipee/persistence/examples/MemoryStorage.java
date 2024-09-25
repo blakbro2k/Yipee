@@ -1,22 +1,26 @@
-package asg.games.yipee.persistence;
+package asg.games.yipee.persistence.examples;
 
-import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.Queue;
+import asg.games.yipee.objects.YokelObject;
+import asg.games.yipee.persistence.AbstractStorage;
+import asg.games.yipee.tools.Util;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 
-import asg.games.yokel.objects.YokelObject;
 
 public class MemoryStorage extends AbstractStorage {
-    private ObjectMap<String, Object> _idStore;
-    private ObjectMap<String, Object> _nameStore;
+    private Map<String, Object> _idStore;
+    private Map<String, Object> _nameStore;
     private Queue<Object> _transactions;
 
     protected MemoryStorage(){
-        _idStore = new ObjectMap<>();
-        _nameStore = new ObjectMap<>();
-        _transactions = new Queue<>();
+        _idStore = new HashMap<>();
+        _nameStore = new HashMap<>();
+        _transactions = new LinkedList<>();
     }
 
     @Override
@@ -56,7 +60,7 @@ public class MemoryStorage extends AbstractStorage {
 
     @Override
     public void saveObject(Object object) {
-        _transactions.addFirst(object);
+        _transactions.offer(object);
     }
 
     @Override
@@ -98,7 +102,7 @@ public class MemoryStorage extends AbstractStorage {
 
 
     public int getTransactions(){
-        return _transactions.size;
+        return Util.size(_transactions);
     }
 
 }

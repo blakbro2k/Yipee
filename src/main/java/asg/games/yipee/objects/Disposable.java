@@ -1,4 +1,4 @@
-package asg.games.yipee.persistence;
+package asg.games.yipee.objects;
 
 /** Interface for disposable resources.
  * */

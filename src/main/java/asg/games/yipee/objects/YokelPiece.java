@@ -1,14 +1,9 @@
 package asg.games.yipee.objects;
 
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
-
 import java.util.Arrays;
 import java.util.Objects;
 
-public class YokelPiece extends AbstractYokelObject implements Json.Serializable {
+public class YokelPiece extends AbstractYokelObject  {
     public static final int MEDUSA_GAME_PIECE = 1;
     public static final int MIDAS_GAME_PIECE = 2;
 
@@ -89,7 +84,7 @@ public class YokelPiece extends AbstractYokelObject implements Json.Serializable
         setBlock2(tempBlock3);
         setBlock3(tempBlock1);
     }
-
+/*
     @Override
     public void write(Json json) {
         if(json != null) {
@@ -119,11 +114,11 @@ public class YokelPiece extends AbstractYokelObject implements Json.Serializable
                 setBlock1(getIntValueFromFloat(array.get(0)));
             }
         }
-    }
+    }*/
 
     public int getIntValueFromFloat(Object o) {
         if (o instanceof Float) {
-            return MathUtils.round((Float) o);
+            return Math.round((Float) o);
         }
         return -1;
     }
