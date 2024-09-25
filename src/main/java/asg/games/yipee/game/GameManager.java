@@ -13,15 +13,7 @@ import asg.games.yipee.server.ServerGameState;
 import asg.games.yipee.tools.MathUtils;
 import asg.games.yipee.tools.Util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Stack;
-import java.util.Vector;
+import java.util.*;
 
 public class GameManager implements Disposable {
     //private final Log logger = Log4LibGDXLoggerService.forClass(GameBlockArea.class);
@@ -254,7 +246,8 @@ public class GameManager implements Disposable {
 
             //Offensive should only hit random enemies.
             //Defensive should only hit you and your partner.
-            Iterator<Integer> iter = Util.getArrayIterator(boardIndexes);
+
+            Iterator<Integer> iter = Util.getArrayIterator(Integer.class, boardIndexes);
             while(iter.hasNext()){
                 int x = iter.next();
 
@@ -270,18 +263,18 @@ public class GameManager implements Disposable {
             }
 
             Map<Integer, YokelGameBoard> activeGameboards = getActiveGameBoards();
-            List<Integer> activeBoards = Util.getMapKeys(activeGameboards).toArray();
-            Iterator<Integer> active = Util.getArrayIterator(boardIndexes);
+            Collection<Integer> activeBoards = Util.getMapKeys(activeGameboards);
+            Iterator<Integer> active = Util.getArrayIterator(Integer.class, boardIndexes);
 
             while(active.hasNext()){
                 int a = active.next();
-                if(!activeBoards.contains(a, true)){
+                if(!activeBoards.contains(a)){
                     active.remove();
                 }
             }
 
             Util.flushIterator(iter);
-            Util.flushIterator(Util.getArrayIterator(activeBoards));
+            Util.flushIterator(activeBoards.iterator());
             Util.flushIterator(active);
 
             int index = MathUtils.random(Util.size(boardIndexes) - 1);

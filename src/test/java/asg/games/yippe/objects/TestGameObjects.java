@@ -12,6 +12,7 @@ import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -429,7 +430,7 @@ public class TestGameObjects {
         yokelRoom1.removeTable(2);
         Assert.assertEquals(Util.size(yokelRoom1.getAllTables()), 3);
 
-        List<YokelTable> tables = yokelRoom1.getAllTables();
+        Collection<YokelTable> tables = yokelRoom1.getAllTables();
         for (YokelTable table : tables) {
             table.setId(Util.IDGenerator.getID());
         }

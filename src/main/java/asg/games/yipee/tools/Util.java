@@ -1,13 +1,19 @@
 package asg.games.yipee.tools;
 
-import asg.games.yipee.objects.YokelPlayer;
 import asg.games.yipee.objects.YokelRoom;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
-import java.util.*;
-import java.util.stream.StreamSupport;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class Util {
     /**
@@ -27,8 +33,8 @@ public class Util {
     public static int getNextTableName(final YokelRoom yokelRoom) {
         int tableIndex = -1;
         if(yokelRoom != null) {
-            List<Integer> tables = yokelRoom.getAllTableIndexes();
-            int size = sizeOf(tables);
+            List<Integer> tables = iterableToList(yokelRoom.getAllTableIndexes());
+            int size = size(tables);
             if(size > 0){
                 int[] indices = new int[size];
                 for(int i = 0; i < size; i++) {
@@ -51,8 +57,9 @@ public class Util {
     public static int getNextTableNumber(final YokelRoom yokelRoom) {
         int tableIndex = -1;
         if (yokelRoom != null) {
-            List<Integer> tables = yokelRoom.getAllTableIndexes();
-            int size = sizeOf(tables);
+            List<Integer> tables = iterableToList(yokelRoom.getAllTableIndexes());
+
+            int size = size(tables);
             if (size > 0) {
                 int[] indices = new int[size];
                 for (int i = 0; i < size; i++) {
@@ -149,19 +156,24 @@ public class Util {
     }
 
 
-    public static void flushIterator(Iterator<?> iterator) {
+    public static <T> void flushIterator(Iterator<T> iterator) {
         while(iterator != null && iterator.hasNext()){
             iterator.remove();
         }
     }
 
+    public static <T> void flushIterator(Class<T> clazz, Iterator<T> iterator) {
+        while(iterator != null && iterator.hasNext()){
+            iterator.remove();
+        }
+    }
 
-   public static <T> Collection<Object> getMapValues(Map<T, Object> map) {
+   public static <Object> Collection<Object> getMapValues(Map<?, Object> map) {
         return map == null ? Collections.emptyList() : map.values();
     }
 
-    public static Collection<String> getMapKeys(Map<?, Object> map) {
-        return map == null ? Collections.emptyList() : toStringList(map.keySet());
+    public static <Object> Collection<Object> getMapKeys(Map<Object, ?> map) {
+        return map == null ? Collections.emptyList() : map.keySet();
     }
 
     private static Collection<String> toStringList(Collection<?> collection) {
@@ -172,10 +184,6 @@ public class Util {
             }
         }
         return strings;
-    }
-
-    public static int sizeOf(Iterable<Integer> collection) {
-        return collection == null ? -1 : (int) StreamSupport.stream(collection.spliterator(), false).count();
     }
 
     public static <T> int size(Collection<T> collection) {
@@ -198,6 +206,10 @@ public class Util {
         if(array != null) {
             array.clear();
         }
+    }
+
+    public static <T> Iterator<T>  getArrayIterator(Class<T> clazz, List<T> boardIndexes) {
+        return boardIndexes == null ? Collections.emptyIterator() : boardIndexes.iterator();
     }
 
     public static class IDGenerator {

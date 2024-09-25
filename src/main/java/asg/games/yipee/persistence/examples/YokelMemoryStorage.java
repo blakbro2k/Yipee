@@ -181,7 +181,7 @@ public class YokelMemoryStorage extends MemoryStorage implements YokelStorageAda
     }
 
     @Override
-    public Collection<Object> getAllGames() {
+    public Collection<GameManager> getAllGames() {
         return Util.getMapValues(games);
     }
 

@@ -2,7 +2,7 @@ package asg.games.yipee.persistence;
 
 import asg.games.yipee.objects.YokelPlayer;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface ClientPlayerController {
     /** Player Controls
@@ -21,7 +21,7 @@ public interface ClientPlayerController {
     YokelPlayer getRegisteredPlayer(YokelPlayer player);
 
     /** Gets all registered players. */
-    List<YokelPlayer> getAllRegisteredPlayers();
+    Collection<YokelPlayer> getAllRegisteredPlayers();
 
     /** Check if client id is registered **/
     boolean isClientRegistered(String clientId);

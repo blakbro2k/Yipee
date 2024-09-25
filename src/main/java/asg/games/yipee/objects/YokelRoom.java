@@ -4,6 +4,7 @@ import asg.games.yipee.persistence.YokelStorageAdapter;
 import asg.games.yipee.tools.Util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,11 +37,11 @@ public class YokelRoom extends AbstractYokelObject implements YokelObjectJPAVisi
         setLoungeName(loungeName);
     }
 
-    public List<YokelTable> getAllTables() {
+    public Collection<YokelTable> getAllTables() {
         return Util.getMapValues(tables);
     }
 
-    public List<Integer> getAllTableIndexes() {
+    public Collection<Integer> getAllTableIndexes() {
         return Util.getMapKeys(tables);
     }
 
