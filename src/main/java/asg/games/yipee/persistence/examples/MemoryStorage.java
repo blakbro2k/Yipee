@@ -1,6 +1,6 @@
 package asg.games.yipee.persistence.examples;
 
-import asg.games.yipee.objects.YokelObject;
+import asg.games.yipee.objects.YipeeObject;
 import asg.games.yipee.persistence.AbstractStorage;
 import asg.games.yipee.tools.Util;
 
@@ -31,7 +31,7 @@ public class MemoryStorage extends AbstractStorage {
     }
 
     @Override
-    public <T extends YokelObject> T getObjectByName(Class<T> clazz, String name) {
+    public <T extends YipeeObject> T getObjectByName(Class<T> clazz, String name) {
         try{
             return clazz.cast(_nameStore.get(name));
         } catch (ClassCastException c){
@@ -40,7 +40,7 @@ public class MemoryStorage extends AbstractStorage {
     }
 
     @Override
-    public <T extends YokelObject> T getObjectById(Class<T> clazz, String id) {
+    public <T extends YipeeObject> T getObjectById(Class<T> clazz, String id) {
         try{
             return clazz.cast(_idStore.get(id));
         } catch (ClassCastException c){
@@ -49,12 +49,12 @@ public class MemoryStorage extends AbstractStorage {
     }
 
     @Override
-    public <T extends YokelObject> List<T> getObjects(Class<T> clazz) {
+    public <T extends YipeeObject> List<T> getObjects(Class<T> clazz) {
         return null;
     }
 
     @Override
-    public <T extends YokelObject> int countObjects(Class<T> clazz) {
+    public <T extends YipeeObject> int countObjects(Class<T> clazz) {
         return 0;
     }
 

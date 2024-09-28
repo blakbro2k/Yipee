@@ -1,19 +1,18 @@
 package asg.games.yipee.objects;
 
-
 import java.util.Arrays;
 import java.util.Queue;
 
-public class YokelGameBoardState extends AbstractYokelObject {
+public class YipeeGameBoardState extends AbstractYipeeObject {
     private long serverGameStartTime = 0;
     private long currentStateTimeStamp = 0;
     private long previousStateTimeStamp = 0;
-    private YokelPiece piece = null;
-    private YokelPiece nextPiecePreview = null;
-    private int[][] playerCells = new int[YokelGameBoard.MAX_ROWS][YokelGameBoard.MAX_COLS];
-    private int[][] partnerCells = new int[YokelGameBoard.MAX_ROWS][YokelGameBoard.MAX_COLS];
-    private Iterable<YokelBrokenBlock> brokenCells = null;
-    private Iterable<YokelBlockMove> cellsToDrop = null;
+    private YipeePiece piece = null;
+    private YipeePiece nextPiecePreview = null;
+    private int[][] playerCells = new int[YipeeGameBoard.MAX_ROWS][YipeeGameBoard.MAX_COLS];
+    private int[][] partnerCells = new int[YipeeGameBoard.MAX_ROWS][YipeeGameBoard.MAX_COLS];
+    private Iterable<YipeeBrokenBlock> brokenCells = null;
+    private Iterable<YipeeBlockMove> cellsToDrop = null;
     private Iterable<Integer> powersQueue = null;
     private int yahooDuration;
     private float pieceFallTimer;
@@ -28,7 +27,8 @@ public class YokelGameBoardState extends AbstractYokelObject {
     private boolean[] ids;
     private int idIndex;
 
-    public YokelGameBoardState() {
+    public YipeeGameBoardState() {
+        super();
     }
 
     public long getServerGameStartTime() {
@@ -56,32 +56,32 @@ public class YokelGameBoardState extends AbstractYokelObject {
         this.previousStateTimeStamp = previousStateTimeStamp;
     }
 
-    public YokelPiece getNextPiecePreview() {
+    public YipeePiece getNextPiecePreview() {
         return nextPiecePreview;
     }
 
-    public void setNextPiecePreview(YokelPiece nextPiecePreview) {
+    public void setNextPiecePreview(YipeePiece nextPiecePreview) {
         this.nextPiecePreview = nextPiecePreview;
     }
 
 
-    public YokelPiece getPiece() {
+    public YipeePiece getPiece() {
         return piece;
     }
 
-    public void setPiece(YokelPiece piece) {
+    public void setPiece(YipeePiece piece) {
         this.piece = piece;
     }
 
-    public Iterable<YokelBrokenBlock> getBrokenCells() {
+    public Iterable<YipeeBrokenBlock> getBrokenCells() {
         return brokenCells;
     }
 
-    public void setBrokenCells(Iterable<YokelBrokenBlock> brokenCells) {
+    public void setBrokenCells(Iterable<YipeeBrokenBlock> brokenCells) {
         this.brokenCells = brokenCells;
     }
 
-    public void setCellsToDrop(Iterable<YokelBlockMove> cellsToDrop) {
+    public void setCellsToDrop(Iterable<YipeeBlockMove> cellsToDrop) {
         this.cellsToDrop = cellsToDrop;
     }
 
@@ -93,7 +93,7 @@ public class YokelGameBoardState extends AbstractYokelObject {
         return powersQueue;
     }
 
-    public Iterable<YokelBlockMove> getCellsToDrop() {
+    public Iterable<YipeeBlockMove> getCellsToDrop() {
         return this.cellsToDrop;
     }
 
@@ -145,11 +145,11 @@ public class YokelGameBoardState extends AbstractYokelObject {
         return isPartnerRight;
     }
 
-    public void setPlayerPiece(YokelPiece piece) {
+    public void setPlayerPiece(YipeePiece piece) {
         this.piece = piece;
     }
 
-    public YokelPiece getPlayerPiece() {
+    public YipeePiece getPlayerPiece() {
         return piece;
     }
 
@@ -187,7 +187,7 @@ public class YokelGameBoardState extends AbstractYokelObject {
         }
 
         addPrintLine(out);
-        for (int r = YokelGameBoard.MAX_ROWS - 1; r > -1; r--) {
+        for (int r = YipeeGameBoard.MAX_ROWS - 1; r > -1; r--) {
             printRow(out, r);
             printRowReturn(out);
         }
@@ -214,16 +214,16 @@ public class YokelGameBoardState extends AbstractYokelObject {
     }
 
     private void printPlayerRows(int[][] cellsLeft, int[][] cellsRight, int r, StringBuilder out) {
-        for (int c = 0; c < YokelGameBoard.MAX_COLS * 2; c++) {
+        for (int c = 0; c < YipeeGameBoard.MAX_COLS * 2; c++) {
             int block;
-            if (c == YokelGameBoard.MAX_COLS) {
+            if (c == YipeeGameBoard.MAX_COLS) {
                 out.append('|');
             }
-            if (c < YokelGameBoard.MAX_COLS) {
+            if (c < YipeeGameBoard.MAX_COLS) {
                 block = isPieceBlock(r, c) && isPartnerRight ? getPieceBlock(r) : getPieceValue(cellsLeft, c, r);
                 printGameLine(out, block);
             } else {
-                block = isPieceBlock(r, c - YokelGameBoard.MAX_COLS) && !isPartnerRight ? getPieceBlock(r) : getPieceValue(cellsRight, c - YokelGameBoard.MAX_COLS, r);
+                block = isPieceBlock(r, c - YipeeGameBoard.MAX_COLS) && !isPartnerRight ? getPieceBlock(r) : getPieceValue(cellsRight, c - YipeeGameBoard.MAX_COLS, r);
                 printGameLine(out, block);
             }
         }
@@ -231,21 +231,21 @@ public class YokelGameBoardState extends AbstractYokelObject {
     }
 
     private void printGameLine(StringBuilder out, int block) {
-        if (block == YokelBlock.CLEAR_BLOCK) {
+        if (block == YipeeBlock.CLEAR_BLOCK) {
             out.append('|').append(' ');
         } else {
-            if (YokelBlockEval.hasPowerBlockFlag(block)) {
-                out.append('|').append(YokelBlockEval.getPowerLabel(block));
+            if (YipeeBlockEval.hasPowerBlockFlag(block)) {
+                out.append('|').append(YipeeBlockEval.getPowerLabel(block));
             } else {
-                out.append('|').append(YokelBlockEval.getNormalLabel(block));
+                out.append('|').append(YipeeBlockEval.getNormalLabel(block));
             }
         }
     }
 
     private void addPrintLine(StringBuilder sb) {
-        for (int a = 0; a < YokelGameBoard.MAX_COLS * 2; a++) {
+        for (int a = 0; a < YipeeGameBoard.MAX_COLS * 2; a++) {
             sb.append("+");
-            if (a == YokelGameBoard.MAX_COLS) {
+            if (a == YipeeGameBoard.MAX_COLS) {
                 sb.append("+");
             }
             sb.append("-");
@@ -266,7 +266,7 @@ public class YokelGameBoardState extends AbstractYokelObject {
     }
 
     private int getPieceValue(int[][] cells, int c, int r) {
-        return YokelBlockEval.getCellFlag(cells[r][c]);
+        return YipeeBlockEval.getCellFlag(cells[r][c]);
     }
 
     public void setBlockAnimationTimer(float blockAnimationTimer) {

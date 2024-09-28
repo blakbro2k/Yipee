@@ -2,7 +2,7 @@ package asg.games.yipee.objects;
 
 import java.util.Objects;
 
-public class YokelBlockMove extends AbstractYokelObject {
+public class YipeeBlockMove extends AbstractYipeeObject {
     public int block;
     public int cellId;
     public int col;
@@ -10,10 +10,12 @@ public class YokelBlockMove extends AbstractYokelObject {
     public int targetRow;
 
     //Empty Constructor required for Json.Serializable
-    public YokelBlockMove() {
+    public YipeeBlockMove() {
+        super();
     }
 
-    public YokelBlockMove(int cellID, int block, int x, int y, int targetRow) {
+    public YipeeBlockMove(int cellID, int block, int x, int y, int targetRow) {
+        this();
         setBlock(block);
         setCellID(cellID);
         this.col = x;
@@ -66,7 +68,7 @@ public class YokelBlockMove extends AbstractYokelObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        YokelBlockMove blockMove = (YokelBlockMove) o;
+        YipeeBlockMove blockMove = (YipeeBlockMove) o;
         return col == blockMove.col && y == blockMove.y && targetRow == blockMove.targetRow;
     }
 

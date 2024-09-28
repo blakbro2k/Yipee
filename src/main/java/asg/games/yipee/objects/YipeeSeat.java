@@ -9,23 +9,26 @@ import java.util.Objects;
  */
 
 
-public class YokelSeat extends AbstractYokelObject implements Disposable {
+public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     private static final String ATTR_SEAT_NUM_SEPARATOR = "-";
 
-    private YokelPlayer seatedPlayer;
+    private YipeePlayer seatedPlayer;
     private String tableId;
     private boolean isSeatReady = false;
 
     //Empty Constructor required for Json.Serializable
-    public YokelSeat(){}
+    public YipeeSeat(){
+        super();
+    }
 
-     public YokelSeat(String tableId, int seatNumber){
+     public YipeeSeat(String tableId, int seatNumber){
+        this();
         if(seatNumber < 0 || seatNumber > 7) throw new IllegalArgumentException("Seat number must be between 0 - 7.");
         setTableId(tableId);
         setName(tableId + ATTR_SEAT_NUM_SEPARATOR + seatNumber);
     }
 
-    public boolean sitDown(YokelPlayer player){
+    public boolean sitDown(YipeePlayer player){
         if(!isOccupied()){
             seatedPlayer = player;
             return true;
@@ -33,8 +36,8 @@ public class YokelSeat extends AbstractYokelObject implements Disposable {
         return false;
     }
 
-    public YokelPlayer standUp(){
-        YokelPlayer var = seatedPlayer;
+    public YipeePlayer standUp(){
+        YipeePlayer var = seatedPlayer;
         seatedPlayer = null;
         setSeatReady(false);
         return var;
@@ -52,7 +55,7 @@ public class YokelSeat extends AbstractYokelObject implements Disposable {
         return isOccupied() && isSeatReady;
     }
 
-    public YokelPlayer getSeatedPlayer(){
+    public YipeePlayer getSeatedPlayer(){
         return seatedPlayer;
     }
 
@@ -102,7 +105,7 @@ public class YokelSeat extends AbstractYokelObject implements Disposable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        YokelSeat yokelSeat = (YokelSeat) o;
+        YipeeSeat yokelSeat = (YipeeSeat) o;
         return isSeatReady() == yokelSeat.isSeatReady() && Objects.equals(getSeatedPlayer(), yokelSeat.getSeatedPlayer()) && Objects.equals(getTableId(), yokelSeat.getTableId());
     }
 

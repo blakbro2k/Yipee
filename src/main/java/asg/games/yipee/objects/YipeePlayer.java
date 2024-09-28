@@ -9,19 +9,21 @@ import java.util.Objects;
  * Created by Blakbro2k on 1/28/2018.
  */
 
-public class YokelPlayer extends AbstractYokelObject implements Copyable<YokelPlayer> {
+public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePlayer> {
     public final static int DEFAULT_RATING_NUMBER = 1500;
-    public final static YokelPlayer BLANK_PLAYER = new YokelPlayer("", DEFAULT_RATING_NUMBER, 0);
+    public final static YipeePlayer BLANK_PLAYER = new YipeePlayer("", DEFAULT_RATING_NUMBER, 0);
 
     private int rating;
     private int icon;
 
     //Empty Constructor required for Json.Serializable
-    public YokelPlayer(){}
-
-    public YokelPlayer(Class<YokelPlayer> clazz, String data) throws JsonProcessingException {
+    public YipeePlayer(){
         super();
-        YokelPlayer temp = Util.getObjectFromJsonString(clazz, data);
+    }
+
+    public YipeePlayer(Class<YipeePlayer> clazz, String data) throws JsonProcessingException {
+        this();
+        YipeePlayer temp = Util.getObjectFromJsonString(clazz, data);
         if(temp != null) {
             setId(temp.getId());
             setName(temp.getName());
@@ -32,16 +34,16 @@ public class YokelPlayer extends AbstractYokelObject implements Copyable<YokelPl
         }
     }
 
-    public YokelPlayer(String name){
+    public YipeePlayer(String name){
         this(name, DEFAULT_RATING_NUMBER, 1);
     }
 
-    public YokelPlayer(String name, int rating){
+    public YipeePlayer(String name, int rating){
         this(name, rating, 1);
     }
 
-    public YokelPlayer(String name, int rating, int icon){
-        super();
+    public YipeePlayer(String name, int rating, int icon){
+        this();
         setName(name);
         setRating(rating);
         setIcon(icon);
@@ -72,15 +74,15 @@ public class YokelPlayer extends AbstractYokelObject implements Copyable<YokelPl
     }
 
     @Override
-    public YokelPlayer copy() {
-        YokelPlayer copy = new YokelPlayer();
+    public YipeePlayer copy() {
+        YipeePlayer copy = new YipeePlayer();
         copyParent(copy);
         return copy;
     }
 
     @Override
-    public YokelPlayer deepCopy() {
-        YokelPlayer copy = copy();
+    public YipeePlayer deepCopy() {
+        YipeePlayer copy = copy();
         copy.setRating(this.rating);
         copy.setIcon(this.icon);
         return copy;
@@ -109,7 +111,7 @@ public class YokelPlayer extends AbstractYokelObject implements Copyable<YokelPl
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        YokelPlayer that = (YokelPlayer) o;
+        YipeePlayer that = (YipeePlayer) o;
         return getRating() == that.getRating() && getIcon() == that.getIcon();
     }
 

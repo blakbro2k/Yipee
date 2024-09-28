@@ -1,6 +1,6 @@
 package asg.games.yipee.persistence;
 
-import asg.games.yipee.objects.YokelObject;
+import asg.games.yipee.objects.YipeeObject;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
@@ -14,18 +14,18 @@ import java.sql.Types;
 abstract class YokelUserType implements UserType {
     protected static final int SQL_TYPE = Types.VARCHAR;
 
-    /*public int[] sqlTypes() {
+    public int[] sqlTypes() {
         return new int[]{SQL_TYPE};
-    }*/
+    }
 
     @Override
     public boolean equals(Object x, Object y) throws HibernateException {
         boolean eq = false;
         if (x == y) {
             eq = true;
-        } else if (x instanceof YokelObject && y instanceof YokelObject) {
-            YokelObject d1 = (YokelObject) x;
-            YokelObject d2 = (YokelObject) y;
+        } else if (x instanceof YipeeObject && y instanceof YipeeObject) {
+            YipeeObject d1 = (YipeeObject) x;
+            YipeeObject d2 = (YipeeObject) y;
             eq = d1.equals(d2);
         }
         return eq;
@@ -36,17 +36,17 @@ abstract class YokelUserType implements UserType {
         return x == null ? 0 : x.hashCode();
     }
 
-    //@Override
-    //public abstract Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner) throws HibernateException, SQLException;
+    @Override
+    public abstract Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner) throws HibernateException, SQLException;
 
     @Override
     public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session) throws HibernateException, SQLException {
         if(value == null){
             st.setNull(index, SQL_TYPE );
-        } else if (!(value instanceof YokelObject)){
+        } else if (!(value instanceof YipeeObject)){
             st.setNull(index, SQL_TYPE );
         } else {
-            YokelObject d = (YokelObject) value;
+            YipeeObject d = (YipeeObject) value;
             st.setString(index, d.getId());
         }
     }

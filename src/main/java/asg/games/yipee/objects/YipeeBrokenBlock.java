@@ -1,13 +1,15 @@
 package asg.games.yipee.objects;
 
-public class YokelBrokenBlock extends AbstractYokelObject {
+public class YipeeBrokenBlock extends AbstractYipeeObject {
    private int block, row, col;
 
    //Empty Constructor required for Json.Serializable
-   public YokelBrokenBlock() {
+   public YipeeBrokenBlock() {
+      super();
    }
 
-   public YokelBrokenBlock(int block, int row, int col) {
+   public YipeeBrokenBlock(int block, int row, int col) {
+      this();
       this.block = block;
       this.row = row;
       this.col = col;
@@ -39,6 +41,6 @@ public class YokelBrokenBlock extends AbstractYokelObject {
 
    @Override
    public String toString() {
-      return super.toString() + "{Block: [" + block + "]" + YokelBlock.printReaderFriendlyBlock(block) + "@, row: " + row + ", col: " + col + "}";
+      return super.toString() + "{Block: [" + block + "]" + YipeeBlock.printReaderFriendlyBlock(block) + "@, row: " + row + ", col: " + col + "}";
    }
 }

@@ -2,32 +2,34 @@ package asg.games.yipee.objects;
 
 import java.util.Objects;
 
-public class YokelBoardPair extends AbstractYokelObject {
-    YokelGameBoard leftBoard;
-    YokelGameBoard rightBoard;
+public class YipeeBoardPair extends AbstractYipeeObject {
+    YipeeGameBoard leftBoard;
+    YipeeGameBoard rightBoard;
 
     //Empty Contractor required for Json.Serializable
-    public YokelBoardPair() {
+    public YipeeBoardPair() {
+        super();
     }
 
-    public YokelBoardPair(YokelGameBoard left, YokelGameBoard right) {
+    public YipeeBoardPair(YipeeGameBoard left, YipeeGameBoard right) {
+        this();
         setLeftBoard(left);
         setRightBoard(right);
     }
 
-    public void setLeftBoard(YokelGameBoard leftBoard) {
+    public void setLeftBoard(YipeeGameBoard leftBoard) {
         this.leftBoard = leftBoard;
     }
 
-    public void setRightBoard(YokelGameBoard rightBoard){
+    public void setRightBoard(YipeeGameBoard rightBoard){
         this.rightBoard = rightBoard;
     }
 
-    public YokelGameBoard getLeftBoard() {
+    public YipeeGameBoard getLeftBoard() {
         return leftBoard;
     }
 
-    public YokelGameBoard getRightBoard() {
+    public YipeeGameBoard getRightBoard() {
         return rightBoard;
     }
 /*
@@ -58,7 +60,7 @@ public class YokelBoardPair extends AbstractYokelObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        YokelBoardPair that = (YokelBoardPair) o;
+        YipeeBoardPair that = (YipeeBoardPair) o;
         return Objects.equals(getLeftBoard(), that.getLeftBoard()) && Objects.equals(getRightBoard(), that.getRightBoard());
     }
 

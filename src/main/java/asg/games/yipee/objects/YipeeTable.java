@@ -1,6 +1,6 @@
 package asg.games.yipee.objects;
 
-import asg.games.yipee.persistence.YokelStorageAdapter;
+import asg.games.yipee.persistence.YipeeStorageAdapter;
 import asg.games.yipee.tools.Util;
 
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class YokelTable extends AbstractYokelObject implements YokelObjectJPAVisitor, Copyable<YokelTable>, Disposable {
+public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVisitor, Copyable<YipeeTable>, Disposable {
     public static final String ARG_TYPE = "type";
     public static final String ARG_RATED = "rated";
     public static final String ENUM_VALUE_PRIVATE = "PRIVATE";
@@ -32,21 +32,23 @@ public class YokelTable extends AbstractYokelObject implements YokelObjectJPAVis
     }
 
     private ACCESS_TYPE accessType = ACCESS_TYPE.PUBLIC;
-    private List<YokelSeat> seats = new LinkedList<>();
-    private List<YokelPlayer> watchers = new ArrayList<>();
+    private List<YipeeSeat> seats = new LinkedList<>();
+    private List<YipeePlayer> watchers = new ArrayList<>();
     private boolean isRated = false;
     private boolean isSoundOn = true;
     private String roomId;
 
     //Empty Constructor required for Json.Serializable
-    public YokelTable() {
+    public YipeeTable() {
+        super();
     }
 
-    public YokelTable(String roomId, int nameNumber) {
+    public YipeeTable(String roomId, int nameNumber) {
         this(roomId, nameNumber, null);
     }
 
-    public YokelTable(String roomId, int nameNumber, Map<String, Object> arguments) {
+    public YipeeTable(String roomId, int nameNumber, Map<String, Object> arguments) {
+        this();
         this.roomId = roomId;
         initialize(nameNumber, arguments);
     }
@@ -132,7 +134,7 @@ public class YokelTable extends AbstractYokelObject implements YokelObjectJPAVis
         return isSeatReady(seatNumber) || isSeatReady(seatNumber + 1);
     }
 
-    public boolean isSeatReady(YokelSeat seat) {
+    public boolean isSeatReady(YipeeSeat seat) {
         if (seat != null) {
             return seat.isSeatReady();
         }
@@ -161,27 +163,27 @@ public class YokelTable extends AbstractYokelObject implements YokelObjectJPAVis
 
     private void setUpSeats() {
         for (int i = 0; i < MAX_SEATS; i++) {
-            seats.add(new YokelSeat(getName(), i));
+            seats.add(new YipeeSeat(getName(), i));
         }
     }
 
     public void makeAllTablesUnready() {
-        for (YokelSeat seat : Util.safeIterable(seats)) {
+        for (YipeeSeat seat : Util.safeIterable(seats)) {
             if (seat != null) {
                 seat.setSeatReady(false);
             }
         }
     }
 
-    public List<YokelSeat> getSeats() {
+    public List<YipeeSeat> getSeats() {
         return seats;
     }
 
-    public void setSeats(List<YokelSeat> seats) {
+    public void setSeats(List<YipeeSeat> seats) {
         this.seats = seats;
     }
 
-    public YokelSeat getSeat(int seatNum) {
+    public YipeeSeat getSeat(int seatNum) {
         return seats.get(seatNum);
     }
 
@@ -193,23 +195,23 @@ public class YokelTable extends AbstractYokelObject implements YokelObjectJPAVis
         this.roomId = roomId;
     }
 
-    public void addWatcher(YokelPlayer player) {
+    public void addWatcher(YipeePlayer player) {
         if (player != null) {
             watchers.add(player);
         }
     }
 
-    public void removeWatcher(YokelPlayer player) {
+    public void removeWatcher(YipeePlayer player) {
         if (player != null) {
             watchers.remove(player);
         }
     }
 
-    private void setWatchers(List<YokelPlayer> watchers) {
+    private void setWatchers(List<YipeePlayer> watchers) {
         this.watchers = watchers;
     }
 
-    public List<YokelPlayer> getWatchers() {
+    public List<YipeePlayer> getWatchers() {
         return watchers;
     }
 
@@ -219,16 +221,16 @@ public class YokelTable extends AbstractYokelObject implements YokelObjectJPAVis
     }
 
     @Override
-    public YokelTable copy() {
-        YokelTable copy = new YokelTable();
+    public YipeeTable copy() {
+        YipeeTable copy = new YipeeTable();
         copy.setName(this.name);
         copy.setRoomId(this.roomId);
         return copy;
     }
 
     @Override
-    public YokelTable deepCopy() {
-        YokelTable copy = copy();
+    public YipeeTable deepCopy() {
+        YipeeTable copy = copy();
         copyParent(copy);
         copy.setAccessType(accessType);
         copy.setRated(isRated);
@@ -240,7 +242,7 @@ public class YokelTable extends AbstractYokelObject implements YokelObjectJPAVis
     }
 
     @Override
-    public void visitSave(YokelStorageAdapter adapter) {
+    public void visitSave(YipeeStorageAdapter adapter) {
         try{
             if(adapter != null) {
                 adapter.putAllPlayers(watchers);
@@ -283,7 +285,7 @@ public class YokelTable extends AbstractYokelObject implements YokelObjectJPAVis
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        YokelTable that = (YokelTable) o;
+        YipeeTable that = (YipeeTable) o;
         return isRated() == that.isRated() && isSoundOn() == that.isSoundOn() && getAccessType() == that.getAccessType() && getSeats().equals(that.getSeats()) && getWatchers().equals(that.getWatchers()) && Objects.equals(getRoomId(), that.getRoomId());
     }
 

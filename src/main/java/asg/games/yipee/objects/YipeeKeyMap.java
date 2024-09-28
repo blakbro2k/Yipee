@@ -2,7 +2,7 @@ package asg.games.yipee.objects;
 
 import asg.games.yipee.tools.Input;
 
-public class YokelKeyMap {
+public class YipeeKeyMap {
     private final int[] keyMap = {
             Input.Keys.RIGHT,
             Input.Keys.LEFT,

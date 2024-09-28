@@ -3,7 +3,7 @@ package asg.games.yipee.objects;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class YokelPiece extends AbstractYokelObject  {
+public class YipeePiece extends AbstractYipeeObject {
     public static final int MEDUSA_GAME_PIECE = 1;
     public static final int MIDAS_GAME_PIECE = 2;
 
@@ -13,10 +13,12 @@ public class YokelPiece extends AbstractYokelObject  {
     public int column;
 
     //Empty Constructor required for Json.Serializable
-    public YokelPiece() {
+    public YipeePiece() {
+        super();
     }
 
-    public YokelPiece(int index, int block1, int block2, int block3) {
+    public YipeePiece(int index, int block1, int block2, int block3) {
+        this();
         setIndex(index);
         setBlock1(block1);
         setBlock2(block2);
@@ -132,7 +134,7 @@ public class YokelPiece extends AbstractYokelObject  {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        YokelPiece that = (YokelPiece) o;
+        YipeePiece that = (YipeePiece) o;
         return getIndex() == that.getIndex() && row == that.row && column == that.column && Arrays.equals(getCells(), that.getCells());
     }
 

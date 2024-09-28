@@ -16,7 +16,7 @@ import java.util.Vector;
  *
  * @author Blakbro2k
  */
-public class YokelGameBoard extends AbstractYokelObject implements Disposable {
+public class YipeeGameBoard extends AbstractYipeeObject implements Disposable {
 
     public static final int MAX_RANDOM_BLOCK_NUMBER = 2048;
     public static final int MAX_COLS = 6;
@@ -69,9 +69,9 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
     private final int[] columnMatchLookup = {-1, -1, 0, 1, 1, 1, 0, -1};
     private final int[] rowMatchLookup = {0, 1, 1, 1, 0, -1, -1, -1};
 
-    private YokelPiece piece;
-    private YokelPiece nextPiece;
-    private YokelClock gameClock;
+    private YipeePiece piece;
+    private YipeePiece nextPiece;
+    private YipeeClock gameClock;
 
     private float pieceFallTimer;
     private float pieceLockTimer;
@@ -81,28 +81,30 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
     private boolean fastDown;
     private Queue<Integer> powers;
     private Queue<Integer> specialPieces;
-    Queue<YokelBrokenBlock> brokenCells = new LinkedList<>();
-    Queue<YokelBlockMove> cellsToDrop = new LinkedList<>();
+    Queue<YipeeBrokenBlock> brokenCells = new LinkedList<>();
+    Queue<YipeeBlockMove> cellsToDrop = new LinkedList<>();
 
 
     private int yahooDuration, brokenBlockCount = 0;
     private boolean hasGameStarted;
 
-    private final YokelGameBoardState state = new YokelGameBoardState();
-    private YokelGameBoard partnerBoard = null;
+    private final YipeeGameBoardState state = new YipeeGameBoardState();
+    private YipeeGameBoard partnerBoard = null;
     private boolean isPartnerRight = true;
     private boolean debug;
 
     //Empty Constructor required for Json.Serializable
-    public YokelGameBoard() {
+    public YipeeGameBoard() {
+        super();
     }
 
-    public YokelGameBoard(long seed) {
+    public YipeeGameBoard(long seed) {
+        this();
         cells = new int[MAX_ROWS][MAX_COLS];
         ids = new boolean[128];
         powers = new LinkedList<>();
         specialPieces = new LinkedList<>();
-        gameClock = new YokelClock();
+        gameClock = new YipeeClock();
         reset(seed);
         setGameState();
     }
@@ -138,7 +140,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         this.debug = isDebug;
     }
 
-    public YokelGameBoardState getGameState() {
+    public YipeeGameBoardState getGameState() {
         return state;
     }
 
@@ -160,7 +162,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         piece = null;
     }
 
-    public void setPartnerBoard(YokelGameBoard partnerB, boolean b) {
+    public void setPartnerBoard(YipeeGameBoard partnerB, boolean b) {
         this.partnerBoard = partnerB;
         this.isPartnerRight = b;
     }
@@ -236,7 +238,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         piece = null;
     }
 
-    public YokelPiece getNextPiece() {
+    public YipeePiece getNextPiece() {
         return nextPiece;
     }
 
@@ -249,7 +251,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
     }
 
     public int getPieceValue(int c, int r) {
-        return YokelBlockEval.getCellFlag(cells[r][c]);
+        return YipeeBlockEval.getCellFlag(cells[r][c]);
     }
 
     public int getBlockValueAt(int column, int row) {
@@ -306,15 +308,15 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
     }
 
     public boolean isArtificiallyAdded(int column, int row) {
-        return YokelBlockEval.hasAddedByYahooFlag(cells[row][column]);
+        return YipeeBlockEval.hasAddedByYahooFlag(cells[row][column]);
     }
 
     public boolean isCellBroken(int column, int row) {
-        return YokelBlockEval.hasBrokenFlag(cells[row][column]);
+        return YipeeBlockEval.hasBrokenFlag(cells[row][column]);
     }
 
     public void setValueWithID(int column, int row, int value) {
-        cells[row][column] = YokelBlockEval.setIDFlag(value, incrementID());
+        cells[row][column] = YipeeBlockEval.setIDFlag(value, incrementID());
     }
 
     void addRow(int amount) {
@@ -325,7 +327,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
 
         for (int row = 0; row < amount; row++) {
             for (int col = 0; col < MAX_COLS; col++)
-                cells[row][col] = YokelBlock.CLEAR_BLOCK;
+                cells[row][col] = YipeeBlock.CLEAR_BLOCK;
         }
 
         int hash = getBoardMakeupHash();
@@ -334,7 +336,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
             for (int col = 0; col < MAX_COLS; col++) {
                 int value = getNonAdjacentCell(col, i, hash + i + col);
 
-                value = YokelBlockEval.setIDFlag(value, incrementID());
+                value = YipeeBlockEval.setIDFlag(value, incrementID());
 
                 if (value < 0) {
                     System.out.println("Assertion failure: unable to find non-adjacent cell " + col + "," + i);
@@ -349,8 +351,8 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
     void removeRow(int amount) {
         for (int row = 0; row < MAX_PLAYABLE_ROWS - amount; row++) {
             for (int col = 0; col < MAX_COLS; col++) {
-                if (row < amount && YokelBlockEval.getCellFlag(cells[row][col]) < MAX_COLS)
-                    releaseID(YokelBlockEval.getID(cells[row][col]));
+                if (row < amount && YipeeBlockEval.getCellFlag(cells[row][col]) < MAX_COLS)
+                    releaseID(YipeeBlockEval.getID(cells[row][col]));
 
                 cells[row][col] = cells[row + amount][col];
             }
@@ -358,7 +360,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
 
         for (int row = MAX_PLAYABLE_ROWS - amount; row < MAX_PLAYABLE_ROWS; row++) {
             for (int col = 0; col < MAX_COLS; col++) {
-                cells[row][col] = YokelBlock.CLEAR_BLOCK;
+                cells[row][col] = YipeeBlock.CLEAR_BLOCK;
             }
         }
 
@@ -389,7 +391,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
 
             for (int y = 0; y < MAX_PLAYABLE_ROWS; y++) {
                 if (getPieceValue(x, y) == MAX_COLS) {
-                    cells[y][x] = YokelBlock.STONE;
+                    cells[y][x] = YipeeBlock.STONE;
                     break;
                 }
             }
@@ -403,12 +405,12 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
 
         for (int y = 12; y >= 0; y--) {
             for (int x = 0; x < MAX_COLS; x++) {
-                if (getPieceValue(x, y) == YokelBlock.STONE) {
+                if (getPieceValue(x, y) == YipeeBlock.STONE) {
                     for (int i = y; i >= 1; i--) {
                         cells[i][x] = cells[i - 1][x];
                     }
 
-                    cells[0][x] = YokelBlock.STONE;
+                    cells[0][x] = YipeeBlock.STONE;
 
                     if (++count == amount) {
                         return;
@@ -433,9 +435,9 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
             for (int col = 0; col < MAX_COLS; col++) {
 
                 // if the piece is purple
-                if (YokelBlockEval.getCellFlag(cells[row][col]) == YokelBlock.Op_BLOCK
+                if (YipeeBlockEval.getCellFlag(cells[row][col]) == YipeeBlock.Op_BLOCK
                         // And the piece is a power
-                        && YokelBlockEval.getPowerFlag(cells[row][col]) != 0) {
+                        && YipeeBlockEval.getPowerFlag(cells[row][col]) != 0) {
 
                     if (isCellInBoard(col - 1, row - 1))
                         colorBlastGrid[row - 1][col - 1] = true;
@@ -484,12 +486,12 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
                 int col = pushColumnOrder[x];
                 int row = y + pushRowOrder[col];
 
-                if (row >= 0 && YokelBlockEval.getCellFlag(cells[row][col]) != YokelBlock.STONE) {
-                    if (YokelBlockEval.getCellFlag(cells[row][col]) < MAX_COLS) {
-                        releaseID(YokelBlockEval.getID(cells[row][col]));
+                if (row >= 0 && YipeeBlockEval.getCellFlag(cells[row][col]) != YipeeBlock.STONE) {
+                    if (YipeeBlockEval.getCellFlag(cells[row][col]) < MAX_COLS) {
+                        releaseID(YipeeBlockEval.getID(cells[row][col]));
                     }
 
-                    cells[row][col] = YokelBlockEval.setIDFlag(value, incrementID());
+                    cells[row][col] = YipeeBlockEval.setIDFlag(value, incrementID());
                     return;
                 }
             }
@@ -502,16 +504,16 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         markColorBlast();
 
         if (isColorBlastGridEmpty()) {
-            pushCellToBottomOfBoard(YokelBlockEval.addPowerBlockFlag(YokelBlockEval.setPowerFlag(YokelBlock.Op_BLOCK, YokelBlock.DEFENSIVE_MINOR)));
+            pushCellToBottomOfBoard(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Op_BLOCK, YipeeBlock.DEFENSIVE_MINOR)));
         } else {
             for (int row = 0; row < MAX_ROWS; row++) {
                 for (int col = 0; col < MAX_COLS; col++) {
                     if (colorBlastGrid[row][col]) {
-                        if (YokelBlockEval.getCellFlag(cells[row][col]) < MAX_COLS) {
-                            releaseID(YokelBlockEval.getID(cells[row][col]));
+                        if (YipeeBlockEval.getCellFlag(cells[row][col]) < MAX_COLS) {
+                            releaseID(YipeeBlockEval.getID(cells[row][col]));
                         }
 
-                        cells[row][col] = YokelBlockEval.setIDFlag(YokelBlock.Op_BLOCK, incrementID());
+                        cells[row][col] = YipeeBlockEval.setIDFlag(YipeeBlock.Op_BLOCK, incrementID());
                     }
                 }
             }
@@ -520,9 +522,9 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
                 boolean bool = false;
 
                 for (int row = 15; row >= 0; row--) {
-                    if (YokelBlockEval.getCellFlag(cells[row][col]) == MAX_COLS) {
+                    if (YipeeBlockEval.getCellFlag(cells[row][col]) == MAX_COLS) {
                         if (bool) {
-                            cells[row][col] = YokelBlockEval.setIDFlag(YokelBlock.Op_BLOCK, incrementID());
+                            cells[row][col] = YipeeBlockEval.setIDFlag(YipeeBlock.Op_BLOCK, incrementID());
                         }
                     } else {
                         bool = true;
@@ -538,14 +540,14 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
 
         for (int row = 0; row < MAX_ROWS; row++) {
             for (int col = 0; col < MAX_COLS; col++) {
-                if (YokelBlockEval.getCellFlag(cells[row][col]) == YokelBlock.Op_BLOCK
-                        && YokelBlockEval.getPowerFlag(cells[row][col]) != YokelBlock.Y_BLOCK) {
+                if (YipeeBlockEval.getCellFlag(cells[row][col]) == YipeeBlock.Op_BLOCK
+                        && YipeeBlockEval.getPowerFlag(cells[row][col]) != YipeeBlock.Y_BLOCK) {
 
-                    if (YokelBlockEval.getCellFlag(cells[row][col]) < MAX_COLS)
-                        releaseID(YokelBlockEval.getID(cells[row][col]));
+                    if (YipeeBlockEval.getCellFlag(cells[row][col]) < MAX_COLS)
+                        releaseID(YipeeBlockEval.getID(cells[row][col]));
 
-                    if (YokelBlockEval.getCellFlag(cells[row][col]) != MAX_COLS)
-                        cells[row][col] = YokelBlock.STONE;
+                    if (YipeeBlockEval.getCellFlag(cells[row][col]) != MAX_COLS)
+                        cells[row][col] = YipeeBlock.STONE;
 
                     if (++cellsDefused == intensity)
                         return;
@@ -556,7 +558,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         updateBoard();
 
         for (int i = cellsDefused; i < intensity; i++) {
-            pushCellToBottomOfBoard(YokelBlockEval.addPowerBlockFlag(YokelBlockEval.setPowerFlag(YokelBlock.Op_BLOCK, YokelBlock.OFFENSIVE_MINOR)));
+            pushCellToBottomOfBoard(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Op_BLOCK, YipeeBlock.OFFENSIVE_MINOR)));
         }
     }
 
@@ -567,7 +569,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         // Loop through the board and tally up count of cells
         for (int row = 0; row < MAX_ROWS; row++) {
             for (int col = 0; col < MAX_COLS; col++) {
-                int value = YokelBlockEval.getCellFlag(cells[row][col]);
+                int value = YipeeBlockEval.getCellFlag(cells[row][col]);
 
                 if (value < MAX_COLS) {
                     countOfPieces[value]++;
@@ -597,8 +599,8 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
 
         for (int row = 0; row < MAX_ROWS; row++) {
             for (int col = 0; col < MAX_COLS; col++) {
-                if (YokelBlockEval.getCellFlag(cells[row][col]) == index) {
-                    cells[row][col] = YokelBlockEval.addBrokenFlag(cells[row][col]);
+                if (YipeeBlockEval.getCellFlag(cells[row][col]) == index) {
+                    cells[row][col] = YipeeBlockEval.addBrokenFlag(cells[row][col]);
                     colorRemoved = true;
                 }
             }
@@ -622,11 +624,11 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
             for (int row = 0; row < MAX_ROWS; row++) {
 
                 if (isCellBroken(col, row)) {
-                    if (YokelBlockEval.getCellFlag(cells[row][col]) < MAX_COLS)
-                        releaseID(YokelBlockEval.getID(cells[row][col]));
-                    incrementBreakCount(YokelBlockEval.getCellFlag(cells[row][col]));
+                    if (YipeeBlockEval.getCellFlag(cells[row][col]) < MAX_COLS)
+                        releaseID(YipeeBlockEval.getID(cells[row][col]));
+                    incrementBreakCount(YipeeBlockEval.getCellFlag(cells[row][col]));
                     addPowerToQueue(cells[row][col]);
-                    brokenCells.offer(new YokelBrokenBlock(YokelBlockEval.getCellFlag(cells[row][col]), row, col));
+                    brokenCells.offer(new YipeeBrokenBlock(YipeeBlockEval.getCellFlag(cells[row][col]), row, col));
                 } else {
                     cells[index][col] = cells[row][col];
                     index++;
@@ -634,7 +636,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
             }
 
             for (; index < MAX_ROWS; index++) {
-                cells[index][col] = YokelBlock.CLEAR_BLOCK;
+                cells[index][col] = YipeeBlock.CLEAR_BLOCK;
             }
         }
         updateBoard();
@@ -644,8 +646,8 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
     public void flagPowerBlockCells() {
         for (int row = 0; row < MAX_ROWS; row++) {
             for (int col = 0; col < MAX_COLS; col++) {
-                if (YokelBlockEval.hasPowerBlockFlag(cells[row][col])) {
-                    cells[row][col] = YokelBlockEval.addBrokenFlag(cells[row][col]);
+                if (YipeeBlockEval.hasPowerBlockFlag(cells[row][col])) {
+                    cells[row][col] = YipeeBlockEval.addBrokenFlag(cells[row][col]);
                 }
             }
         }
@@ -683,19 +685,19 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         if (count >= 3) {
             for (int i = 0; i < count; i++) {
                 int copy = cells[y + i * _y][x + i * _x];
-                copy = YokelBlockEval.addBrokenFlag(copy);
+                copy = YipeeBlockEval.addBrokenFlag(copy);
                 cells[y + i * _y][x + i * _x] = copy;
             }
         }
     }
 
     public void handlePower(int i) {
-        if (YokelBlockEval.getPowerFlag(i) == 0) {
+        if (YipeeBlockEval.getPowerFlag(i) == 0) {
             switch (i) {
-                case YokelBlock.SPECIAL_BLOCK_1:
+                case YipeeBlock.SPECIAL_BLOCK_1:
                     removeAllPowersFromBoard();
                     break;
-                case YokelBlock.SPECIAL_BLOCK_2:
+                case YipeeBlock.SPECIAL_BLOCK_2:
                     removeAllStonesFromBoard();
                     break;
                 default:
@@ -703,12 +705,12 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
                     break;
             }
         } else {
-            boolean isOffensive = YokelBlockEval.isOffensive(i);
-            int level = YokelBlockEval.getPowerLevel(i);
+            boolean isOffensive = YipeeBlockEval.isOffensive(i);
+            int level = YipeeBlockEval.getPowerLevel(i);
 
-            switch (YokelBlockEval.getCellFlag(i)) {
+            switch (YipeeBlockEval.getCellFlag(i)) {
                 //Y
-                case YokelBlock.Y_BLOCK:
+                case YipeeBlock.Y_BLOCK:
                     if (isOffensive) {
                         addRow(1);
                     } else {
@@ -716,7 +718,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
                     }
 
                     break;
-                case YokelBlock.A_BLOCK:
+                case YipeeBlock.A_BLOCK:
                     if (isOffensive) {
                         dither(2 * Math.min(level, 3));
                     } else {
@@ -724,7 +726,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
                     }
 
                     break;
-                case YokelBlock.H_BLOCK:
+                case YipeeBlock.H_BLOCK:
                     if (isOffensive) {
                         addStone(Math.min(level, 3));
                     } else {
@@ -732,7 +734,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
                     }
 
                     break;
-                case YokelBlock.Op_BLOCK:
+                case YipeeBlock.Op_BLOCK:
                     if (isOffensive) {
                         defuse(Math.min(level, 3));
                     } else {
@@ -741,10 +743,10 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
                     }
 
                     break;
-                case YokelBlock.Oy_BLOCK:
+                case YipeeBlock.Oy_BLOCK:
                     System.out.println("Assertion failure: invalid CELL5 board attack " + i);
                     break;
-                case YokelBlock.EX_BLOCK:
+                case YipeeBlock.EX_BLOCK:
                     removeColorFromBoard();
                     break;
                 default:
@@ -776,7 +778,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
                     cells[0][col] = value;
 
                     if (!hasFullMatchInProximity(col, 0)) {
-                        cells[0][col] = YokelBlockEval.setIDFlag(value, incrementID());
+                        cells[0][col] = YipeeBlockEval.setIDFlag(value, incrementID());
                         break;
                     }
 
@@ -969,8 +971,8 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
             for (int col = 0; col < MAX_COLS; col++) {
                 int value = cells[row][col];
 
-                if (YokelBlockEval.getPowerFlag(value) != 0) {
-                    cells[row][col] = YokelBlockEval.setPowerFlag(value, 0);
+                if (YipeeBlockEval.getPowerFlag(value) != 0) {
+                    cells[row][col] = YipeeBlockEval.setPowerFlag(value, 0);
                 }
             }
         }
@@ -982,7 +984,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
             int row = 0;
 
             for (int y = 0; y < MAX_ROWS; y++) {
-                if (YokelBlockEval.getCellFlag(cells[y][x]) != 7) {
+                if (YipeeBlockEval.getCellFlag(cells[y][x]) != 7) {
                     cells[row][x] = cells[y][x];
                     row++;
                 }
@@ -999,7 +1001,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
 
         for (int row = 0; row < MAX_PLAYABLE_ROWS; row++) {
             for (int col = 0; col < MAX_COLS; col++) {
-                num += YokelBlockEval.removePartnerBreakFlag(cells[row][col]) * (row * MAX_COLS + col);
+                num += YipeeBlockEval.removePartnerBreakFlag(cells[row][col]) * (row * MAX_COLS + col);
             }
         }
 
@@ -1016,18 +1018,18 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
     }
 
     public boolean isDownCellFree(int column, int row) {
-        return row > 0 && row < MAX_PLAYABLE_ROWS + 1 && getPieceValue(column, row - 1) == YokelBlock.CLEAR_BLOCK;
+        return row > 0 && row < MAX_PLAYABLE_ROWS + 1 && getPieceValue(column, row - 1) == YipeeBlock.CLEAR_BLOCK;
     }
 
     public boolean isRightCellFree(int column, int row) {
-        return column < MAX_COLS - 1 && getPieceValue(column + 1, row) == YokelBlock.CLEAR_BLOCK;
+        return column < MAX_COLS - 1 && getPieceValue(column + 1, row) == YipeeBlock.CLEAR_BLOCK;
     }
 
     public boolean isLeftCellFree(int column, int row) {
-        return column > 0 && getPieceValue(column - 1, row) == YokelBlock.CLEAR_BLOCK;
+        return column > 0 && getPieceValue(column - 1, row) == YipeeBlock.CLEAR_BLOCK;
     }
 
-    public int getColumnWithPossiblePieceMatch(YokelPiece piece) {
+    public int getColumnWithPossiblePieceMatch(YipeePiece piece) {
         shuffleColumnIndices();
 
         for (int i = 0; i < MAX_COLS; i++) {
@@ -1131,7 +1133,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
                 //++horizontal;
 
                 for (int column = 0; column < MAX_COLS; column++) {
-                    cells[row][column] = YokelBlockEval.addBrokenFlag(cells[row][column]);
+                    cells[row][column] = YipeeBlockEval.addBrokenFlag(cells[row][column]);
                 }
             }
         }
@@ -1139,25 +1141,25 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         //Count Verticals
         for (int column = 0; column < MAX_COLS; column++) {
             for (int row = 0; row < 10; row++) {
-                if (YokelBlockEval.getCellFlag(cells[row][column]) == 5) {
-                    if (YokelBlockEval.getCellFlag(cells[row + 1][column]) == 4) {
-                        if (YokelBlockEval.getCellFlag(cells[row + 2][column]) != 3) {
+                if (YipeeBlockEval.getCellFlag(cells[row][column]) == 5) {
+                    if (YipeeBlockEval.getCellFlag(cells[row + 1][column]) == 4) {
+                        if (YipeeBlockEval.getCellFlag(cells[row + 2][column]) != 3) {
                             continue;
                         }
-                    } else if (YokelBlockEval.getCellFlag(cells[row + 1][column]) != 3
-                            || YokelBlockEval.getCellFlag(cells[row + 2][column]) != 4) {
+                    } else if (YipeeBlockEval.getCellFlag(cells[row + 1][column]) != 3
+                            || YipeeBlockEval.getCellFlag(cells[row + 2][column]) != 4) {
                         continue;
                     }
 
-                    if (YokelBlockEval.getCellFlag(cells[row + 3][column]) == 2
-                            && YokelBlockEval.getCellFlag(cells[row + 4][column]) == 1
-                            && YokelBlockEval.getCellFlag(cells[row + 5][column]) == 0) {
+                    if (YipeeBlockEval.getCellFlag(cells[row + 3][column]) == 2
+                            && YipeeBlockEval.getCellFlag(cells[row + 4][column]) == 1
+                            && YipeeBlockEval.getCellFlag(cells[row + 5][column]) == 0) {
 
                         duration += VERTICAL_HOO_TIME;
                         //++vert;
 
                         for (int i = 0; i < MAX_COLS; i++) {
-                            cells[row + i][column] = YokelBlockEval.addBrokenFlag(cells[row + i][column]);
+                            cells[row + i][column] = YipeeBlockEval.addBrokenFlag(cells[row + i][column]);
                         }
                     }
                 }
@@ -1171,7 +1173,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
                 //++diag;
 
                 for (int col = 0; col < MAX_COLS; col++) {
-                    cells[row + col][col] = YokelBlockEval.addBrokenFlag(cells[row + col][col]);
+                    cells[row + col][col] = YipeeBlockEval.addBrokenFlag(cells[row + col][col]);
                 }
             }
         }
@@ -1182,7 +1184,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
                 //++diag;
 
                 for (int col = 0; col < MAX_COLS; col++) {
-                    cells[row - col][col] = YokelBlockEval.addBrokenFlag(cells[row - col][col]);
+                    cells[row - col][col] = YipeeBlockEval.addBrokenFlag(cells[row - col][col]);
                 }
             }
         }
@@ -1197,30 +1199,30 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
     }
 
     // Possible UI function
-    public void placeBlockAt(YokelPiece block, int x, int y) {
+    public void placeBlockAt(YipeePiece block, int x, int y) {
         this.piece = block;
         int index = block.getIndex();
 
         int v0 = block.getValueAt(index % 3);
-        v0 = YokelBlockEval.setIDFlag(v0, incrementID());
+        v0 = YipeeBlockEval.setIDFlag(v0, incrementID());
 
         int v1 = block.getValueAt((1 + index) % 3);
-        v1 = YokelBlockEval.setIDFlag(v1, incrementID());
+        v1 = YipeeBlockEval.setIDFlag(v1, incrementID());
 
         int v2 = block.getValueAt((2 + index) % 3);
-        v2 = YokelBlockEval.setIDFlag(v2, incrementID());
+        v2 = YipeeBlockEval.setIDFlag(v2, incrementID());
 
-        if (YokelBlockEval.getCellFlag(cells[y][x]) != YokelBlock.CLEAR_BLOCK) {
+        if (YipeeBlockEval.getCellFlag(cells[y][x]) != YipeeBlock.CLEAR_BLOCK) {
             //Thread.dumpStack();
             System.out.println("Assertion failure: grid at " + x + "," + y
                     + " isn't empty for piece placement");
         }
-        if (YokelBlockEval.getCellFlag(cells[y + 1][x]) != YokelBlock.CLEAR_BLOCK) {
+        if (YipeeBlockEval.getCellFlag(cells[y + 1][x]) != YipeeBlock.CLEAR_BLOCK) {
             //Thread.dumpStack();
             System.out.println("Assertion failure: grid at " + x + "," + y
                     + " isn't empty for piece placement");
         }
-        if (YokelBlockEval.getCellFlag(cells[y + 2][x]) != YokelBlock.CLEAR_BLOCK) {
+        if (YipeeBlockEval.getCellFlag(cells[y + 2][x]) != YipeeBlock.CLEAR_BLOCK) {
             //Thread.dumpStack();
             System.out.println("Assertion failure: grid at " + x + "," + y
                     + " isn't empty for piece placement");
@@ -1237,7 +1239,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
     public void handlePlacedPowerBlock(int type) {
         for (int y = 0; y < MAX_ROWS; y++) {
             for (int x = 0; x < MAX_COLS; x++) {
-                if (YokelBlockEval.hasPowerBlockFlag(cells[y][x])) {
+                if (YipeeBlockEval.hasPowerBlockFlag(cells[y][x])) {
                     if (isCellInBoard(x - 1, y - 1))
                         applyPowerBlockAt(type, x - 1, y - 1);
                     if (isCellInBoard(x, y - 1))
@@ -1266,23 +1268,23 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         System.out.println("Special col=" + col);
         System.out.println("Special row=" + row);
 
-        if (!YokelBlockEval.hasPowerBlockFlag(value)) {
+        if (!YipeeBlockEval.hasPowerBlockFlag(value)) {
             System.out.println("Assertion failure:  cell isn't weird " + value);
-        } else if (YokelBlockEval.getCellFlag(value) != YokelBlock.Oy_BLOCK) {
+        } else if (YipeeBlockEval.getCellFlag(value) != YipeeBlock.Oy_BLOCK) {
             System.out.println("Assertion failure:  cell isn't weird type " + value);
-        } else if (!YokelBlockEval.hasPowerBlockFlag(cells[row][col])) {
-            boolean isAttack = YokelBlockEval.isOffensive(value);
+        } else if (!YipeeBlockEval.hasPowerBlockFlag(cells[row][col])) {
+            boolean isAttack = YipeeBlockEval.isOffensive(value);
 
             if (isAttack) {
-                if (YokelBlockEval.getCellFlag(cells[row][col]) < YokelBlock.CLEAR_BLOCK) {
-                    releaseID(YokelBlockEval.getID(cells[row][col]));
+                if (YipeeBlockEval.getCellFlag(cells[row][col]) < YipeeBlock.CLEAR_BLOCK) {
+                    releaseID(YipeeBlockEval.getID(cells[row][col]));
                 }
 
-                if (YokelBlockEval.getCellFlag(cells[row][col]) != YokelBlock.CLEAR_BLOCK) {
-                    cells[row][col] = YokelBlock.STONE;
+                if (YipeeBlockEval.getCellFlag(cells[row][col]) != YipeeBlock.CLEAR_BLOCK) {
+                    cells[row][col] = YipeeBlock.STONE;
                 }
-            } else if (YokelBlockEval.getCellFlag(cells[row][col]) < YokelBlock.CLEAR_BLOCK) {
-                cells[row][col] = YokelBlockEval.addArtificialFlag(YokelBlockEval.setValueFlag(cells[row][col], YokelBlock.Oy_BLOCK));
+            } else if (YipeeBlockEval.getCellFlag(cells[row][col]) < YipeeBlock.CLEAR_BLOCK) {
+                cells[row][col] = YipeeBlockEval.addArtificialFlag(YipeeBlockEval.setValueFlag(cells[row][col], YipeeBlock.Oy_BLOCK));
             }
 
             updateBoard();
@@ -1290,10 +1292,10 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
     }
 
     public void setValueAt(int value, int column, int row) {
-        if (YokelBlockEval.getCellFlag(cells[row][column]) != MAX_COLS) {
+        if (YipeeBlockEval.getCellFlag(cells[row][column]) != MAX_COLS) {
             System.out.println("Assertion failure: grid at " + column + "," + row + " isn't empty for cell placement");
         }
-        value = YokelBlockEval.setIDFlag(value, incrementID());
+        value = YipeeBlockEval.setIDFlag(value, incrementID());
         cells[row][column] = value;
         updateBoard();
     }
@@ -1306,7 +1308,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
                     return true;
             }
         }*/
-        return getPieceValue(2, 12) != YokelBlock.CLEAR_BLOCK;
+        return getPieceValue(2, 12) != YipeeBlock.CLEAR_BLOCK;
     }
 
     public int getBrokenCellCount() {
@@ -1314,7 +1316,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
 
         for (int i = 0; i < MAX_ROWS; i++) {
             for (int j = 0; j < MAX_COLS; j++) {
-                if (YokelBlockEval.hasBrokenFlag(cells[i][j]))
+                if (YipeeBlockEval.hasBrokenFlag(cells[i][j]))
                     count++;
             }
         }
@@ -1322,16 +1324,16 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         return count;
     }
 
-    public Vector<YokelBlock> getBrokenCells() {
-        Vector<YokelBlock> vector = new Vector<>();
+    public Vector<YipeeBlock> getBrokenCells() {
+        Vector<YipeeBlock> vector = new Vector<>();
 
         for (int i = 0; i < MAX_ROWS; i++) {
             for (int j = 0; j < MAX_COLS; j++) {
-                if (YokelBlockEval.hasBrokenFlag(cells[i][j])) {
+                if (YipeeBlockEval.hasBrokenFlag(cells[i][j])) {
                     int cell = cells[i][j];
-                    YokelBlock block = new YokelBlock(j, i, YokelBlockEval.getCellFlag(cell));
-                    if (YokelBlockEval.hasPowerBlockFlag(cell)) {
-                        block.setPowerIntensity(YokelBlockEval.getPowerFlag(cell));
+                    YipeeBlock block = new YipeeBlock(j, i, YipeeBlockEval.getCellFlag(cell));
+                    if (YipeeBlockEval.hasPowerBlockFlag(cell)) {
+                        block.setPowerIntensity(YipeeBlockEval.getPowerFlag(cell));
                     }
                     vector.addElement(block);
                 }
@@ -1405,8 +1407,8 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
 
         for (int row = 0; row < MAX_ROWS; row++) {
             for (int col = 0; col < MAX_COLS; col++) {
-                if (YokelBlockEval.hasPartnerBreakFlag(cells[row][col])) {
-                    stack.push(YokelBlockEval.getID(cells[row][col]));
+                if (YipeeBlockEval.hasPartnerBreakFlag(cells[row][col])) {
+                    stack.push(YipeeBlockEval.getID(cells[row][col]));
                 }
             }
         }
@@ -1422,8 +1424,8 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
 
             for (int row = 0; row < MAX_ROWS; row++) {
                 for (int col = 0; col < MAX_COLS; col++) {
-                    if (YokelBlockEval.getCellFlag(cells[row][col]) < MAX_COLS) {
-                        int id = YokelBlockEval.getID(cells[row][col]);
+                    if (YipeeBlockEval.getCellFlag(cells[row][col]) < MAX_COLS) {
+                        int id = YipeeBlockEval.getID(cells[row][col]);
 
                         if (stack.elementAt(index) == id) {
                             count++;
@@ -1446,10 +1448,10 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         for (int i = 0; i < stack.size(); i++) {
             for (int row = 0; row < MAX_ROWS; row++) {
                 for (int col = 0; col < MAX_COLS; col++) {
-                    if (YokelBlockEval.getCellFlag(cells[row][col]) < MAX_COLS
-                            && stack.elementAt(i) == YokelBlockEval.getID(cells[row][col])) {
+                    if (YipeeBlockEval.getCellFlag(cells[row][col]) < MAX_COLS
+                            && stack.elementAt(i) == YipeeBlockEval.getID(cells[row][col])) {
 
-                        cells[row][col] = YokelBlockEval.addBrokenFlag(cells[row][col]);
+                        cells[row][col] = YipeeBlockEval.addBrokenFlag(cells[row][col]);
                     }
                 }
             }
@@ -1469,7 +1471,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
                 // incremented when a cell is to be broken.
                 if (!isCellBroken(x, y)) {
                     if (targetRows[x] != y && getPieceValue(x, y) != MAX_COLS) {
-                        cellsToDrop.offer(new YokelBlockMove(cells[y][x], YokelBlockEval.getCellFlag(cells[y][x]), x, y, targetRows[x]));
+                        cellsToDrop.offer(new YipeeBlockMove(cells[y][x], YipeeBlockEval.getCellFlag(cells[y][x]), x, y, targetRows[x]));
                     }
                     targetRows[x]++;
                 }
@@ -1478,7 +1480,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         state.setCellsToDrop(cellsToDrop);
     }
 
-    public void checkBoardForPartnerBreaks(YokelGameBoard partner, boolean isPartnerOnRight) {
+    public void checkBoardForPartnerBreaks(YipeeGameBoard partner, boolean isPartnerOnRight) {
         for (int row = 0; row < MAX_ROWS; row++) {
             for (int col = 0; col < MAX_COLS; col++) {
                 checkCellForPartnerBreak(partner, isPartnerOnRight, col, row);
@@ -1486,7 +1488,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         }
     }
 
-    void checkCellForPartnerBreak(YokelGameBoard board, boolean isPartnerOnRight, int col, int row) {
+    void checkCellForPartnerBreak(YipeeGameBoard board, boolean isPartnerOnRight, int col, int row) {
         //boolean bool_53_ = true;
         int colOffset;
 
@@ -1502,7 +1504,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         }
     }
 
-    void checkCellForNonVerticalPartnerBreaks(YokelGameBoard partner, int col, int row, int _x, int _y) {
+    void checkCellForNonVerticalPartnerBreaks(YipeeGameBoard partner, int col, int row, int _x, int _y) {
         int value = getPieceValue(col, row);
 
         int matchCount;
@@ -1511,7 +1513,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         for (matchCount = 1;
              (isCellInBoard(col + matchCount * _x, row + matchCount * _y)
                      && getPieceValue(col + matchCount * _x, row + matchCount * _y) == value
-                     && !YokelBlockEval.hasPowerBlockFlag(cells[row + matchCount * _y][col + matchCount * _x]));
+                     && !YipeeBlockEval.hasPowerBlockFlag(cells[row + matchCount * _y][col + matchCount * _x]));
              matchCount++) {
             /* empty */
         }
@@ -1529,7 +1531,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
             for (/**/;
                      (isCellInBoard(pX + matchCount * _x, row + matchCount * _y)
                              && partner.getPieceValue(pX + matchCount * _x, row + matchCount * _y) == value
-                             && !YokelBlockEval.hasPowerBlockFlag(partner.cells[row + matchCount * _y][pX + matchCount * _x]));
+                             && !YipeeBlockEval.hasPowerBlockFlag(partner.cells[row + matchCount * _y][pX + matchCount * _x]));
                      matchCount++) {
                 partnerMatchCount++;
             }
@@ -1543,12 +1545,12 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
 
                         if (isCellInBoard(x, y)) {
                             int copy = cells[y][x];
-                            copy = YokelBlockEval.addPartnerBreakFlag(copy);
+                            copy = YipeeBlockEval.addPartnerBreakFlag(copy);
                             cells[y][x] = copy;
                         } else {
                             x = pX + i * _x;
                             int copy = partner.cells[y][x];
-                            copy = YokelBlockEval.addPartnerBreakFlag(copy);
+                            copy = YipeeBlockEval.addPartnerBreakFlag(copy);
                             partner.cells[y][x] = copy;
                         }
                     }
@@ -1563,35 +1565,35 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
 
         int row = y;
 
-        if (YokelBlockEval.getCellFlag(cells[row][0]) != YokelBlock.Y_BLOCK) {
+        if (YipeeBlockEval.getCellFlag(cells[row][0]) != YipeeBlock.Y_BLOCK) {
             result = false;
         }
 
         row += _y;
 
-        if (YokelBlockEval.getCellFlag(cells[row][1]) != YokelBlock.A_BLOCK) {
+        if (YipeeBlockEval.getCellFlag(cells[row][1]) != YipeeBlock.A_BLOCK) {
             result = false;
         }
 
         row += _y;
 
-        if (YokelBlockEval.getCellFlag(cells[row][2]) != YokelBlock.H_BLOCK) {
+        if (YipeeBlockEval.getCellFlag(cells[row][2]) != YipeeBlock.H_BLOCK) {
             result = false;
         }
 
         row += _y;
 
-        if (YokelBlockEval.getCellFlag(cells[row][3]) == YokelBlock.Op_BLOCK) {
-            if (YokelBlockEval.getCellFlag(cells[row + _y][4]) != YokelBlock.Oy_BLOCK)
+        if (YipeeBlockEval.getCellFlag(cells[row][3]) == YipeeBlock.Op_BLOCK) {
+            if (YipeeBlockEval.getCellFlag(cells[row + _y][4]) != YipeeBlock.Oy_BLOCK)
                 result = false;
         } else {
-            if (YokelBlockEval.getCellFlag(cells[row][3]) != YokelBlock.Oy_BLOCK)
+            if (YipeeBlockEval.getCellFlag(cells[row][3]) != YipeeBlock.Oy_BLOCK)
                 result = false;
-            if (YokelBlockEval.getCellFlag(cells[row + _y][4]) != YokelBlock.Op_BLOCK)
+            if (YipeeBlockEval.getCellFlag(cells[row + _y][4]) != YipeeBlock.Op_BLOCK)
                 result = false;
         }
         row += 2 * _y;
-        if (YokelBlockEval.getCellFlag(cells[row][5]) != YokelBlock.EX_BLOCK)
+        if (YipeeBlockEval.getCellFlag(cells[row][5]) != YipeeBlock.EX_BLOCK)
             result = false;
 
         return result;
@@ -1632,7 +1634,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         }
     }
 
-    private void printPlayerRows(YokelGameBoard boardLeft, YokelGameBoard boardRight, int r, StringBuilder out) {
+    private void printPlayerRows(YipeeGameBoard boardLeft, YipeeGameBoard boardRight, int r, StringBuilder out) {
         for (int c = 0; c < MAX_COLS * 2; c++) {
             int block;
             if (c == MAX_COLS) {
@@ -1650,13 +1652,13 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
     }
 
     private void printGameLine(StringBuilder out, int block) {
-        if (block == YokelBlock.CLEAR_BLOCK) {
+        if (block == YipeeBlock.CLEAR_BLOCK) {
             out.append('|').append(' ');
         } else {
-            if (YokelBlockEval.hasPowerBlockFlag(block)) {
-                out.append('|').append(YokelBlockEval.getPowerLabel(block));
+            if (YipeeBlockEval.hasPowerBlockFlag(block)) {
+                out.append('|').append(YipeeBlockEval.getPowerLabel(block));
             } else {
-                out.append('|').append(YokelBlockEval.getNormalLabel(block));
+                out.append('|').append(YipeeBlockEval.getNormalLabel(block));
             }
         }
     }
@@ -1685,7 +1687,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
     }
 
     private void clearCell(int r, int c) {
-        cells[r][c] = YokelBlock.CLEAR_BLOCK;
+        cells[r][c] = YipeeBlock.CLEAR_BLOCK;
     }
 
     public void update(float delta) {
@@ -1718,7 +1720,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
                     if (Util.size(cellsToDrop) > 0) {
                         blockAnimationTimer -= 0.049;
                         //Clear dropped cell while animating
-                        for (YokelBlockMove move : Util.safeIterable(cellsToDrop)) {
+                        for (YipeeBlockMove move : Util.safeIterable(cellsToDrop)) {
                             if (move != null) {
                                 clearCell(move.getRow(), move.getCol());
                             }
@@ -1733,7 +1735,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
                     } else {
                         //System.out.println("}}}}reset broken Cells");
                         //Put moved cell back now that animation is complete
-                        for (YokelBlockMove move : Util.safeIterable(cellsToDrop)) {
+                        for (YipeeBlockMove move : Util.safeIterable(cellsToDrop)) {
                             if (move != null) {
                                 setCell(move.getRow(), move.getCol(), move.getCellID());
                             }
@@ -1794,13 +1796,13 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         setGameState();
     }
 
-    private void dropCellRows(Vector<YokelBlockMove> cellsToDrop) {
+    private void dropCellRows(Vector<YipeeBlockMove> cellsToDrop) {
         //Remove matches
 
         if (cellsToDrop.size() > 0) {
             System.out.println("Time to do some row dropping");
 
-            for (YokelBlockMove blockMove : cellsToDrop) {
+            for (YipeeBlockMove blockMove : cellsToDrop) {
                 System.out.println(blockMove);
                 clearCell(blockMove.y, blockMove.col);
                 cells[blockMove.targetRow][blockMove.col] = blockMove.block;
@@ -1892,16 +1894,16 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
 
     public void setNextPiece() {
         if (piece != null) {
-            int block = YokelBlockEval.getCellFlag(piece.getBlock1());
+            int block = YipeeBlockEval.getCellFlag(piece.getBlock1());
 
-            if (block == YokelBlock.MEDUSA) {
-                piece.setBlock1(YokelBlockEval.addPowerBlockFlag(YokelBlockEval.setPowerFlag(YokelBlock.Oy_BLOCK, 3)));
-                piece.setBlock2(YokelBlockEval.addPowerBlockFlag(YokelBlockEval.setPowerFlag(YokelBlock.Oy_BLOCK, 3)));
-                piece.setBlock3(YokelBlockEval.addPowerBlockFlag(YokelBlockEval.setPowerFlag(YokelBlock.Oy_BLOCK, 3)));
-            } else if (block == YokelBlock.TOP_MIDAS || block == YokelBlock.MID_MIDAS || block == YokelBlock.BOT_MIDAS) {
-                piece.setBlock1(YokelBlockEval.addPowerBlockFlag(YokelBlockEval.setPowerFlag(YokelBlock.Oy_BLOCK, 2)));
-                piece.setBlock2(YokelBlockEval.addPowerBlockFlag(YokelBlockEval.setPowerFlag(YokelBlock.Oy_BLOCK, 2)));
-                piece.setBlock3(YokelBlockEval.addPowerBlockFlag(YokelBlockEval.setPowerFlag(YokelBlock.Oy_BLOCK, 2)));
+            if (block == YipeeBlock.MEDUSA) {
+                piece.setBlock1(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Oy_BLOCK, 3)));
+                piece.setBlock2(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Oy_BLOCK, 3)));
+                piece.setBlock3(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Oy_BLOCK, 3)));
+            } else if (block == YipeeBlock.TOP_MIDAS || block == YipeeBlock.MID_MIDAS || block == YipeeBlock.BOT_MIDAS) {
+                piece.setBlock1(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Oy_BLOCK, 2)));
+                piece.setBlock2(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Oy_BLOCK, 2)));
+                piece.setBlock3(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Oy_BLOCK, 2)));
             }
 
             //Place piece
@@ -1909,11 +1911,11 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
             state.setIsPieceSet(true);
 
             //Handle special O then remove powers from placed block so they can be marked broken
-            if (block == YokelBlock.MEDUSA || block == YokelBlock.TOP_MIDAS || block == YokelBlock.MID_MIDAS || block == YokelBlock.BOT_MIDAS) {
+            if (block == YipeeBlock.MEDUSA || block == YipeeBlock.TOP_MIDAS || block == YipeeBlock.MID_MIDAS || block == YipeeBlock.BOT_MIDAS) {
                 handlePlacedPowerBlock(piece.getBlock1());
-                cells[piece.row][piece.column] = YokelBlockEval.setIDFlag(YokelBlock.Oy_BLOCK, YokelBlockEval.getID(cells[piece.row][piece.column]));
-                cells[piece.row + 1][piece.column] = YokelBlockEval.setIDFlag(YokelBlock.Oy_BLOCK, YokelBlockEval.getID(cells[piece.row + 1][piece.column]));
-                cells[piece.row + 2][piece.column] = YokelBlockEval.setIDFlag(YokelBlock.Oy_BLOCK, YokelBlockEval.getID(cells[piece.row + 2][piece.column]));
+                cells[piece.row][piece.column] = YipeeBlockEval.setIDFlag(YipeeBlock.Oy_BLOCK, YipeeBlockEval.getID(cells[piece.row][piece.column]));
+                cells[piece.row + 1][piece.column] = YipeeBlockEval.setIDFlag(YipeeBlock.Oy_BLOCK, YipeeBlockEval.getID(cells[piece.row + 1][piece.column]));
+                cells[piece.row + 2][piece.column] = YipeeBlockEval.setIDFlag(YipeeBlock.Oy_BLOCK, YipeeBlockEval.getID(cells[piece.row + 2][piece.column]));
             }
 
             resetPiece();
@@ -1952,20 +1954,20 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         }
     }
 
-    private YokelPiece newPieceBock(int isSpecial) {
+    private YipeePiece newPieceBock(int isSpecial) {
         int block1;
         int block2;
         int block3;
 
         if (isSpecial > 0) {
             if (isSpecial % 2 == 1) {
-                block1 = YokelBlockEval.addPowerBlockFlag(YokelBlockEval.setPowerFlag(YokelBlock.MEDUSA, 3));
-                block2 = YokelBlockEval.addPowerBlockFlag(YokelBlockEval.setPowerFlag(YokelBlock.MEDUSA, 3));
-                block3 = YokelBlockEval.addPowerBlockFlag(YokelBlockEval.setPowerFlag(YokelBlock.MEDUSA, 3));
+                block1 = YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.MEDUSA, 3));
+                block2 = YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.MEDUSA, 3));
+                block3 = YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.MEDUSA, 3));
             } else {
-                block1 = YokelBlockEval.addPowerBlockFlag(YokelBlockEval.setPowerFlag(YokelBlock.BOT_MIDAS, 2));
-                block2 = YokelBlockEval.addPowerBlockFlag(YokelBlockEval.setPowerFlag(YokelBlock.MID_MIDAS, 2));
-                block3 = YokelBlockEval.addPowerBlockFlag(YokelBlockEval.setPowerFlag(YokelBlock.TOP_MIDAS, 2));
+                block1 = YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.BOT_MIDAS, 2));
+                block2 = YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.MID_MIDAS, 2));
+                block3 = YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.TOP_MIDAS, 2));
             }
         } else {
             block1 = powerUpBlock(getNextBlock());
@@ -1973,7 +1975,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
             block3 = powerUpBlock(getNextBlock());
         }
 
-        YokelPiece piece = new YokelPiece(getIdIndex(), block1, block2, block3);
+        YipeePiece piece = new YipeePiece(getIdIndex(), block1, block2, block3);
         pieceFallTimer = MAX_FALL_VALUE;
         piece.setPosition(MAX_PLAYABLE_ROWS, 2);
         return piece;
@@ -2004,7 +2006,7 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
         if (intensity > 7) {
             intensity = 7;
         }
-        return YokelBlockEval.addPowerBlockFlag(YokelBlockEval.setPowerFlag(block, intensity));
+        return YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(block, intensity));
     }
 
     public void incrementBreakCount(int type) {
@@ -2015,11 +2017,11 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
     public void addPowerToQueue(int block) {
         //logger.debug("Enter addPowerToQueue(block=" + block + ")");
         //int b = block.getBlockType();
-        if (YokelBlockEval.hasPowerBlockFlag(block)) {
-            int intensity = YokelBlockEval.getPowerFlag(block);
-            block = YokelBlockEval.removeBrokenFlag(block);
+        if (YipeeBlockEval.hasPowerBlockFlag(block)) {
+            int intensity = YipeeBlockEval.getPowerFlag(block);
+            block = YipeeBlockEval.removeBrokenFlag(block);
             //logger.debug("intensity=" + intensity);
-            powers.offer(YokelBlockEval.addPowerBlockFlag(YokelBlockEval.setPowerFlag(block, intensity)));
+            powers.offer(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(block, intensity)));
         }
         //logger.debug("current queue=" + powers);
         //logger.debug("Exit addPowerToQueue()");
@@ -2051,12 +2053,12 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
     }
 
     public void testHorizontalYahoo() {
-        setValueAt(YokelBlock.Y_BLOCK, 0, 0);
-        setValueAt(YokelBlock.A_BLOCK, 1, 0);
-        setValueAt(YokelBlock.H_BLOCK, 2, 0);
-        setValueAt(YokelBlock.Op_BLOCK, 3, 0);
-        setValueAt(YokelBlock.Oy_BLOCK, 4, 0);
-        setValueAt(YokelBlock.EX_BLOCK, 5, 0);
+        setValueAt(YipeeBlock.Y_BLOCK, 0, 0);
+        setValueAt(YipeeBlock.A_BLOCK, 1, 0);
+        setValueAt(YipeeBlock.H_BLOCK, 2, 0);
+        setValueAt(YipeeBlock.Op_BLOCK, 3, 0);
+        setValueAt(YipeeBlock.Oy_BLOCK, 4, 0);
+        setValueAt(YipeeBlock.EX_BLOCK, 5, 0);
 
         //setValueAt(YokelBlock.Y_BLOCK, 0, 1);
         //setValueAt(YokelBlock.A_BLOCK, 1, 1);
@@ -2068,12 +2070,12 @@ public class YokelGameBoard extends AbstractYokelObject implements Disposable {
     }
 
     public void testVerticalYahoo() {
-        setValueAt(YokelBlock.Y_BLOCK, 5, 6);
-        setValueAt(YokelBlock.A_BLOCK, 5, 5);
-        setValueAt(YokelBlock.H_BLOCK, 5, 4);
-        setValueAt(YokelBlock.Op_BLOCK, 5, 3);
-        setValueAt(YokelBlock.Oy_BLOCK, 5, 2);
-        setValueAt(YokelBlock.EX_BLOCK, 5, 1);
+        setValueAt(YipeeBlock.Y_BLOCK, 5, 6);
+        setValueAt(YipeeBlock.A_BLOCK, 5, 5);
+        setValueAt(YipeeBlock.H_BLOCK, 5, 4);
+        setValueAt(YipeeBlock.Op_BLOCK, 5, 3);
+        setValueAt(YipeeBlock.Oy_BLOCK, 5, 2);
+        setValueAt(YipeeBlock.EX_BLOCK, 5, 1);
         //updateBoard();
     }
 }

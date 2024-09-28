@@ -1,6 +1,6 @@
 package asg.games.yipee.objects;
 
-public class YokelBlockEval {
+public class YipeeBlockEval {
     private static final int SEVERITY_REGULAR = 1;
     private static final int SEVERITY_MAJOR = 2;
 
@@ -112,19 +112,19 @@ public class YokelBlockEval {
 
     public static char getNormalLabel(int i){
         switch(i){
-            case YokelBlock.Y_BLOCK:
+            case YipeeBlock.Y_BLOCK:
                 return 'Y';
-            case YokelBlock.A_BLOCK:
+            case YipeeBlock.A_BLOCK:
                 return 'A';
-            case YokelBlock.H_BLOCK:
+            case YipeeBlock.H_BLOCK:
                 return 'H';
-            case YokelBlock.Op_BLOCK:
+            case YipeeBlock.Op_BLOCK:
                 return '0';
-            case YokelBlock.Oy_BLOCK:
+            case YipeeBlock.Oy_BLOCK:
                 return 'O';
-            case YokelBlock.EX_BLOCK:
+            case YipeeBlock.EX_BLOCK:
                 return '!';
-            case YokelBlock.CLEAR_BLOCK:
+            case YipeeBlock.CLEAR_BLOCK:
                 return ' ';
             default:
                 return 159;

@@ -1,13 +1,13 @@
 package asg.games.yipee.game;
 
-import asg.games.yipee.objects.YokelBlock;
-import asg.games.yipee.objects.YokelBlockEval;
-import asg.games.yipee.objects.YokelGameBoard;
-import asg.games.yipee.objects.YokelGameBoardState;
-import asg.games.yipee.objects.YokelPiece;
-import asg.games.yipee.objects.YokelPlayer;
-import asg.games.yipee.objects.YokelSeat;
-import asg.games.yipee.objects.YokelTable;
+import asg.games.yipee.objects.YipeeBlock;
+import asg.games.yipee.objects.YipeeBlockEval;
+import asg.games.yipee.objects.YipeeGameBoard;
+import asg.games.yipee.objects.YipeeGameBoardState;
+import asg.games.yipee.objects.YipeePiece;
+import asg.games.yipee.objects.YipeePlayer;
+import asg.games.yipee.objects.YipeeSeat;
+import asg.games.yipee.objects.YipeeTable;
 import asg.games.yipee.objects.Disposable;
 import asg.games.yipee.server.ServerGameState;
 import asg.games.yipee.tools.MathUtils;
@@ -17,24 +17,24 @@ import java.util.*;
 
 public class GameManager implements Disposable {
     //private final Log logger = Log4LibGDXLoggerService.forClass(GameBlockArea.class);
-    private YokelTable table;
-    private final YokelGameBoard[] gameBoards = new YokelGameBoard[8];
+    private YipeeTable table;
+    private final YipeeGameBoard[] gameBoards = new YipeeGameBoard[8];
     private final Vector[] boardCellsToDrop = new Vector[8];
-    private final List<YokelPlayer> winners = new ArrayList<>();
+    private final List<YipeePlayer> winners = new ArrayList<>();
     private boolean isGameRunning, wasPieceJustSet, showGameOver, hasGameStarted = false;
     private long seed = 1L;
 
-    public GameManager(YokelTable table) throws Exception {
+    public GameManager(YipeeTable table) throws Exception {
         if (table == null) throw new Exception("Table cannot be null for GameManager.");
         setTable(table);
         init();
     }
 
-    public void setTable(YokelTable table) {
+    public void setTable(YipeeTable table) {
         this.table = table;
     }
 
-    public YokelTable getTable() {
+    public YipeeTable getTable() {
         return this.table;
     }
 
@@ -43,11 +43,11 @@ public class GameManager implements Disposable {
     public void update(float delta){
         if(!isGameRunning) return;
 
-        for(int i = 0; i < YokelTable.MAX_SEATS; i++){
-            YokelSeat seat = table.getSeat(i);
+        for(int i = 0; i < YipeeTable.MAX_SEATS; i++){
+            YipeeSeat seat = table.getSeat(i);
 
             if(isOccupied(seat)){
-                YokelGameBoard board = gameBoards[i];
+                YipeeGameBoard board = gameBoards[i];
 
                 if(board != null){
                     board.begin();
@@ -61,7 +61,7 @@ public class GameManager implements Disposable {
         }
     }
 
-    private void updateBoard(YokelGameBoard board, float delta){
+    private void updateBoard(YipeeGameBoard board, float delta){
         //logger.enter("updateBoard");
         boolean wasPieceJustSet = false;
         if(board != null){
@@ -71,7 +71,7 @@ public class GameManager implements Disposable {
         //logger.exit("updateBoard", wasPieceJustSet);
     }
 
-    private boolean isOccupied(YokelSeat seat){
+    private boolean isOccupied(YipeeSeat seat){
         if(seat != null){
             return seat.isOccupied();
         }
@@ -86,7 +86,7 @@ public class GameManager implements Disposable {
         return temp;
     }
 
-    private boolean isPlayerDead(YokelGameBoard board){
+    private boolean isPlayerDead(YipeeGameBoard board){
         if(board != null && board.hasGameStarted()){
             return board.hasPlayerDied();
         }
@@ -102,16 +102,16 @@ public class GameManager implements Disposable {
         resetGameBoards();
     }
 
-    public YokelGameBoard getGameBoard(int i){
+    public YipeeGameBoard getGameBoard(int i){
         if(i < 0 || i > 8) throw new RuntimeException("Invalid Gameboard index: " + i);
         return gameBoards[i];
     }
 
-    public Map<Integer, YokelGameBoard> getActiveGameBoards(){
+    public Map<Integer, YipeeGameBoard> getActiveGameBoards(){
         //TODO: Should be a persisted map in the object, not new everytime
-        Map<Integer, YokelGameBoard> returnBoards = new HashMap<>();
+        Map<Integer, YipeeGameBoard> returnBoards = new HashMap<>();
         int index = 0;
-        for(YokelGameBoard board : gameBoards){
+        for(YipeeGameBoard board : gameBoards){
             if(board != null && board.hasGameStarted() && !board.hasPlayerDied()){
                 returnBoards.put(index, board);
             }
@@ -133,12 +133,12 @@ public class GameManager implements Disposable {
         long seed = getSeed();
         isGameRunning = false;
         for (int i = 0; i < 8; i++) {
-            YokelGameBoard gameBoard = gameBoards[i];
+            YipeeGameBoard gameBoard = gameBoards[i];
             if (gameBoard != null) {
                 gameBoard.dispose();
                 gameBoard.reset(seed);
             } else {
-                YokelGameBoard newBoard = new YokelGameBoard(seed);
+                YipeeGameBoard newBoard = new YipeeGameBoard(seed);
                 newBoard.setName(i + "");
                 gameBoards[i] = newBoard;
             }
@@ -176,7 +176,7 @@ public class GameManager implements Disposable {
     private Stack<Integer> popPowersFromBoard(int boardIndex, int amount){
         Stack<Integer> powerStack = new Stack<>();
         //given board, get player powers
-        YokelGameBoard gameBoard = getGameBoard(boardIndex);
+        YipeeGameBoard gameBoard = getGameBoard(boardIndex);
         Queue<Integer> powers = gameBoard.getPowers();
         if(powers != null){
             //pop next power
@@ -191,26 +191,26 @@ public class GameManager implements Disposable {
 
     private void handleAttackGivenAttack(int target, int attackBlock){
         //Get all active boards
-        if(attackBlock != YokelBlock.CLEAR_BLOCK){
-            Map<Integer, YokelGameBoard> activeBoards = getActiveGameBoards();
-            YokelGameBoard gameBoard = activeBoards.get(target);
+        if(attackBlock != YipeeBlock.CLEAR_BLOCK){
+            Map<Integer, YipeeGameBoard> activeBoards = getActiveGameBoards();
+            YipeeGameBoard gameBoard = activeBoards.get(target);
 
             if(gameBoard != null){
-                boolean isOffensive = YokelBlockEval.isOffensive(attackBlock);
-                int value = YokelBlockEval.getCellFlag(attackBlock);
+                boolean isOffensive = YipeeBlockEval.isOffensive(attackBlock);
+                int value = YipeeBlockEval.getCellFlag(attackBlock);
 
-                if(value == YokelBlock.Oy_BLOCK) {
+                if(value == YipeeBlock.Oy_BLOCK) {
                     //If offensive Yokel.L, set medusa next piece to target
                     if(isOffensive){
-                        gameBoard.addSpecialPiece(YokelPiece.MEDUSA_GAME_PIECE);
+                        gameBoard.addSpecialPiece(YipeePiece.MEDUSA_GAME_PIECE);
                     } else {
                         //If defensive Yokel.L, set midas next piece to target
-                        gameBoard.addSpecialPiece(YokelPiece.MIDAS_GAME_PIECE);
+                        gameBoard.addSpecialPiece(YipeePiece.MIDAS_GAME_PIECE);
                     }
-                } else if(value == YokelBlock.EX_BLOCK) {
+                } else if(value == YipeeBlock.EX_BLOCK) {
                     if(isOffensive){
                         //if offensive Yokel.Ex, need to remove powers from target
-                        int level = YokelBlockEval.getPowerLevel(value);
+                        int level = YipeeBlockEval.getPowerLevel(value);
                         Stack<Integer> blockStack = popPowersFromBoard(target, level);
                         gameBoard.addRemovedPowersToBoard(blockStack);
                     } else {
@@ -251,7 +251,7 @@ public class GameManager implements Disposable {
             while(iter.hasNext()){
                 int x = iter.next();
 
-                if(YokelBlockEval.isOffensive(block)){
+                if(YipeeBlockEval.isOffensive(block)){
                     if(x == currentBoardSeat || x == partnerIndex){
                         iter.remove();
                     }
@@ -262,7 +262,7 @@ public class GameManager implements Disposable {
                 }
             }
 
-            Map<Integer, YokelGameBoard> activeGameboards = getActiveGameBoards();
+            Map<Integer, YipeeGameBoard> activeGameboards = getActiveGameBoards();
             Collection<Integer> activeBoards = Util.getMapKeys(activeGameboards);
             Iterator<Integer> active = Util.getArrayIterator(Integer.class, boardIndexes);
 
@@ -282,7 +282,7 @@ public class GameManager implements Disposable {
         }
     }
 
-    public YokelGameBoardState getBoardState(int boardSeat) {
+    public YipeeGameBoardState getBoardState(int boardSeat) {
         return getGameBoard(boardSeat).getGameState();
     }
 
@@ -298,7 +298,7 @@ public class GameManager implements Disposable {
         StringBuilder sbSeats = new StringBuilder();
 
         if (table != null) {
-            for (YokelGameBoard board : gameBoards) {
+            for (YipeeGameBoard board : gameBoards) {
                 sbSeats.append(board.toString());
             }
         }
@@ -317,7 +317,7 @@ public class GameManager implements Disposable {
     }
 
     public boolean stopGame(){
-        for(YokelGameBoard gameboard : gameBoards){
+        for(YipeeGameBoard gameboard : gameBoards){
             if(gameboard != null){
                 gameboard.end();
                 showGameOver = true;
@@ -371,7 +371,7 @@ public class GameManager implements Disposable {
         return group1won || group2won || group3won || group4won;
     }
 
-    private void setWinners(YokelPlayer player1, YokelPlayer player2) {
+    private void setWinners(YipeePlayer player1, YipeePlayer player2) {
         winners.clear();
         if(player1 != null){
             winners.add(player1);
@@ -382,11 +382,11 @@ public class GameManager implements Disposable {
         }
     }
 
-    public List<YokelPlayer> getWinners(){
+    public List<YipeePlayer> getWinners(){
         return winners;
     }
 
-    private YokelPlayer getPlayerFromBoard(YokelSeat seat){
+    private YipeePlayer getPlayerFromBoard(YipeeSeat seat){
         if(seat != null){
             return seat.getSeatedPlayer();
         }
@@ -395,22 +395,22 @@ public class GameManager implements Disposable {
 
     //TODO: Remove test methods
     public void testMedusa(int target) {
-        Map<Integer, YokelGameBoard> activeBoards = getActiveGameBoards();
-        YokelGameBoard gameBoard = activeBoards.get(target);
+        Map<Integer, YipeeGameBoard> activeBoards = getActiveGameBoards();
+        YipeeGameBoard gameBoard = activeBoards.get(target);
 
         if(gameBoard != null){
             System.out.println("Added a Medusa");
-            gameBoard.addSpecialPiece(YokelPiece.MEDUSA_GAME_PIECE);
+            gameBoard.addSpecialPiece(YipeePiece.MEDUSA_GAME_PIECE);
         }
     }
 
     public void testMidas(int target) {
-        Map<Integer, YokelGameBoard> activeBoards = getActiveGameBoards();
-        YokelGameBoard gameBoard = activeBoards.get(target);
+        Map<Integer, YipeeGameBoard> activeBoards = getActiveGameBoards();
+        YipeeGameBoard gameBoard = activeBoards.get(target);
 
         if(gameBoard != null){
             System.out.println("Added a Midas");
-            gameBoard.addSpecialPiece(YokelPiece.MIDAS_GAME_PIECE);
+            gameBoard.addSpecialPiece(YipeePiece.MIDAS_GAME_PIECE);
         }
     }
 

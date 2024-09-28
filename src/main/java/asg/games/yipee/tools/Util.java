@@ -1,8 +1,20 @@
 package asg.games.yipee.tools;
 
-import asg.games.yipee.objects.YokelRoom;
+import asg.games.yipee.objects.YipeeRoom;
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.StreamReadConstraints;
+import com.fasterxml.jackson.core.StreamReadFeature;
+import com.fasterxml.jackson.core.StreamWriteFeature;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,9 +40,10 @@ public class Util {
 
     private final static String LEFT_CURLY_BRACET_HTML = "&#123;";
     private final static String RIGHTT_CURLY_BRACET_HTML = "&#125;";
+
     private final static ObjectMapper json = new ObjectMapper();
 
-    public static int getNextTableName(final YokelRoom yokelRoom) {
+    public static int getNextTableName(final YipeeRoom yokelRoom) {
         int tableIndex = -1;
         if(yokelRoom != null) {
             List<Integer> tables = iterableToList(yokelRoom.getAllTableIndexes());
@@ -54,7 +67,7 @@ public class Util {
         return tableIndex;
     }
 
-    public static int getNextTableNumber(final YokelRoom yokelRoom) {
+    public static int getNextTableNumber(final YipeeRoom yokelRoom) {
         int tableIndex = -1;
         if (yokelRoom != null) {
             List<Integer> tables = iterableToList(yokelRoom.getAllTableIndexes());
@@ -135,7 +148,7 @@ public class Util {
         }
     }
 
-    public static <T> List<T> iterableToList(final Iterable<T> iterable) {
+    public static <T> @NotNull List<T> iterableToList(final Iterable<T> iterable) {
         List<T> returnList = new ArrayList<T>();
         if(iterable != null) {
             for(T o : iterable) {
@@ -176,7 +189,7 @@ public class Util {
         return map == null ? Collections.emptyList() : map.keySet();
     }
 
-    private static Collection<String> toStringList(Collection<?> collection) {
+    private static @NotNull Collection<String> toStringList(Collection<?> collection) {
         List<String> strings = new ArrayList<>();
         for(Object o : safeIterable(collection)) {
             if(o != null) {
@@ -220,7 +233,7 @@ public class Util {
             return replace(UUID.randomUUID() + "", "-","") ;
         }
 
-        public static List<String> getGroupOfIDs(int num) throws IllegalArgumentException{
+        public static @NotNull List<String> getGroupOfIDs(int num) throws IllegalArgumentException{
             if(num > 0) {
                 List<String> ids = new ArrayList<>();
                 for(int i = 0; i < num; i++){
@@ -274,7 +287,8 @@ public class Util {
         return array == null || array.length < 1;
     }
 
-    public static <T> String[] toStringArray(List<T> collection) {
+    @Contract("null -> new")
+    public static <T> String @NotNull [] toStringArray(List<T> collection) {
         if(collection != null){
             int size = collection.size();
             String[] c2 = new String[size];
@@ -370,7 +384,6 @@ public class Util {
         return -1;
     }
 
-
     public static List<String> getFileNames(File folder){
         List<String> retFileNames = new ArrayList<>();
         if(folder != null){
@@ -398,8 +411,6 @@ public class Util {
         }
         return fileNames;
     }
-
-
 
     /**
      * <p>Compares two CharSequences, returning {@code true} if they represent
@@ -490,7 +501,6 @@ public class Util {
 
         return true;
     }
-
 
     /**
      * <p>Checks if CharSequence contains a search CharSequence irrespective of case,

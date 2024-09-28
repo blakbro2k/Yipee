@@ -4,12 +4,13 @@ import asg.games.yipee.tools.TimeUtils;
 
 import java.util.Objects;
 
-public class YokelClock extends AbstractYokelObject {
+public class YipeeClock extends AbstractYipeeObject {
     private long start;
     private boolean isRunning;
 
     //Empty Constructor required for Json.Serializable
-    public YokelClock() {
+    public YipeeClock() {
+        super();
         resetTimer();
     }
 
@@ -76,7 +77,7 @@ public class YokelClock extends AbstractYokelObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        YokelClock that = (YokelClock) o;
+        YipeeClock that = (YipeeClock) o;
         return getStart() == that.getStart() && isRunning() == that.isRunning();
     }
 

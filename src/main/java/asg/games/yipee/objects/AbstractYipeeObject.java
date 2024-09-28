@@ -17,23 +17,52 @@ package asg.games.yipee.objects;
 
 import asg.games.yipee.tools.TimeUtils;
 import asg.games.yipee.tools.Util;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializable;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import java.io.IOException;
 import java.util.Objects;
 
-public abstract class AbstractYokelObject implements YokelObject {
-    /*@Id
-    @GeneratedValue(generator = "asg.games.yokel.persistence.IdGenerator")
+/**
+ * Base Abstract class for any Yipee Game objects
+ * implements YipeeObject interface
+ *
+ * @author Blakbro2k
+ */
+
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.CLASS,
+        property = "@class"
+)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public abstract class AbstractYipeeObject implements YipeeObject {
+    @Id
+    @GeneratedValue(generator = "asg.games.yipee.persistence.IdGenerator")
     @GenericGenerator(name = "uuid_gen_strategy_class",
             parameters = @Parameter(name = "uuid_gen_strategy_class", value = "org.hibernate.id.uuid.CustomVersionOneStrategy"),
             strategy = "asg.games.yokel.persistence.IdGenerator")
-    @Column(name = "id", nullable = false, length=32)*/
+    @Column(name = "id", nullable = false, length=32)
+
     protected String id;
     protected String name;
     protected long created;
     protected long modified;
 
-    AbstractYokelObject(){
+    AbstractYipeeObject(){
         setCreated(TimeUtils.millis());
         setModified(TimeUtils.millis());
     }
@@ -42,7 +71,7 @@ public abstract class AbstractYokelObject implements YokelObject {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AbstractYokelObject object = (AbstractYokelObject) o;
+        AbstractYipeeObject object = (AbstractYipeeObject) o;
         return getCreated() == object.getCreated() && getModified() == object.getModified() && Objects.equals(getId(), object.getId()) && Objects.equals(getName(), object.getName());
     }
 
@@ -54,10 +83,6 @@ public abstract class AbstractYokelObject implements YokelObject {
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "[" + this.getId() + "," + this.getName() + "]";
-    }
-
-    public String getJsonString() throws JsonProcessingException {
-        return Util.getJsonString(this.getClass());
     }
 
     public void setId(String id){ this.id = id;}
@@ -88,7 +113,7 @@ public abstract class AbstractYokelObject implements YokelObject {
         return modified;
     }
 
-    protected void copyParent(YokelObject o){
+    protected void copyParent(YipeeObject o){
         if(o != null) {
             o.setId(this.getId());
             o.setName(this.getName());
@@ -96,4 +121,5 @@ public abstract class AbstractYokelObject implements YokelObject {
             o.setModified(this.getModified());
         }
     }
+
 }

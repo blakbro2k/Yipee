@@ -1,12 +1,12 @@
 package asg.games.yipee.persistence.examples;
 
 import asg.games.yipee.game.GameManager;
-import asg.games.yipee.objects.YokelObject;
-import asg.games.yipee.objects.YokelPlayer;
-import asg.games.yipee.objects.YokelRoom;
-import asg.games.yipee.objects.YokelSeat;
-import asg.games.yipee.objects.YokelTable;
-import asg.games.yipee.persistence.YokelStorageAdapter;
+import asg.games.yipee.objects.YipeeObject;
+import asg.games.yipee.objects.YipeePlayer;
+import asg.games.yipee.objects.YipeeRoom;
+import asg.games.yipee.objects.YipeeSeat;
+import asg.games.yipee.objects.YipeeTable;
+import asg.games.yipee.persistence.YipeeStorageAdapter;
 import asg.games.yipee.tools.Util;
 
 import java.util.ArrayList;
@@ -14,13 +14,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
-public class YokelMemoryStorage extends MemoryStorage implements YokelStorageAdapter {
+public class YokelMemoryStorage extends MemoryStorage implements YipeeStorageAdapter {
     //<"lounge name", room object>
     private Map<String, String> clients;
     //<"player id", player object>
-    private Map<String, YokelPlayer> registeredPlayers;
+    private Map<String, YipeePlayer> registeredPlayers;
     //<"table name", gameManager>
     private Map<String, GameManager> games;
     //<"player id", room object>
@@ -42,7 +41,7 @@ public class YokelMemoryStorage extends MemoryStorage implements YokelStorageAda
     }
 
     @Override
-    public void registerPlayer(String clientID, YokelPlayer player) throws Exception {
+    public void registerPlayer(String clientID, YipeePlayer player) throws Exception {
         if(player == null) throw new Exception("Player was null.");
         if(clientID == null) throw new Exception("clientID was null.");
         String playerId = player.getId();
@@ -67,7 +66,7 @@ public class YokelMemoryStorage extends MemoryStorage implements YokelStorageAda
 
 
     @Override
-    public Collection<YokelPlayer> getAllRegisteredPlayers() {
+    public Collection<YipeePlayer> getAllRegisteredPlayers() {
         return Util.getMapValues(registeredPlayers);
     }
 
@@ -76,12 +75,12 @@ public class YokelMemoryStorage extends MemoryStorage implements YokelStorageAda
     }
 
     @Override
-    public YokelPlayer getRegisteredPlayerGivenId(String id) {
+    public YipeePlayer getRegisteredPlayerGivenId(String id) {
         return registeredPlayers.get(id);
     }
 
     @Override
-    public YokelPlayer getRegisteredPlayer(YokelPlayer player) {
+    public YipeePlayer getRegisteredPlayer(YipeePlayer player) {
         if(player != null){
             return getRegisteredPlayerGivenId(player.getId());
         }
@@ -99,73 +98,73 @@ public class YokelMemoryStorage extends MemoryStorage implements YokelStorageAda
     }
 
     @Override
-    public void putRoom(YokelRoom room) throws Exception {
+    public void putRoom(YipeeRoom room) throws Exception {
         if(room == null) throw new Exception("Room was null");
         save(room);
     }
 
     @Override
-    public YokelRoom getRoom(String nameOrId) {
-        return get(YokelRoom.class, nameOrId);
+    public YipeeRoom getRoom(String nameOrId) {
+        return get(YipeeRoom.class, nameOrId);
     }
 
     @Override
-    public void putTable(YokelTable table) throws Exception {
+    public void putTable(YipeeTable table) throws Exception {
         save(table);
     }
 
     @Override
-    public YokelTable getTable(String nameOrId) {
-        return get(YokelTable.class, nameOrId);
+    public YipeeTable getTable(String nameOrId) {
+        return get(YipeeTable.class, nameOrId);
     }
 
     @Override
-    public List<YokelTable> getAllTables() {
+    public List<YipeeTable> getAllTables() {
         return null;
     }
 
     @Override
-    public void putAllTables(Iterable<YokelTable> tables) {
+    public void putAllTables(Iterable<YipeeTable> tables) {
 
     }
 
     @Override
-    public void putSeat(YokelSeat seat) throws Exception {
+    public void putSeat(YipeeSeat seat) throws Exception {
         setSeatIdx(seat);
     }
 
     @Override
-    public YokelSeat getSeat(String nameOrId) {
-        return get(YokelSeat.class, nameOrId);
+    public YipeeSeat getSeat(String nameOrId) {
+        return get(YipeeSeat.class, nameOrId);
     }
 
     @Override
-    public List<YokelSeat> getAllSeats() {
+    public List<YipeeSeat> getAllSeats() {
         return null;
     }
 
     @Override
-    public void putAllSeats(Iterable<YokelSeat> seats) {
+    public void putAllSeats(Iterable<YipeeSeat> seats) {
 
     }
 
     @Override
-    public void putPlayer(YokelPlayer player) throws Exception {
+    public void putPlayer(YipeePlayer player) throws Exception {
         save(player);
     }
 
     @Override
-    public YokelPlayer getPlayer(String nameOrId) {
-        return get(YokelPlayer.class, nameOrId);
+    public YipeePlayer getPlayer(String nameOrId) {
+        return get(YipeePlayer.class, nameOrId);
     }
 
     @Override
-    public List<YokelPlayer> getAllPlayers() {
+    public List<YipeePlayer> getAllPlayers() {
         return null;
     }
 
     @Override
-    public void putAllPlayers(Iterable<YokelPlayer> players) {
+    public void putAllPlayers(Iterable<YipeePlayer> players) {
 
     }
 
@@ -191,12 +190,12 @@ public class YokelMemoryStorage extends MemoryStorage implements YokelStorageAda
     }
 
     @Override
-    public List<YokelRoom> getAllRooms() {
+    public List<YipeeRoom> getAllRooms() {
         return null;
     }
 
     @Override
-    public void putAllRooms(Iterable<YokelRoom> rooms) {
+    public void putAllRooms(Iterable<YipeeRoom> rooms) {
 
     }
 
@@ -239,15 +238,15 @@ public class YokelMemoryStorage extends MemoryStorage implements YokelStorageAda
         commitTransactions();
     }
 
-    private <T extends YokelObject> T get(Class<T> klass, String idOrName){
+    private <T extends YipeeObject> T get(Class<T> klass, String idOrName){
         T object = getObjectById(klass, idOrName);
         if(object == null) object = getObjectByName(klass, idOrName);
         return object;
     }
 
-    private void setSeatIdx(YokelSeat seat) {
+    private void setSeatIdx(YipeeSeat seat) {
         if(seat != null){
-            YokelPlayer player = seat.getSeatedPlayer();
+            YipeePlayer player = seat.getSeatedPlayer();
             if(player != null){
                 setIndex(seat_idx, player.getId(), seat.getId());
             } else {
@@ -257,7 +256,7 @@ public class YokelMemoryStorage extends MemoryStorage implements YokelStorageAda
         }
     }
 
-    private void removeSeatedIndex(YokelSeat seat) {
+    private void removeSeatedIndex(YipeeSeat seat) {
         if(seat != null){
 
         }
@@ -277,7 +276,7 @@ public class YokelMemoryStorage extends MemoryStorage implements YokelStorageAda
             List<String> seats = seat_idx.get(playerId);
             for(String seatId : Util.safeIterable(seats)){
                 if(seatId != null){
-                    YokelSeat seat = get(YokelSeat.class, seatId);
+                    YipeeSeat seat = get(YipeeSeat.class, seatId);
                     if(seat != null){
                         seat.standUp();
                     }

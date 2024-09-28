@@ -1,6 +1,6 @@
 package asg.games.yipee.persistence;
 
-import asg.games.yipee.objects.YokelObject;
+import asg.games.yipee.objects.YipeeObject;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.UUIDGenerator;
@@ -11,8 +11,8 @@ public class IdGenerator extends UUIDGenerator {
 
 	public Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
 		Serializable id = null;
-		if(object instanceof YokelObject){
-			id = ((YokelObject) object).getId();
+		if(object instanceof YipeeObject){
+			id = ((YipeeObject) object).getId();
 		}
 		
 		if(id == null) {

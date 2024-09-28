@@ -1,6 +1,6 @@
 package asg.games.yipee.persistence;
 
-import asg.games.yipee.objects.YokelRoom;
+import asg.games.yipee.objects.YipeeRoom;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 
@@ -9,15 +9,15 @@ import java.sql.SQLException;
 
 public class YokelRoomType extends YokelUserType {
     @Override
-    public Class<YokelRoom> returnedClass() {
-        return YokelRoom.class;
+    public Class<YipeeRoom> returnedClass() {
+        return YipeeRoom.class;
     }
 
     @Override
     public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner) throws HibernateException, SQLException {
 
         //id	created	modified	name	lounge_name
-        YokelRoom result = null;
+        YipeeRoom result = null;
         String id = rs.getString(names[0]);
         long created = rs.getLong(names[1]);
         long modified = rs.getLong(names[2]);
@@ -26,7 +26,7 @@ public class YokelRoomType extends YokelUserType {
 
 
         if (!rs.wasNull()) {
-            result = new YokelRoom();
+            result = new YipeeRoom();
             result.setId(id);
             result.setName(name);
             result.setCreated(created);
@@ -38,14 +38,14 @@ public class YokelRoomType extends YokelUserType {
 
     @Override
     public Object deepCopy(Object value) throws HibernateException {
-        YokelRoom copy;
+        YipeeRoom copy;
 
         if (value == null) {
             copy = null;
-        } else if (!(value instanceof YokelRoom)) {
+        } else if (!(value instanceof YipeeRoom)) {
             copy = null;
         } else {
-            copy = ((YokelRoom) value).deepCopy();
+            copy = ((YipeeRoom) value).deepCopy();
         }
         return copy;
     }

@@ -1,12 +1,32 @@
 package asg.games.yipee.objects;
+/*******************************************************************************
+ * Copyright 2011 See AUTHORS file.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.SerializerProvider;
+
+import java.io.IOException;
 import java.util.Objects;
 
 /**
  * Created by Blakbro2k on 12/29/2017.
  */
-
-public class YokelBlock extends AbstractYokelObject implements Disposable {
+public class YipeeBlock extends AbstractYipeeObject implements Disposable {
     /* Retrieves power "level"
      * - Even represents defensive powers ( 2, 4, 6 )
      * - Odd represents attack powers ( 3, 5, 7 )
@@ -79,9 +99,9 @@ public class YokelBlock extends AbstractYokelObject implements Disposable {
     private int blockType;
     private int powerIntensity = 0;
 
-
     //Empty Constructor required for Json.Serializable
-    public YokelBlock() {
+    public YipeeBlock() {
+        super();
     }
 
     @Override
@@ -89,14 +109,15 @@ public class YokelBlock extends AbstractYokelObject implements Disposable {
         reset();
     }
 
-    public YokelBlock(int x, int y, int blockType) {
+    public YipeeBlock(int x, int y, int blockType) {
+        this();
         reset();
         this.x = x;
         this.y = y;
         this.blockType = blockType;
     }
 
-    public YokelBlock(int x, int y) {
+    public YipeeBlock(int x, int y) {
         this(x, y, CLEAR_BLOCK);
     }
 
@@ -167,7 +188,7 @@ public class YokelBlock extends AbstractYokelObject implements Disposable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        YokelBlock that = (YokelBlock) o;
+        YipeeBlock that = (YipeeBlock) o;
         return x == that.x && y == that.y && getBlockType() == that.getBlockType() && getPowerIntensity() == that.getPowerIntensity();
     }
 
@@ -177,19 +198,44 @@ public class YokelBlock extends AbstractYokelObject implements Disposable {
     }
 
     public static String printReaderFriendlyBlock(int block) {
-        if (block == YokelBlock.CLEAR_BLOCK) {
+        if (block == YipeeBlock.CLEAR_BLOCK) {
             return "' '";
         } else {
-            if (YokelBlockEval.hasPowerBlockFlag(block)) {
-                return "" + YokelBlockEval.getPowerLabel(block);
+            if (YipeeBlockEval.hasPowerBlockFlag(block)) {
+                return "" + YipeeBlockEval.getPowerLabel(block);
             } else {
-                return "" + YokelBlockEval.getNormalLabel(block);
+                return "" + YipeeBlockEval.getNormalLabel(block);
             }
         }
     }
 
     @Override
     public String toString() {
-        return super.toString() + "{block: [" + blockType + "]" + YokelBlock.printReaderFriendlyBlock(blockType) + "}";
+        return super.toString() + "{block: [" + blockType + "]" + YipeeBlock.printReaderFriendlyBlock(blockType) + "}";
     }
+/*
+    @Override
+    protected void doWriteProperties(JsonGenerator gen, SerializerProvider provider) throws IOException {
+        gen.writeStartObject();
+        gen.writeStringField("id", this.getId());
+        gen.writeStringField("name", this.getName());
+        gen.writeNumberField("created", this.getCreated());
+        gen.writeNumberField("modified", this.getModified());
+        gen.writeNumberField("x", this.x);
+        gen.writeNumberField("y", this.y);
+        gen.writeNumberField("blockType", this.getBlockType());
+        gen.writeNumberField("powerIntensity", this.getPowerIntensity());
+        gen.writeEndObject();
+    }
+
+    @Override
+    protected Object doReadProperties(Object obj, DeserializationContext context, JsonNode node) throws IOException {
+        if(obj instanceof AbstractYipeeObject) {
+            ((AbstractYipeeObject)obj).setId(node.get("id").asText());
+            ((AbstractYipeeObject)obj).setName(node.get("name").asText());
+            ((AbstractYipeeObject)obj).setCreated(node.get("created").longValue());
+            ((AbstractYipeeObject)obj).setModified(node.get("modified").longValue());
+        }
+        return obj;
+    }*/
 }

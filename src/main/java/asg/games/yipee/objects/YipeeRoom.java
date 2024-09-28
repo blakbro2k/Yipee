@@ -1,6 +1,6 @@
 package asg.games.yipee.objects;
 
-import asg.games.yipee.persistence.YokelStorageAdapter;
+import asg.games.yipee.persistence.YipeeStorageAdapter;
 import asg.games.yipee.tools.Util;
 
 import java.util.ArrayList;
@@ -13,31 +13,34 @@ import java.util.Objects;
  * Created by Blakbro2k on 1/28/2018.
  */
 
-public class YokelRoom extends AbstractYokelObject implements YokelObjectJPAVisitor, Copyable<YokelRoom>, Disposable {
+public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisitor, Copyable<YipeeRoom>, Disposable {
     public static final String SOCIAL_LOUNGE = "Social";
     public static final String BEGINNER_LOUNGE = "Beginner";
     public static final String INTERMEDIATE_LOUNGE = "Intermediate";
     public static final String ADVANCED_LOUNGE = "Advanced";
 
-    private List<YokelPlayer> players = new ArrayList<>();
-    private Map<Integer, YokelTable> tables = new HashMap<>();
+    private List<YipeePlayer> players = new ArrayList<>();
+    private Map<Integer, YipeeTable> tables = new HashMap<>();
 
     private String loungeName = "_NoTableName";
 
     //Empty Constructor required for Json.Serializable
-    public YokelRoom() {
+    public YipeeRoom() {
+        super();
     }
 
-    public YokelRoom(String name) {
+    public YipeeRoom(String name) {
+        this();
         setName(name);
     }
 
-    public YokelRoom(String name, String loungeName) {
+    public YipeeRoom(String name, String loungeName) {
+        this();
         setName(name);
         setLoungeName(loungeName);
     }
 
-    public Collection<YokelTable> getAllTables() {
+    public Collection<YipeeTable> getAllTables() {
         return Util.getMapValues(tables);
     }
 
@@ -45,46 +48,46 @@ public class YokelRoom extends AbstractYokelObject implements YokelObjectJPAVisi
         return Util.getMapKeys(tables);
     }
 
-    public void setAllTables(Map<Integer, YokelTable> tables) {
+    public void setAllTables(Map<Integer, YipeeTable> tables) {
         this.tables = tables;
     }
 
-    public List<YokelPlayer> getAllPlayers() {
+    public List<YipeePlayer> getAllPlayers() {
         return players;
     }
 
-    public void setAllPlayers(List<YokelPlayer> players) {
+    public void setAllPlayers(List<YipeePlayer> players) {
         this.players = players;
     }
 
-    public void joinRoom(YokelPlayer player) {
+    public void joinRoom(YipeePlayer player) {
         if (player != null && !players.contains(player)) {
             players.add(player);
         }
     }
 
-    public void leaveRoom(YokelPlayer player) {
+    public void leaveRoom(YipeePlayer player) {
         players.remove(player);
     }
 
-    public YokelTable addTable() {
+    public YipeeTable addTable() {
         return addTable(null);
     }
 
-    public YokelTable addTable(Map<String, Object> arguments) {
-        YokelTable table;
+    public YipeeTable addTable(Map<String, Object> arguments) {
+        YipeeTable table;
         int tableNumber = Util.getNextTableNumber(this);
 
         if (arguments != null) {
-            table = new YokelTable(getId(), tableNumber, arguments);
+            table = new YipeeTable(getId(), tableNumber, arguments);
         } else {
-            table = new YokelTable(getId(), tableNumber);
+            table = new YipeeTable(getId(), tableNumber);
         }
         tables.put(tableNumber, table);
         return table;
     }
 
-    public YokelTable getTable(int tableNumber) {
+    public YipeeTable getTable(int tableNumber) {
         return tables.get(tableNumber);
     }
 
@@ -109,16 +112,16 @@ public class YokelRoom extends AbstractYokelObject implements YokelObjectJPAVisi
     }
 
     @Override
-    public YokelRoom copy() {
-        YokelRoom copy = new YokelRoom();
+    public YipeeRoom copy() {
+        YipeeRoom copy = new YipeeRoom();
         copy.setName(this.name);
         copy.setLoungeName(this.loungeName);
         return copy;
     }
 
     @Override
-    public YokelRoom deepCopy() {
-        YokelRoom copy = copy();
+    public YipeeRoom deepCopy() {
+        YipeeRoom copy = copy();
         copyParent(copy);
         copy.setAllPlayers(players);
         copy.setAllTables(tables);
@@ -126,7 +129,7 @@ public class YokelRoom extends AbstractYokelObject implements YokelObjectJPAVisi
     }
 
     @Override
-    public void visitSave(YokelStorageAdapter adapter) {
+    public void visitSave(YipeeStorageAdapter adapter) {
         try {
             if (adapter != null) {
                 adapter.putAllTables(Util.getMapValues(tables));
@@ -174,7 +177,7 @@ public class YokelRoom extends AbstractYokelObject implements YokelObjectJPAVisi
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        YokelRoom yokelRoom = (YokelRoom) o;
+        YipeeRoom yokelRoom = (YipeeRoom) o;
         return players.equals(yokelRoom.players) && tables.equals(yokelRoom.tables) && getLoungeName().equals(yokelRoom.getLoungeName());
     }
 

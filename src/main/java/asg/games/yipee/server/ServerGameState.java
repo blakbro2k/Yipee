@@ -1,20 +1,20 @@
 package asg.games.yipee.server;
 
-import asg.games.yipee.objects.YokelGameBoardState;
+import asg.games.yipee.objects.YipeeGameBoardState;
 
 public class ServerGameState {
-   YokelGameBoardState[] gamePositions = new YokelGameBoardState[8];
+   YipeeGameBoardState[] gamePositions = new YipeeGameBoardState[8];
 
    public ServerGameState() {
    }
 
-   public void setGameState(int position, YokelGameBoardState state) {
+   public void setGameState(int position, YipeeGameBoardState state) {
       if (position < 0 || position > 8)
          throw new IndexOutOfBoundsException("Position is out of bounds 0 > x > 8.");
       gamePositions[position] = state;
    }
 
-   public YokelGameBoardState getGameState(int position) {
+   public YipeeGameBoardState getGameState(int position) {
       if (position < 0 || position > 8)
          throw new IndexOutOfBoundsException("Position is out of bounds 0 > x > 8.");
       return gamePositions[position];
