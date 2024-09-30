@@ -15,12 +15,6 @@ package asg.games.yipee.objects;
  * limitations under the License.
  ******************************************************************************/
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.SerializerProvider;
-
-import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -101,7 +95,6 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
 
     //Empty Constructor required for Json.Serializable
     public YipeeBlock() {
-        super();
     }
 
     @Override
@@ -110,7 +103,6 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
     }
 
     public YipeeBlock(int x, int y, int blockType) {
-        this();
         reset();
         this.x = x;
         this.y = y;
@@ -160,28 +152,6 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
         //Logger.trace("Exit hasPower()={}", powerIntensity > 0);
         return powerIntensity > 0;
     }
-/*
-    @Override
-    public void write(Json json) {
-        if(json != null) {
-            super.write(json);
-            json.writeValue("x", x);
-            json.writeValue("y", y);
-            json.writeValue("blockType", blockType);
-            json.writeValue("powerIntensity", powerIntensity);
-        }
-    }
-
-    @Override
-    public void read(Json json, JsonValue jsonValue) {
-        if (json != null) {
-            super.read(json, jsonValue);
-            x = json.readValue("x", Integer.class, jsonValue);
-            y = json.readValue("y", Integer.class, jsonValue);
-            blockType = json.readValue("blockType", Integer.class, jsonValue);
-            powerIntensity = json.readValue("powerIntensity", Integer.class, jsonValue);
-        }
-    }*/
 
     @Override
     public boolean equals(Object o) {
@@ -213,29 +183,4 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
     public String toString() {
         return super.toString() + "{block: [" + blockType + "]" + YipeeBlock.printReaderFriendlyBlock(blockType) + "}";
     }
-/*
-    @Override
-    protected void doWriteProperties(JsonGenerator gen, SerializerProvider provider) throws IOException {
-        gen.writeStartObject();
-        gen.writeStringField("id", this.getId());
-        gen.writeStringField("name", this.getName());
-        gen.writeNumberField("created", this.getCreated());
-        gen.writeNumberField("modified", this.getModified());
-        gen.writeNumberField("x", this.x);
-        gen.writeNumberField("y", this.y);
-        gen.writeNumberField("blockType", this.getBlockType());
-        gen.writeNumberField("powerIntensity", this.getPowerIntensity());
-        gen.writeEndObject();
-    }
-
-    @Override
-    protected Object doReadProperties(Object obj, DeserializationContext context, JsonNode node) throws IOException {
-        if(obj instanceof AbstractYipeeObject) {
-            ((AbstractYipeeObject)obj).setId(node.get("id").asText());
-            ((AbstractYipeeObject)obj).setName(node.get("name").asText());
-            ((AbstractYipeeObject)obj).setCreated(node.get("created").longValue());
-            ((AbstractYipeeObject)obj).setModified(node.get("modified").longValue());
-        }
-        return obj;
-    }*/
 }

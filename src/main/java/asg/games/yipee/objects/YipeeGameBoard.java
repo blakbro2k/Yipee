@@ -3,6 +3,7 @@ package asg.games.yipee.objects;
 import asg.games.yipee.tools.RandomUtil;
 import asg.games.yipee.tools.TimeUtils;
 import asg.games.yipee.tools.Util;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -16,7 +17,11 @@ import java.util.Vector;
  *
  * @author Blakbro2k
  */
+@JsonIgnoreProperties({ "brokenCells", "brokenByPartnerCellIDs", "brokenCellCount", "brokenCellCount",
+        "nextBlock", "gameState"
+})
 public class YipeeGameBoard extends AbstractYipeeObject implements Disposable {
+
 
     public static final int MAX_RANDOM_BLOCK_NUMBER = 2048;
     public static final int MAX_COLS = 6;
@@ -94,12 +99,9 @@ public class YipeeGameBoard extends AbstractYipeeObject implements Disposable {
     private boolean debug;
 
     //Empty Constructor required for Json.Serializable
-    public YipeeGameBoard() {
-        super();
-    }
+    public YipeeGameBoard() {}
 
     public YipeeGameBoard(long seed) {
-        this();
         cells = new int[MAX_ROWS][MAX_COLS];
         ids = new boolean[128];
         powers = new LinkedList<>();
@@ -1804,8 +1806,8 @@ public class YipeeGameBoard extends AbstractYipeeObject implements Disposable {
 
             for (YipeeBlockMove blockMove : cellsToDrop) {
                 System.out.println(blockMove);
-                clearCell(blockMove.y, blockMove.col);
-                cells[blockMove.targetRow][blockMove.col] = blockMove.block;
+                clearCell(blockMove.getRow(), blockMove.getCol());
+                cells[blockMove.getTargetRow()][blockMove.getCol()] = blockMove.getBlock();
             }
             //TODO: Do some dropping
         }

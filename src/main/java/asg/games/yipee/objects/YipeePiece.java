@@ -13,18 +13,14 @@ public class YipeePiece extends AbstractYipeeObject {
     public int column;
 
     //Empty Constructor required for Json.Serializable
-    public YipeePiece() {
-        super();
-    }
+    public YipeePiece() {}
 
     public YipeePiece(int index, int block1, int block2, int block3) {
-        this();
         setIndex(index);
         setBlock1(block1);
         setBlock2(block2);
         setBlock3(block3);
     }
-
 
     public int[] getCells(){
         return cells;
@@ -86,37 +82,6 @@ public class YipeePiece extends AbstractYipeeObject {
         setBlock2(tempBlock3);
         setBlock3(tempBlock1);
     }
-/*
-    @Override
-    public void write(Json json) {
-        if(json != null) {
-            super.write(json);
-            json.writeValue("index", index);
-            json.writeValue("row", row);
-            json.writeValue("column", column);
-            json.writeArrayStart("cells");
-            json.writeValue(getBlock1());
-            json.writeValue(getBlock2());
-            json.writeValue(getBlock3());
-            json.writeArrayEnd();
-        }
-    }
-
-    @Override
-    public void read(Json json, JsonValue jsonValue) {
-        if (json != null) {
-            super.read(json, jsonValue);
-            index = json.readValue("index", Integer.class, jsonValue);
-            row = json.readValue("row", Integer.class, jsonValue);
-            column = json.readValue("column", Integer.class, jsonValue);
-            Array<?> array = json.readValue("cells", Array.class, jsonValue);
-            if (array != null) {
-                setBlock3(getIntValueFromFloat(array.get(2)));
-                setBlock2(getIntValueFromFloat(array.get(1)));
-                setBlock1(getIntValueFromFloat(array.get(0)));
-            }
-        }
-    }*/
 
     public int getIntValueFromFloat(Object o) {
         if (o instanceof Float) {

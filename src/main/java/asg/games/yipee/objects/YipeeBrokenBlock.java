@@ -4,12 +4,9 @@ public class YipeeBrokenBlock extends AbstractYipeeObject {
    private int block, row, col;
 
    //Empty Constructor required for Json.Serializable
-   public YipeeBrokenBlock() {
-      super();
-   }
+   public YipeeBrokenBlock() {}
 
    public YipeeBrokenBlock(int block, int row, int col) {
-      this();
       this.block = block;
       this.row = row;
       this.col = col;

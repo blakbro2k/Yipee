@@ -1,7 +1,10 @@
 package asg.games.yipee.objects;
 
+import asg.games.yipee.persistence.YipeeObjectJPAVisitor;
 import asg.games.yipee.persistence.YipeeStorageAdapter;
 import asg.games.yipee.tools.Util;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -9,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@JsonIgnoreProperties({ "tableNumber", "tableStartReady", "upArguments", "tableName" })
 public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVisitor, Copyable<YipeeTable>, Disposable {
     public static final String ARG_TYPE = "type";
     public static final String ARG_RATED = "rated";
@@ -34,21 +38,20 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     private ACCESS_TYPE accessType = ACCESS_TYPE.PUBLIC;
     private List<YipeeSeat> seats = new LinkedList<>();
     private List<YipeePlayer> watchers = new ArrayList<>();
+    @JsonProperty("rated")
     private boolean isRated = false;
+    @JsonProperty("soundOn")
     private boolean isSoundOn = true;
     private String roomId;
 
     //Empty Constructor required for Json.Serializable
-    public YipeeTable() {
-        super();
-    }
+    public YipeeTable() {}
 
     public YipeeTable(String roomId, int nameNumber) {
         this(roomId, nameNumber, null);
     }
 
     public YipeeTable(String roomId, int nameNumber, Map<String, Object> arguments) {
-        this();
         this.roomId = roomId;
         initialize(nameNumber, arguments);
     }
@@ -64,7 +67,6 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     }
 
     public int getTableNumber() {
-        System.out.println(getName());
         return Integer.parseInt(Util.split(getName(), ATT_NAME_PREPEND)[1]);
     }
 
@@ -252,33 +254,6 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
             throw new RuntimeException("Issue visiting save for " + this.getClass().getSimpleName() + ": ", e);
         }
     }
-/*
-    @Override
-    public void write(Json json) {
-        super.write(json);
-        if(json != null) {
-            json.writeValue("accessType", accessType);
-            json.writeValue("isRated", isRated);
-            json.writeValue("isSoundOn", isSoundOn);
-            json.writeValue("roomId", roomId);
-            json.writeValue("seats", seats);
-            json.writeValue("watchers", watchers);
-        }
-    }
-
-    @Override
-    @SuppressWarnings({"unchecked"})
-    public void read(Json json, JsonValue jsonValue) {
-        super.read(json, jsonValue);
-        if (json != null) {
-            accessType = json.readValue("accessType", ACCESS_TYPE.class, jsonValue);
-            isRated = json.readValue("isRated", Boolean.class, jsonValue);
-            isSoundOn = json.readValue("isSoundOn", Boolean.class, jsonValue);
-            roomId = json.readValue("roomId", String.class, jsonValue);
-            seats = json.readValue("seats", Array.class, jsonValue);
-            watchers = json.readValue("watchers", Array.class, jsonValue);
-        }
-    }*/
 
     @Override
     public boolean equals(Object o) {

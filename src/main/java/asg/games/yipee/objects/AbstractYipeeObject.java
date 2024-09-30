@@ -16,25 +16,16 @@ package asg.games.yipee.objects;
  ******************************************************************************/
 
 import asg.games.yipee.tools.TimeUtils;
-import asg.games.yipee.tools.Util;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializable;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -45,9 +36,13 @@ import java.util.Objects;
  */
 
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.CLASS,
-        property = "@class"
-)
+        use = JsonTypeInfo.Id.CLASS)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = YipeeSeat.class, name = "YipeeSeat"),
+        @JsonSubTypes.Type(value = YipeeClock.class, name = "YipeeClock"),
+        @JsonSubTypes.Type(value = YipeeRoom.class, name = "YipeeRoom"),
+        @JsonSubTypes.Type(value = YipeeTable.class, name = "YipeeTable")
+})
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class AbstractYipeeObject implements YipeeObject {
     @Id
@@ -57,6 +52,7 @@ public abstract class AbstractYipeeObject implements YipeeObject {
             strategy = "asg.games.yokel.persistence.IdGenerator")
     @Column(name = "id", nullable = false, length=32)
 
+    @JsonProperty()
     protected String id;
     protected String name;
     protected long created;
@@ -121,5 +117,4 @@ public abstract class AbstractYipeeObject implements YipeeObject {
             o.setModified(this.getModified());
         }
     }
-
 }

@@ -1,31 +1,20 @@
 package asg.games.yipee.tools;
 
+import asg.games.yipee.json.YipeeRoomDeserializer;
+import asg.games.yipee.objects.YipeePlayer;
 import asg.games.yipee.objects.YipeeRoom;
-import com.fasterxml.jackson.core.JsonFactory;
+import asg.games.yipee.objects.YipeeTable;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.StreamReadConstraints;
-import com.fasterxml.jackson.core.StreamReadFeature;
-import com.fasterxml.jackson.core.StreamWriteFeature;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
-import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class Util {
     /**
@@ -42,6 +31,12 @@ public class Util {
     private final static String RIGHTT_CURLY_BRACET_HTML = "&#125;";
 
     private final static ObjectMapper json = new ObjectMapper();
+    private final static SimpleModule module = new SimpleModule();
+
+    static {
+        module.addDeserializer(YipeeRoom.class, new YipeeRoomDeserializer());
+        json.registerModule(module);
+    }
 
     public static int getNextTableName(final YipeeRoom yokelRoom) {
         int tableIndex = -1;
@@ -294,7 +289,7 @@ public class Util {
             String[] c2 = new String[size];
 
             for(int c = 0; c < size; c++){
-                Object o = collection.get(c);
+                T o = collection.get(c);
                 if(o != null){
                     c2[c] = o.toString();
                 }
@@ -318,7 +313,7 @@ public class Util {
         return collection.stream().toList();
     }
 
-    public static String getJsonString(Object o) throws JsonProcessingException {
+    public static String getJsonString(asg.games.yipee.objects.AbstractYipeeObject o) throws JsonProcessingException {
         return json.writeValueAsString(o);
     }
 
@@ -328,6 +323,39 @@ public class Util {
 
     public static String jsonToString(String str){
         return replace(replace(str, "{",LEFT_CURLY_BRACET_HTML),"}", RIGHTT_CURLY_BRACET_HTML);
+    }
+
+    public static <T> List<T> jsonNodeToCollection(Class<T> inClass, JsonNode node) {
+        List<T> collection = new ArrayList<>();
+        if(node instanceof ArrayNode) {
+            for (JsonNode o : node) {
+                if (o != null) {
+                    String localClassName = o.get(JsonTypeInfo.Id.CLASS.getDefaultPropertyName()).asText();
+                    try {
+                        Class<?> clazz = Class.forName(localClassName);
+                        Object object = getObjectFromJsonString(clazz, o.toString());
+                        if(inClass.isInstance(object)) {
+                            collection.add(inClass.cast(object));
+                        }
+                    } catch (ClassNotFoundException | JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+       }
+       return collection;
+    }
+
+    public static <T> Map<Integer, YipeeTable> jsonNodeToTableIndexMap(Class<T> inClass, JsonNode node) {
+       Map<Integer, YipeeTable> tableMap = new HashMap<>();
+        List<YipeeTable> collection = jsonNodeToCollection(YipeeTable.class, node);
+        for(YipeeTable table : collection) {
+            if(table != null) {
+                int tableNum = table.getTableNumber();
+                tableMap.put(tableNum, table);
+            }
+        }
+        return tableMap;
     }
 
     public static String stringToJson(String str){

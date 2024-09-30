@@ -27,9 +27,7 @@ public class YipeeGameBoardState extends AbstractYipeeObject {
     private boolean[] ids;
     private int idIndex;
 
-    public YipeeGameBoardState() {
-        super();
-    }
+    public YipeeGameBoardState() {}
 
     public long getServerGameStartTime() {
         return serverGameStartTime;

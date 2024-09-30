@@ -1,7 +1,12 @@
 package asg.games.yipee.objects;
 
+import asg.games.yipee.persistence.YipeeObjectJPAVisitor;
 import asg.games.yipee.persistence.YipeeStorageAdapter;
 import asg.games.yipee.tools.Util;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.MapSerializer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,33 +14,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
 /**
  * Created by Blakbro2k on 1/28/2018.
  */
 
+@JsonIgnoreProperties({ "allTableIndexes" })
 public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisitor, Copyable<YipeeRoom>, Disposable {
     public static final String SOCIAL_LOUNGE = "Social";
     public static final String BEGINNER_LOUNGE = "Beginner";
     public static final String INTERMEDIATE_LOUNGE = "Intermediate";
     public static final String ADVANCED_LOUNGE = "Advanced";
 
+    @JsonProperty("allPlayers")
     private List<YipeePlayer> players = new ArrayList<>();
+    @JsonProperty("allTables")
+    //@JsonSerialize(keyUsing = MapSerializer.class)
     private Map<Integer, YipeeTable> tables = new HashMap<>();
 
     private String loungeName = "_NoTableName";
 
     //Empty Constructor required for Json.Serializable
     public YipeeRoom() {
-        super();
     }
 
     public YipeeRoom(String name) {
-        this();
         setName(name);
     }
 
     public YipeeRoom(String name, String loungeName) {
-        this();
         setName(name);
         setLoungeName(loungeName);
     }
@@ -139,38 +146,6 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
             throw new RuntimeException("Issue visiting save for " + this.getClass().getSimpleName(), e);
         }
     }
-/*
-    @Override
-    public void write(Json json) {
-        super.write(json);
-        if (json != null) {
-            json.writeValue("loungeName", loungeName);
-            json.writeValue("players", players);
-            json.writeValue("tables", tables);
-        }
-    }
-
-    @Override
-    public void read(Json json, JsonValue jsonValue) {
-        super.read(json, jsonValue);
-        if (json != null) {
-            loungeName = json.readValue("loungeName", String.class, jsonValue);
-            players = json.readValue("players", Array.class, jsonValue);
-            //need to add manually to preserve order
-            ObjectMap<Object, Object> tablesJson = json.readValue("tables", ObjectMap.class, jsonValue);
-            if (tablesJson != null) {
-                for (Object keyStringObj : Util.getMapKeys(tablesJson)) {
-                    if (keyStringObj instanceof String) {
-                        int key = Integer.parseInt(keyStringObj.toString());
-                        Object o = tablesJson.get(keyStringObj);
-                        if (o instanceof YokelTable) {
-                            tables.put(key, (YokelTable) o);
-                        }
-                    }
-                }
-            }
-        }
-    }*/
 
     @Override
     public boolean equals(Object o) {

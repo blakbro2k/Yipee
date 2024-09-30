@@ -1,21 +1,22 @@
 package asg.games.yipee.objects;
 
 import asg.games.yipee.tools.TimeUtils;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.Objects;
 
+@JsonIgnoreProperties({ "seconds", "minutes", "elapsedSeconds" })
 public class YipeeClock extends AbstractYipeeObject {
     private long start;
-    private boolean isRunning;
+    private boolean running;
 
     //Empty Constructor required for Json.Serializable
     public YipeeClock() {
-        super();
         resetTimer();
     }
 
     public void start(){
-        isRunning = true;
+        running = true;
         start = TimeUtils.millis();
     }
 
@@ -29,7 +30,7 @@ public class YipeeClock extends AbstractYipeeObject {
 
     private void resetTimer(){
         start = -1;
-        isRunning = false;
+        running = false;
     }
 
     public long getStart() {
@@ -51,26 +52,8 @@ public class YipeeClock extends AbstractYipeeObject {
     }
 
     public boolean isRunning() {
-        return this.isRunning;
+        return this.running;
     }
-/*
-    @Override
-    public void write(Json json) {
-        if (json != null) {
-            super.write(json);
-            json.writeValue("start", start);
-            json.writeValue("isRunning", isRunning);
-        }
-    }
-
-    @Override
-    public void read(Json json, JsonValue jsonValue) {
-        if (json != null) {
-            super.read(json, jsonValue);
-            start = json.readValue("start", Long.class, jsonValue);
-            isRunning = json.readValue("isRunning", Boolean.class, jsonValue);
-        }
-    }*/
 
     @Override
     public boolean equals(Object o) {

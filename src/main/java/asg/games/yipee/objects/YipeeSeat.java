@@ -1,6 +1,7 @@
 package asg.games.yipee.objects;
 
 import asg.games.yipee.tools.Util;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.Objects;
 
@@ -8,7 +9,7 @@ import java.util.Objects;
  * Created by Blakbro2k on 1/28/2018.
  */
 
-
+@JsonIgnoreProperties({ "seatNumber", "occupied", "seatReady" })
 public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     private static final String ATTR_SEAT_NUM_SEPARATOR = "-";
 
@@ -18,11 +19,9 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
 
     //Empty Constructor required for Json.Serializable
     public YipeeSeat(){
-        super();
     }
 
      public YipeeSeat(String tableId, int seatNumber){
-        this();
         if(seatNumber < 0 || seatNumber > 7) throw new IllegalArgumentException("Seat number must be between 0 - 7.");
         setTableId(tableId);
         setName(tableId + ATTR_SEAT_NUM_SEPARATOR + seatNumber);
@@ -60,7 +59,7 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     }
 
     public int getSeatNumber(){
-        return Integer.parseInt(Util.split(getName(),ATTR_SEAT_NUM_SEPARATOR)[1]);
+        return Integer.parseInt(Util.split(getName(), ATTR_SEAT_NUM_SEPARATOR)[1]);
     }
 
     @Override
@@ -77,28 +76,6 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     public void setTableId(String tableId) {
         this.tableId = tableId;
     }
-
-    /*@Override
-    public void write(Json json) {
-        super.write(json);
-        if (json != null) {
-            json.writeValue("tableId", tableId);
-            json.writeValue("isSeatReady", isSeatReady);
-            if (seatedPlayer != null) {
-                json.writeValue("seatedPlayer", seatedPlayer, YokelPlayer.class);
-            }
-        }
-    }
-
-    @Override
-    public void read(Json json, JsonValue jsonValue) {
-        super.read(json, jsonValue);
-        if (json != null) {
-            tableId = json.readValue("tableId", String.class, jsonValue);
-            isSeatReady = json.readValue("isSeatReady", Boolean.class, jsonValue);
-            seatedPlayer = json.readValue("seatedPlayer", YokelPlayer.class, jsonValue);
-        }
-    }*/
 
     @Override
     public boolean equals(Object o) {

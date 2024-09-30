@@ -1,6 +1,7 @@
 package asg.games.yipee.objects;
 
 import asg.games.yipee.tools.Util;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.Objects;
@@ -10,19 +11,18 @@ import java.util.Objects;
  */
 
 public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePlayer> {
+    @JsonIgnore
     public final static int DEFAULT_RATING_NUMBER = 1500;
+    @JsonIgnore
     public final static YipeePlayer BLANK_PLAYER = new YipeePlayer("", DEFAULT_RATING_NUMBER, 0);
 
     private int rating;
     private int icon;
 
     //Empty Constructor required for Json.Serializable
-    public YipeePlayer(){
-        super();
-    }
+    public YipeePlayer(){}
 
     public YipeePlayer(Class<YipeePlayer> clazz, String data) throws JsonProcessingException {
-        this();
         YipeePlayer temp = Util.getObjectFromJsonString(clazz, data);
         if(temp != null) {
             setId(temp.getId());
@@ -87,24 +87,6 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
         copy.setIcon(this.icon);
         return copy;
     }
-/*
-    @Override
-    public void write(Json json) {
-        super.write(json);
-        if(json != null) {
-            json.writeValue("rating", rating);
-            json.writeValue("icon", icon);
-        }
-    }
-
-    @Override
-    public void read(Json json, JsonValue jsonValue) {
-        super.read(json, jsonValue);
-        if (json != null) {
-            rating = json.readValue("rating", Integer.class, jsonValue);
-            icon = json.readValue("icon", Integer.class, jsonValue);
-        }
-    }*/
 
     @Override
     public boolean equals(Object o) {

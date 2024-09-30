@@ -3,23 +3,20 @@ package asg.games.yipee.objects;
 import java.util.Objects;
 
 public class YipeeBlockMove extends AbstractYipeeObject {
-    public int block;
-    public int cellId;
-    public int col;
-    public int y;
-    public int targetRow;
+    private int block;
+    private int cellId;
+    private int col;
+    private int row;
+    private int targetRow;
 
     //Empty Constructor required for Json.Serializable
-    public YipeeBlockMove() {
-        super();
-    }
+    public YipeeBlockMove() {}
 
-    public YipeeBlockMove(int cellID, int block, int x, int y, int targetRow) {
-        this();
+    public YipeeBlockMove(int cellID, int block, int col, int row, int targetRow) {
         setBlock(block);
         setCellID(cellID);
-        this.col = x;
-        this.y = y;
+        setCol(col);
+        setRow(row);
         this.targetRow = targetRow;
     }
 
@@ -38,30 +35,6 @@ public class YipeeBlockMove extends AbstractYipeeObject {
     public int getBlock() {
         return block;
     }
-/*
-    @Override
-    public void write(Json json) {
-        if (json != null) {
-            super.write(json);
-            json.writeValue("block", block);
-            json.writeValue("cellId", cellId);
-            json.writeValue("x", col);
-            json.writeValue("y", y);
-            json.writeValue("targetRow", targetRow);
-        }
-    }
-
-    @Override
-    public void read(Json json, JsonValue jsonValue) {
-        if (json != null) {
-            super.read(json, jsonValue);
-            block = json.readValue("block", Integer.class, jsonValue);
-            cellId = json.readValue("cellId", Integer.class, jsonValue);
-            col = json.readValue("x", Integer.class, jsonValue);
-            y = json.readValue("y", Integer.class, jsonValue);
-            targetRow = json.readValue("targetRow", Integer.class, jsonValue);
-        }
-    }*/
 
     @Override
     public boolean equals(Object o) {
@@ -69,24 +42,36 @@ public class YipeeBlockMove extends AbstractYipeeObject {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         YipeeBlockMove blockMove = (YipeeBlockMove) o;
-        return col == blockMove.col && y == blockMove.y && targetRow == blockMove.targetRow;
+        return col == blockMove.getCol() && row == blockMove.getRow() && targetRow == blockMove.getTargetRow();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), col, y, targetRow);
+        return Objects.hash(super.hashCode(), col, row, targetRow);
     }
 
     @Override
     public String toString() {
-        return super.toString() + "{" + block + "@(x: " + col + ", y: " + y + ") to targetRow: " + targetRow + "}";
+        return super.toString() + "{" + block + "@(col: " + col + ", row: " + row + ") to targetRow: " + targetRow + "}";
+    }
+
+    public void setRow(int row) {
+        this.row = row;
     }
 
     public int getRow() {
-        return targetRow;
+        return row;
+    }
+
+    public void setCol(int col) {
+        this.col = col;
     }
 
     public int getCol() {
         return col;
+    }
+
+    public int getTargetRow() {
+        return targetRow;
     }
 }
