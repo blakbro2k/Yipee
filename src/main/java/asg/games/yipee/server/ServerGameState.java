@@ -19,13 +19,4 @@ public class ServerGameState {
          throw new IndexOutOfBoundsException("Position is out of bounds 0 > x > 8.");
       return gamePositions[position];
    }
-/*
-   @Override
-   public void write(Json json) {
-   }
-
-   @Override
-   public void read(Json json, JsonValue jsonData) {
-
-   }*/
 }

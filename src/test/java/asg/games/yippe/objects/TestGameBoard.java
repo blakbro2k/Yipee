@@ -17,8 +17,8 @@ public class TestGameBoard {
         System.out.println("Start Test Game Board.");
         ServerGameState serverGameState = new ServerGameState();
 
-        int gameSeed = -1;
-        int maxTicks = 129;
+        int gameSeed = 1;
+        int maxTicks = 329;
         YipeeGameBoard playerB = new YipeeGameBoard(gameSeed);
         playerB.setDebug(true);
         YipeeGameBoard partnerB = new YipeeGameBoard(gameSeed);

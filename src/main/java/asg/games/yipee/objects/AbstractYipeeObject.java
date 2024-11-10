@@ -1,4 +1,3 @@
-package asg.games.yipee.objects;
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
  *
@@ -14,6 +13,7 @@ package asg.games.yipee.objects;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+package asg.games.yipee.objects;
 
 import asg.games.yipee.tools.TimeUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -81,8 +81,17 @@ public abstract class AbstractYipeeObject implements YipeeObject {
         return this.getClass().getSimpleName() + "[" + this.getId() + "," + this.getName() + "]";
     }
 
+    /**
+     * Sets the unique UUID of the object
+     *
+     * @param id String
+     */
     public void setId(String id){ this.id = id;}
 
+    /**
+     * Returns the unique UUID of the object
+     * @return
+     */
     public String getId(){ return id;}
 
     public void setName(String name){

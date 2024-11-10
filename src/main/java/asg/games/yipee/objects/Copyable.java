@@ -1,4 +1,3 @@
-package asg.games.yipee.objects;
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
  *
@@ -14,6 +13,7 @@ package asg.games.yipee.objects;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+package asg.games.yipee.objects;
 
 /**
  * A simple interface that allows objects to be shallow copied or deep copied
