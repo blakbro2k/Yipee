@@ -927,4 +927,28 @@ public class Util {
         }
         return cs.toString().indexOf(searchChar.toString(), start);
     }
+
+    /*public static Array<Vector2> getPolygonVertices(int n, float radius, int h, int k) {
+        Array<Vector2> verts = GdxArrays.newArray();
+        double angle_between_vertices = 2 * Math.PI / n;
+
+        for (int i = n; i >= 0; i--) {
+            double theta = i * angle_between_vertices;
+            double x = h + radius * Math.cos(theta);
+            double y = k + radius * Math.sin(theta);
+
+            verts.add(new Vector2((float) x, (float) y));
+        }
+        return verts;
+    }
+
+    public static Vector2 rotatePoint(double x, double y, double Cx, double Cy, double theta) {
+        double cosTheta = Math.cos(theta);
+        double sinTheta = Math.sin(theta);
+
+        double newX = Cx + (x - Cx) * cosTheta - (y - Cy) * sinTheta;
+        double newY = Cy + (x - Cx) * sinTheta + (y - Cy) * cosTheta;
+
+        return new Vector2((float) newX, (float) newY);
+    }*/
 }

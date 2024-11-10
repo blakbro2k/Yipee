@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.Objects;
 
-
 @JsonIgnoreProperties({ "brokenCells", "tableStartReady", "upArguments", "tableName" })
 public class YipeeBoardPair extends AbstractYipeeObject {
     YipeeGameBoard leftBoard;

@@ -3,6 +3,7 @@ package asg.games.yipee.objects;
 import asg.games.yipee.persistence.YipeeObjectJPAVisitor;
 import asg.games.yipee.persistence.YipeeStorageAdapter;
 import asg.games.yipee.tools.Util;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -21,9 +22,13 @@ import java.util.Objects;
 
 @JsonIgnoreProperties({ "allTableIndexes" })
 public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisitor, Copyable<YipeeRoom>, Disposable {
+    @JsonIgnore
     public static final String SOCIAL_LOUNGE = "Social";
+    @JsonIgnore
     public static final String BEGINNER_LOUNGE = "Beginner";
+    @JsonIgnore
     public static final String INTERMEDIATE_LOUNGE = "Intermediate";
+    @JsonIgnore
     public static final String ADVANCED_LOUNGE = "Advanced";
 
     @JsonProperty("allPlayers")

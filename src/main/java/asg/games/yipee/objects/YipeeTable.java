@@ -3,6 +3,7 @@ package asg.games.yipee.objects;
 import asg.games.yipee.persistence.YipeeObjectJPAVisitor;
 import asg.games.yipee.persistence.YipeeStorageAdapter;
 import asg.games.yipee.tools.Util;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -14,12 +15,19 @@ import java.util.Objects;
 
 @JsonIgnoreProperties({ "tableNumber", "tableStartReady", "upArguments", "tableName" })
 public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVisitor, Copyable<YipeeTable>, Disposable {
+    @JsonIgnore
     public static final String ARG_TYPE = "type";
+    @JsonIgnore
     public static final String ARG_RATED = "rated";
+    @JsonIgnore
     public static final String ENUM_VALUE_PRIVATE = "PRIVATE";
+    @JsonIgnore
     public static final String ENUM_VALUE_PUBLIC = "PUBLIC";
+    @JsonIgnore
     public static final String ENUM_VALUE_PROTECTED = "PROTECTED";
+    @JsonIgnore
     public static final String ATT_NAME_PREPEND = "#";
+    @JsonIgnore
     public static final int MAX_SEATS = 8;
 
     public enum ACCESS_TYPE {

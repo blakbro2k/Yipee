@@ -1,6 +1,7 @@
 package asg.games.yipee.objects;
 
 import asg.games.yipee.tools.Util;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.Objects;
@@ -11,6 +12,7 @@ import java.util.Objects;
 
 @JsonIgnoreProperties({ "seatNumber", "occupied", "seatReady" })
 public class YipeeSeat extends AbstractYipeeObject implements Disposable {
+    @JsonIgnore
     private static final String ATTR_SEAT_NUM_SEPARATOR = "-";
 
     private YipeePlayer seatedPlayer;

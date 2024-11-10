@@ -1,10 +1,14 @@
 package asg.games.yipee.objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Arrays;
 import java.util.Objects;
 
 public class YipeePiece extends AbstractYipeeObject {
+    @JsonIgnore
     public static final int MEDUSA_GAME_PIECE = 1;
+    @JsonIgnore
     public static final int MIDAS_GAME_PIECE = 2;
 
     private final int[] cells = new int[3];
