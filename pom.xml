@@ -3,56 +3,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>${groupId}</groupId>
-    <artifactId>${artifactId}</artifactId>
-    <version>${yipee.version}</version>
+    <groupId>asg.games</groupId>
+    <artifactId>yipee</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>${groupId}</groupId>
-                    <artifactId>${artifactId}</artifactId>
-                    <configuration>
-                        <source>${java.version}</source>
-                        <target>${java.version}</target>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
-
-    <distributionManagement>
-        <repository>
-            <id>yipee</id>
-            <name>Yipee Repository</name>
-            <url>https://maven.pkg.github.com/${groupId}/${groupId}</url>
-        </repository>
-    </distributionManagement>
-<!--
-        <plugin>
-            <artifactId>${artifactId}</artifactId>
-            <version>${yipee.version}</version>
-            <configuration>
-                <altDeploymentRepository>
-                    yipee::default::file://${project.build.directory}/mvn-artifact
-                </altDeploymentRepository>
-            </configuration>
-        </plugin>
-
-        <plugin>
-            <groupId>${groupId}</groupId>
-            <artifactId>${artifactId}-source</artifactId>
-            <version>${yipee.version}</version>
-            <executions>
-                <execution>
-                    <id>attach-sources</id>
-                    <goals>
-                        <goal>jar</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>-->
+<distributionManagement>
+   <repository>
+     <id>github</id>
+     <name>GitHub OWNER Apache Maven Packages</name>
+     <url>https://maven.pkg.github.com/blakbro2k/Yipee</url>
+   </repository>
+</distributionManagement>
 
     <repositories>
         <repository>
