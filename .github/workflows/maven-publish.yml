@@ -26,8 +26,8 @@ jobs:
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
-    - name: Replace version token
-      uses: mingjun97/file-regex-replace@v2
+    - name: File Regex Replace 2023
+      uses: vyan024/file-regex-replace-2023@v2   
       with:
           regex: '"%%version%%",'
           replacement: '"%0.0.1-SNAPShot",'
