@@ -36,15 +36,11 @@ jobs:
       run: echo ${{steps.tag.outputs.tag}}
 
     - name: Replace Version in pom.xml
-      uses: vyan024/file-regex-replace-2023@v2   
+      uses: jacobtomlinson/gha-find-replace@v3
       with:
-          regex: '"%%version%%",'
-          replacement: '"${{steps.tag.outputs.tag}}",'
-          flags: "g"                  # Optional, defaults to "g"
-          include: 'pom.xml'          # Optional, defaults to ".*"
-          exclude: '.^'               # Optional, defaults to '.^'
-          encoding: 'utf8'            # Optional, defaults to 'utf8'
-          path: '.'                   # Optional, defaults to '.'   
+          find: "%%version%%"
+          replace: "${{steps.tag.outputs.tag}}"
+          include: "pom.xml"
             
     - name: Build with Maven
       run: mvn -B package --file pom.xml
