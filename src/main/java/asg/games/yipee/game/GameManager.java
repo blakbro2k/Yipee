@@ -81,6 +81,7 @@ public class GameManager implements Disposable {
     public boolean showGameOver(){
         boolean temp = showGameOver;
         if(showGameOver){
+
             showGameOver = false;
         }
         return temp;
