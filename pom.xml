@@ -7,13 +7,13 @@
     <artifactId>yipee</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-<distributionManagement>
-   <repository>
-     <id>github</id>
-     <name>GitHub OWNER Apache Maven Packages</name>
-     <url>https://maven.pkg.github.com/blakbro2k/Yipee</url>
-   </repository>
-</distributionManagement>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub OWNER Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/blakbro2k/Yipee</url>
+        </repository>
+    </distributionManagement>
 
     <repositories>
         <repository>
