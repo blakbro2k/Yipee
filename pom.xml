@@ -7,13 +7,13 @@
     <artifactId>yipee</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <distributionManagement>
-        <repository>
-            <id>yipee</id>
-            <name>Yipee Repository</name>
-            <url>https://maven.pkg.github.com/${project.groupId}/${project.artifactId}</url>
-        </repository>
-    </distributionManagement>
+<distributionManagement>
+   <repository>
+     <id>github</id>
+     <name>GitHub OWNER Apache Maven Packages</name>
+     <url>https://maven.pkg.github.com/blakbro2k/Yipee</url>
+   </repository>
+</distributionManagement>
 
     <repositories>
         <repository>
@@ -23,6 +23,7 @@
             <layout>default</layout>
         </repository>
     </repositories>
+
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -38,6 +39,9 @@
         <repository-name>Put-repository-name</repository-name>
         <branch-name>Put-branch-name</branch-name>
         <github.global.server>github</github.global.server>
+        <artifactId>yipee</artifactId>
+        <groupId>asg.games</groupId>
+        <yipee.version>1.0.0-SNAPSHOT</yipee.version>
         <java.version>1.8</java.version>
         <maven-source-plugin.version>3.1.0</maven-source-plugin.version>
         <site-maven-plugin.version>0.12</site-maven-plugin.version>
