@@ -3,56 +3,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>${groupId}</groupId>
-    <artifactId>${artifactId}</artifactId>
-    <version>${yipee.version}</version>
-
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>${groupId}</groupId>
-                    <artifactId>${artifactId}</artifactId>
-                    <configuration>
-                        <source>${java.version}</source>
-                        <target>${java.version}</target>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
+    <groupId>asg.games</groupId>
+    <artifactId>yipee</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
 
     <distributionManagement>
         <repository>
             <id>yipee</id>
             <name>Yipee Repository</name>
-            <url>https://maven.pkg.github.com/${groupId}/${groupId}</url>
+            <url>https://maven.pkg.github.com/${project.groupId}/${project.artifactId}</url>
         </repository>
     </distributionManagement>
-<!--
-        <plugin>
-            <artifactId>${artifactId}</artifactId>
-            <version>${yipee.version}</version>
-            <configuration>
-                <altDeploymentRepository>
-                    yipee::default::file://${project.build.directory}/mvn-artifact
-                </altDeploymentRepository>
-            </configuration>
-        </plugin>
-
-        <plugin>
-            <groupId>${groupId}</groupId>
-            <artifactId>${artifactId}-source</artifactId>
-            <version>${yipee.version}</version>
-            <executions>
-                <execution>
-                    <id>attach-sources</id>
-                    <goals>
-                        <goal>jar</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>-->
 
     <repositories>
         <repository>
@@ -62,7 +23,6 @@
             <layout>default</layout>
         </repository>
     </repositories>
-
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -78,9 +38,6 @@
         <repository-name>Put-repository-name</repository-name>
         <branch-name>Put-branch-name</branch-name>
         <github.global.server>github</github.global.server>
-        <artifactId>yipee</artifactId>
-        <groupId>asg.games</groupId>
-        <yipee.version>1.0.0-SNAPSHOT</yipee.version>
         <java.version>1.8</java.version>
         <maven-source-plugin.version>3.1.0</maven-source-plugin.version>
         <site-maven-plugin.version>0.12</site-maven-plugin.version>
