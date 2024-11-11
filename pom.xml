@@ -29,7 +29,7 @@
             <url>https://maven.pkg.github.com/${groupId}/${groupId}</url>
         </repository>
     </distributionManagement>
-
+<!--
         <plugin>
             <artifactId>${artifactId}</artifactId>
             <version>${yipee.version}</version>
@@ -52,7 +52,7 @@
                     </goals>
                 </execution>
             </executions>
-        </plugin>
+        </plugin>-->
 
     <repositories>
         <repository>
