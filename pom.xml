@@ -5,8 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>asg.games</groupId>
     <artifactId>yipee</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-         <version2>%%version%%</version2>
+    <version>%%version%%</version>
 
 <distributionManagement>
    <repository>
