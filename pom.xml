@@ -26,8 +26,9 @@
 
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+         <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <hbm.version>5.3.36.Final</hbm.version>
         <json.version>2.17.2</json.version>
         <junit.version>4.13.2</junit.version>
