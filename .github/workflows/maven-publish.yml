@@ -26,6 +26,20 @@ jobs:
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
+    - uses: actions/checkout@v4
+    - name: Replace version token
+    - uses: mingjun97/regex-property-action@test
+      with:
+          regex: '"version": "([0-9\.]*)",'
+          replacement: '"%%version%%": "0.0.1-SNAPShot",'
+          include: 'pom.xml'
+    - uses: actions/upload-artifact@v2  # upload to artifact to see the changes
+      with:
+          name: test
+          path: |
+            *.json
+
+
     - name: Get Release Tag
       id: tag
       uses: dawidd6/action-get-tag@v1
