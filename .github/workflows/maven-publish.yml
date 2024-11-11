@@ -27,11 +27,15 @@ jobs:
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
     - name: Replace version token
-      uses: mingjun97/regex-property-action@test
+      uses: mingjun97/file-regex-replace@v2
       with:
-          regex: '"version": "([0-9\.]*)",'
-          replacement: '"%%version%%": "0.0.1-SNAPShot",'
-          include: 'pom.xml'
+          regex: '"%%version%%",'
+          replacement: '"%0.0.1-SNAPShot",'
+          flags: "g"                  # Optional, defaults to "g"
+          include: 'pom.xml'          # Optional, defaults to ".*"
+          exclude: '.^'               # Optional, defaults to '.^'
+          encoding: 'utf8'            # Optional, defaults to 'utf8'
+          path: '.'                   # Optional, defaults to '.'        
 
     - name: Get Release Tag
       id: tag
