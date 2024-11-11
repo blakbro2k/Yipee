@@ -34,7 +34,20 @@ jobs:
         strip_v: true
     - name: Use tag
       run: echo ${{steps.tag.outputs.tag}}
-  
+
+    - name: Replace version token
+    - uses: actions/checkout@v4
+    - uses: mingjun97/regex-property-action@test
+      with:
+          regex: '"version": "([0-9\.]*)",'
+          replacement: '"%%version%%": "${{steps.tag.outputs.tag}}",'
+          include: 'pom.xml'
+    - uses: actions/upload-artifact@v2  # upload to artifact to see the changes
+      with:
+          name: test
+          path: |
+            *.json
+            
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
