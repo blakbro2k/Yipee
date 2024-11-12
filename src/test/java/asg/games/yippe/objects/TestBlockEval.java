@@ -1,13 +1,16 @@
 package asg.games.yippe.objects;
 
-import asg.games.yipee.objects.YipeeBlock;
-import asg.games.yipee.objects.YipeeBlockEval;
+import asg.games.yipee.objects.*;
+import asg.games.yipee.tools.Util;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TestBlockEval {
+    AtomicInteger atomicId = new AtomicInteger(0);
 
     @BeforeMethod
     public void setUp() {
@@ -355,11 +358,18 @@ public class TestBlockEval {
         System.out.println("End YipeeBlock_EX_Test()");
     }
 
-    @Test
-    public void testGetCellFlag() throws Exception {
-        throw new Exception("Test not implemented.");
+    @Test(dataProvider = "yokel_blocks_with_ids")
+    public void testGetCellFlag(YipeeBlock block, int blockType) throws Exception {
+        System.out.println("Start testGetCellFlag()=" + block);
+        int cellBlock = blockType;
+        int cellFlag = YipeeBlockEval.setValueFlag(cellBlock, blockType);
+        System.out.println("cellBlock=" + cellBlock);
+        System.out.println("cellFlag=" + cellFlag);
+        Assert.assertEquals(cellFlag, YipeeBlockEval.setValueFlag(cellBlock, blockType));
+        Assert.assertEquals(cellBlock, YipeeBlockEval.getCellFlag(cellFlag));
+        System.out.println("End testGetCellFlag()");
     }
-
+/*
     @Test
     public void testSetValueFlag() throws Exception {
         throw new Exception("Test not implemented.");
@@ -376,7 +386,7 @@ public class TestBlockEval {
     }
 
     @Test
-    public void testBrokenFlags() throws Exception {
+    public void testHasBrokenFlags() throws Exception {
         throw new Exception("Test not implemented.");
     }
 
@@ -389,10 +399,10 @@ public class TestBlockEval {
     public void testRemoveBrokenFlag() throws Exception {
         throw new Exception("Test not implemented.");
     }
-
+*/
     @Test
-    public void testPartnerBreakFlags() {
-        System.out.println("Start testPartnerBreakFlag()");
+    public void testHasPartnerBreakFlags() {
+        System.out.println("Start testHasPartnerBreakFlags()");
         int block;
         int actual;
 
@@ -443,7 +453,7 @@ public class TestBlockEval {
         Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
 
         //Offensive Blocks
-        /*block = YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.Y_BLOCK, YipeeBlockEval.OFFENSIVE_MINOR);
+        block = YipeeBlockEval.addPowerBlockFlag(YipeeBlock.Y_BLOCK);
         actual = YipeeBlockEval.removePartnerBreakFlag(block);
         Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
         actual = YipeeBlockEval.addPartnerBreakFlag(block);
@@ -451,41 +461,55 @@ public class TestBlockEval {
         actual = YipeeBlockEval.removePartnerBreakFlag(block);
         Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
 
-        block = YipeeBlockEval.O_BLOCK;
+        block = YipeeBlock.A_BLOCK;
         Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
         actual = YipeeBlockEval.addPartnerBreakFlag(block);
         Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
         actual = YipeeBlockEval.removePartnerBreakFlag(block);
         Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
 
-        block = YipeeBlockEval.K_BLOCK;
+        block = YipeeBlock.H_BLOCK;
         Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
         actual = YipeeBlockEval.addPartnerBreakFlag(block);
         Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
         actual = YipeeBlockEval.removePartnerBreakFlag(block);
         Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
 
-        block = YipeeBlockEval.E_BLOCK;
+        block = YipeeBlock.Op_BLOCK;
         Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
         actual = YipeeBlockEval.addPartnerBreakFlag(block);
         Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
         actual = YipeeBlockEval.removePartnerBreakFlag(block);
         Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
 
-        block = YipeeBlockEval.L_BLOCK;
+        block = YipeeBlock.Oy_BLOCK;
         Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
         actual = YipeeBlockEval.addPartnerBreakFlag(block);
         Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
         actual = YipeeBlockEval.removePartnerBreakFlag(block);
         Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
 
-        block = YipeeBlockEval.EX_BLOCK;
+        block = YipeeBlock.EX_BLOCK;
         Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
         actual = YipeeBlockEval.addPartnerBreakFlag(block);
         Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
         actual = YipeeBlockEval.removePartnerBreakFlag(block);
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));*/
-        System.out.println("End testPartnerBreakFlag()");
+        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+        System.out.println("End testHasPartnerBreakFlags()");
+    }
+/*
+    @Test
+    public void testAddPartnerBreakFlag() throws Exception {
+        System.out.println("Start testAddPartnerBreakFlag()");
+        System.out.println("End testAddPartnerBreakFlag()");
+        throw new Exception("Test not implemented.");
+    }
+
+    @Test
+    public void testRemovePartnerBreakFlag() throws Exception {
+        System.out.println("Start testRemovePartnerBreakFlag()");
+        System.out.println("End testRemovePartnerBreakFlag()");
+        throw new Exception("Test not implemented.");
     }
 
     @Test
@@ -494,7 +518,15 @@ public class TestBlockEval {
     }
 
     @Test
+    public void testGetIDFlag() throws Exception {
+        System.out.println("Start testPartnerBreakFlag()");
+        System.out.println("End testPartnerBreakFlag()");
+        throw new Exception("Test not implemented.");
+    }
+*/
+    @Test
     public void testSetIDFlag() throws Exception {
+        System.out.println("Start testSetIDFlag()");
         int v0 = YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Y_BLOCK, YipeeBlock.OFFENSIVE_MEGA));
         System.out.println("powwah-V0-" + v0);
         int v1= YipeeBlockEval.setIDFlag(v0, 1);
@@ -513,13 +545,14 @@ public class TestBlockEval {
         System.out.println("-V2-" + v12);
         int v13 = YipeeBlockEval.setValueFlag(v11, v12);
         System.out.println("-V3-" + v13);
+        System.out.println("End testSetIDFlag()");
     }
-
+/*
     @Test
     public void testGetPowerFlag() throws Exception {
         throw new Exception("Test not implemented.");
     }
-
+*/
     @Test
     public void testSetPowerFlag() throws Exception {
         System.out.println("power 8" + YipeeBlockEval.setPowerFlag(YipeeBlock.Y_BLOCK, 8));
@@ -530,7 +563,7 @@ public class TestBlockEval {
         System.out.println("power level = " + YipeeBlockEval.getPowerLevel(block));
 
     }
-
+/*
     @Test
     public void testHasSpecialFlag() throws Exception {
         throw new Exception("Test not implemented.");
@@ -540,7 +573,7 @@ public class TestBlockEval {
     public void testAddSpecialFlag() throws Exception {
         throw new Exception("Test not implemented.");
     }
-
+*/
     @Test
     public void testHasPowerBlockFlag() throws Exception {
         int block = YipeeBlock.Y_BLOCK;
@@ -572,7 +605,7 @@ public class TestBlockEval {
         Assert.assertTrue(YipeeBlockEval.hasPowerBlockFlag(actual));
         Assert.assertFalse(YipeeBlockEval.hasPowerBlockFlag(block));
     }
-
+/*
     @Test
     public void testIsOffensive() throws Exception {
         throw new Exception("Test not implemented.");
@@ -581,5 +614,61 @@ public class TestBlockEval {
     @Test
     public void testGetPowerLevel() throws Exception {
         throw new Exception("Test not implemented.");
+    }
+*/
+    @DataProvider(name = "yokel_objects")
+    public Object[][] provideYokelObjects() {
+        YipeeBlock yokelBlockY = new YipeeBlock(0,0,0);
+        YipeeBlock yokelBlockA = new YipeeBlock(0,0,1);
+        YipeeBlock yokelBlockH = new YipeeBlock(0,0,2);
+        YipeeBlock yokelBlockOp = new YipeeBlock(0,0,3);
+        YipeeBlock yokelBlockOy = new YipeeBlock(0,0,4);
+        YipeeBlock yokelBlockBsh = new YipeeBlock(0,0,5);
+        YipeeBlock yokelBlockClear = new YipeeBlock(0,0,6);
+        YipeeBlock yokelBlockStone = new YipeeBlock(0,0,7);
+        YipeeBlock yokelBlockMedusa = new YipeeBlock(0,0,9);
+
+        return new Object[][]{
+                {yokelBlockY, yokelBlockY.getBlockType()},
+                {yokelBlockA, yokelBlockA.getBlockType()},
+                {yokelBlockH, yokelBlockH.getBlockType()},
+                {yokelBlockOp, yokelBlockOp.getBlockType()},
+                {yokelBlockOy, yokelBlockOy.getBlockType()},
+                {yokelBlockBsh, yokelBlockBsh.getBlockType()},
+                {yokelBlockClear, yokelBlockClear.getBlockType()},
+                {yokelBlockStone, yokelBlockStone.getBlockType()},
+                {yokelBlockMedusa, yokelBlockMedusa.getBlockType()}
+        };
+    }
+/*
+    @Test
+    public void testGetNormalLabel() throws Exception {
+        System.out.println("Start testGetNormalLabel()");
+        System.out.println("End testGetNormalLabel()");
+        throw new Exception("Test not implemented.");
+    }
+*/
+    @DataProvider(name = "yokel_blocks_with_ids")
+    public Object[][] provideYokelObjectsWithIds() {
+        Object[][] objectsWithIds = provideYokelObjects();
+        // let's loop through array to populate id and name
+        for (Object[] objectsWithId : objectsWithIds) {
+            for (Object object : objectsWithId) {
+                if (object instanceof YipeeObject) {
+                    setIdAndName((YipeeObject) object);
+                }
+            }
+        }
+        return objectsWithIds;
+    }
+
+    private void setIdAndName(YipeeObject... yipeeObjects) {
+        for (YipeeObject yipeeObject : Util.safeIterableArray(yipeeObjects)) {
+            if (yipeeObject != null) {
+                int id = atomicId.getAndIncrement();
+                yipeeObject.setId(Util.IDGenerator.getID());
+                yipeeObject.setName(id + "-" + yipeeObject.getClass().getSimpleName());
+            }
+        }
     }
 }
