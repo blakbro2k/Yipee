@@ -24,9 +24,17 @@ public class GameManager implements Disposable {
     private boolean isGameRunning, wasPieceJustSet, showGameOver, hasGameStarted = false;
     private long seed = 1L;
 
+    public GameManager(YipeeTable table, long seed) throws Exception {
+        if (table == null) throw new Exception("Table cannot be null for GameManager.");
+        setTable(table);
+        setSeed(seed);
+        init();
+    }
+
     public GameManager(YipeeTable table) throws Exception {
         if (table == null) throw new Exception("Table cannot be null for GameManager.");
         setTable(table);
+        setSeed(seed);
         init();
     }
 
