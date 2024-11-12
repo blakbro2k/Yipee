@@ -1,4 +1,4 @@
-package asg.games.yippe.tools;
+package asg.games.yippe.objects.tools;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
