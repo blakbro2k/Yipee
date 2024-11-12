@@ -9,7 +9,6 @@ import asg.games.yipee.objects.YipeePlayer;
 import asg.games.yipee.objects.YipeeSeat;
 import asg.games.yipee.objects.YipeeTable;
 import asg.games.yipee.objects.Disposable;
-import asg.games.yipee.server.ServerGameState;
 import asg.games.yipee.tools.MathUtils;
 import asg.games.yipee.tools.Util;
 
@@ -293,14 +292,6 @@ public class GameManager implements Disposable {
 
     public YipeeGameBoardState getBoardState(int boardSeat) {
         return getGameBoard(boardSeat).getGameState();
-    }
-
-    public ServerGameState getServerState() {
-        ServerGameState server = new ServerGameState();
-        for (int i = 0; i < gameBoards.length; i++) {
-            server.setGameState(i, getBoardState(i));
-        }
-        return server;
     }
 
     public String printTables() {
