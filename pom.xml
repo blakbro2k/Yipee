@@ -34,6 +34,7 @@
         <junit.version>4.13.2</junit.version>
         <lombok.version>1.18.30</lombok.version>
         <testng.version>7.5</testng.version>
+        <jakarta.version>3.0.0</jakarta.version>
         <jetbrains.version>26.0.1</jetbrains.version>
         <!--Put your own properties -->
         <repository-owner>blakbro2k</repository-owner>
@@ -72,6 +73,12 @@
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>${testng.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>${jakarta.version}</version>
         </dependency>
 
         <dependency>

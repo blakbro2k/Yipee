@@ -20,12 +20,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.util.Objects;
 
 /**
@@ -35,8 +36,7 @@ import java.util.Objects;
  * @author Blakbro2k
  */
 
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = YipeeSeat.class, name = "YipeeSeat"),
         @JsonSubTypes.Type(value = YipeeClock.class, name = "YipeeClock"),
@@ -44,15 +44,15 @@ import java.util.Objects;
         @JsonSubTypes.Type(value = YipeeTable.class, name = "YipeeTable")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
+@MappedSuperclass
 public abstract class AbstractYipeeObject implements YipeeObject {
+    @JsonProperty()
     @Id
     @GeneratedValue(generator = "asg.games.yipee.persistence.IdGenerator")
     @GenericGenerator(name = "uuid_gen_strategy_class",
             parameters = @Parameter(name = "uuid_gen_strategy_class", value = "org.hibernate.id.uuid.CustomVersionOneStrategy"),
             strategy = "asg.games.yokel.persistence.IdGenerator")
-    @Column(name = "id", nullable = false, length=32)
-
-    @JsonProperty()
+    @Column(name = "id", nullable = false, length = 32)
     protected String id;
     protected String name;
     protected long created;

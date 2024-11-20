@@ -6,6 +6,10 @@ import asg.games.yipee.tools.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Table;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -13,7 +17,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@JsonIgnoreProperties({ "tableNumber", "tableStartReady", "upArguments", "tableName" })
+@JsonIgnoreProperties({"tableNumber", "tableStartReady", "upArguments", "tableName"})
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Table(name = "YT_TABLES")
 public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVisitor, Copyable<YipeeTable>, Disposable {
     @JsonIgnore
     public static final String ARG_TYPE = "type";

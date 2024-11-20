@@ -6,8 +6,10 @@ import asg.games.yipee.tools.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.MapSerializer;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Table;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,7 +22,10 @@ import java.util.Objects;
  * Created by Blakbro2k on 1/28/2018.
  */
 
-@JsonIgnoreProperties({ "allTableIndexes" })
+@JsonIgnoreProperties({"allTableIndexes"})
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Table(name = "YT_ROOMS")
 public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisitor, Copyable<YipeeRoom>, Disposable {
     @JsonIgnore
     public static final String SOCIAL_LOUNGE = "Social";

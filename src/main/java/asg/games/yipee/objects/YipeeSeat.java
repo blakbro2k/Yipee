@@ -3,6 +3,12 @@ package asg.games.yipee.objects;
 import asg.games.yipee.tools.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import java.util.Objects;
 
@@ -10,27 +16,36 @@ import java.util.Objects;
  * Created by Blakbro2k on 1/28/2018.
  */
 
-@JsonIgnoreProperties({ "seatNumber", "occupied", "seatReady" })
+@JsonIgnoreProperties({"seatNumber", "occupied", "seatReady"})
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Table(name = "YT_SEATS")
 public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     @JsonIgnore
     private static final String ATTR_SEAT_NUM_SEPARATOR = "-";
 
+    @ManyToOne
+    @JoinColumn(name = "seated_player_id")
     private YipeePlayer seatedPlayer;
     private String tableId;
     private boolean isSeatReady = false;
 
-    //Empty Constructor required for Json.Serializable
-    public YipeeSeat(){
+    public void setSeatedPlayer(YipeePlayer seatedPlayer) {
+        this.seatedPlayer = seatedPlayer;
     }
 
-     public YipeeSeat(String tableId, int seatNumber){
-        if(seatNumber < 0 || seatNumber > 7) throw new IllegalArgumentException("Seat number must be between 0 - 7.");
+    //Empty Constructor required for Json.Serializable
+    public YipeeSeat() {
+    }
+
+    public YipeeSeat(String tableId, int seatNumber) {
+        if (seatNumber < 0 || seatNumber > 7) throw new IllegalArgumentException("Seat number must be between 0 - 7.");
         setTableId(tableId);
         setName(tableId + ATTR_SEAT_NUM_SEPARATOR + seatNumber);
     }
 
-    public boolean sitDown(YipeePlayer player){
-        if(!isOccupied()){
+    public boolean sitDown(YipeePlayer player) {
+        if (!isOccupied()) {
             seatedPlayer = player;
             return true;
         }

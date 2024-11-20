@@ -3,6 +3,10 @@ package asg.games.yipee.objects;
 import asg.games.yipee.tools.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Table;
 
 import java.util.Objects;
 
@@ -10,11 +14,12 @@ import java.util.Objects;
  * Created by Blakbro2k on 1/28/2018.
  */
 
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Table(name = "YT_PLAYERS")
 public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePlayer> {
     @JsonIgnore
     public final static int DEFAULT_RATING_NUMBER = 1500;
-    @JsonIgnore
-    public final static YipeePlayer BLANK_PLAYER = new YipeePlayer("", DEFAULT_RATING_NUMBER, 0);
 
     private int rating;
     private int icon;
