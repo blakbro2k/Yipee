@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.Objects;
@@ -42,6 +43,7 @@ import java.util.Objects;
         @JsonSubTypes.Type(value = YipeeTable.class, name = "YipeeTable")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
+@MappedSuperclass
 public abstract class AbstractYipeeObject implements YipeeObject {
     @JsonProperty()
     @Id
