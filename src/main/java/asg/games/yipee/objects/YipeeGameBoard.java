@@ -17,12 +17,8 @@ import java.util.Vector;
  *
  * @author Blakbro2k
  */
-@JsonIgnoreProperties({ "brokenCells", "brokenByPartnerCellIDs", "brokenCellCount", "brokenCellCount",
-        "nextBlock", "gameState"
-})
+@JsonIgnoreProperties({"brokenCells", "brokenByPartnerCellIDs", "brokenCellCount", "brokenCellCount", "nextBlock", "gameState"})
 public class YipeeGameBoard extends AbstractYipeeObject implements Disposable {
-
-
     public static final int MAX_RANDOM_BLOCK_NUMBER = 2048;
     public static final int MAX_COLS = 6;
     public static final int MAX_ROWS = 16;

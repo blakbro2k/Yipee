@@ -1,7 +1,0 @@
-<id name="id" length="32">
-    <generator class="asg.games.yokel.persistence.IdGenerator">
-        <param name="uuid_gen_strategy_class">org.hibernate.id.uuid.CustomVersionOneStrategy</param>
-    </generator>
-</id><property name="name" type="string" length="128" unique="true" not-null="true" /><property
-name="created" type="asg.games.yokel.persistence.DateType" /><property name="modified"
-type="asg.games.yokel.persistence.DateType" />

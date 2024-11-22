@@ -1,7 +1,6 @@
 package asg.games.yipee.tools;
 
 import asg.games.yipee.json.YipeeRoomDeserializer;
-import asg.games.yipee.objects.YipeePlayer;
 import asg.games.yipee.objects.YipeeRoom;
 import asg.games.yipee.objects.YipeeTable;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
