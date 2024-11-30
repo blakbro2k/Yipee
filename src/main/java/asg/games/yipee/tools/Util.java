@@ -2,6 +2,7 @@ package asg.games.yipee.tools;
 
 import asg.games.yipee.json.YipeeRoomDeserializer;
 import asg.games.yipee.objects.YipeeRoom;
+import asg.games.yipee.objects.YipeeSeat;
 import asg.games.yipee.objects.YipeeTable;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -210,24 +211,38 @@ public class Util {
     }
 
     public static void clearArray(final Collection<?> array) {
-        if(array != null) {
+        if (array != null) {
             array.clear();
         }
     }
 
-    public static <T> Iterator<T>  getArrayIterator(Class<T> clazz, List<T> boardIndexes) {
+    public static <T> Iterator<T> getArrayIterator(Class<T> clazz, List<T> boardIndexes) {
         return boardIndexes == null ? Collections.emptyIterator() : boardIndexes.iterator();
     }
 
-    public static class IDGenerator {
-        private IDGenerator(){}
+    public static YipeeSeat getIndexOfSet(Set<YipeeSeat> seats, int seatNum) {
+        int count = 0;
 
-        public static String getID(){
-            //return replace(GwtUUIDUtil.get() + "", "-","") ;
-            return replace(UUID.randomUUID() + "", "-","") ;
+        for (YipeeSeat seat : safeIterable(seats)) {
+            if (count == seatNum) {
+                return seat;
+            } else {
+                count++;
+            }
+        }
+        return null;
+    }
+
+    public static class IDGenerator {
+        private IDGenerator() {
         }
 
-        public static @NotNull List<String> getGroupOfIDs(int num) throws IllegalArgumentException{
+        public static String getID() {
+            //return replace(GwtUUIDUtil.get() + "", "-","") ;
+            return replace(UUID.randomUUID() + "", "-", "");
+        }
+
+        public static @NotNull List<String> getGroupOfIDs(int num) throws IllegalArgumentException {
             if(num > 0) {
                 List<String> ids = new ArrayList<>();
                 for(int i = 0; i < num; i++){
@@ -404,22 +419,32 @@ public class Util {
         return -1;
     }
 
-    public static float otof(Object o){
-        if(o != null){
+    public static float otof(Object o) {
+        if (o != null) {
             return Float.parseFloat(otos(o));
         }
         return -1;
     }
 
-    public static List<String> getFileNames(File folder){
+    public static <T> Set<T> listToSet(List<T> list) {
+        Set<T> set = new HashSet<>();
+        for (T listItem : safeIterable(list)) {
+            if (listItem != null) {
+                set.add(listItem);
+            }
+        }
+        return set;
+    }
+
+    public static List<String> getFileNames(File folder) {
         List<String> retFileNames = new ArrayList<>();
-        if(folder != null){
+        if (folder != null) {
             File[] fileNames = folder.listFiles();
 
-            if(fileNames != null){
-                for(File file : fileNames){
-                    if(file != null){
-                        if(file.isDirectory()){
+            if (fileNames != null) {
+                for (File file : fileNames) {
+                    if (file != null) {
+                        if (file.isDirectory()) {
                             getFileNames(file);
                         } else {
                             retFileNames.add(file.getName());

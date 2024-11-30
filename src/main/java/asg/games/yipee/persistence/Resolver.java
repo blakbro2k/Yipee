@@ -9,9 +9,13 @@ public interface Resolver {
     /** Gets Object given id */
     <T extends YipeeObject> T getObjectById(Class<T> clazz, String id);
 
-    /** Gets All Objects given class */
-    <T extends YipeeObject> Iterable<T> getObjects(Class<T> clazz);
+    /**
+     * Gets All Objects given class
+     */
+    <T extends YipeeObject> Iterable<T> getAllObjects(Class<T> clazz);
 
-    /** returns the number of All Objects given class */
-    <T extends YipeeObject> int countObjects(Class<T> clazz);
+    /**
+     * returns the number of All Objects given class
+     */
+    <T extends YipeeObject> int countAllObjects(Class<T> clazz);
 }

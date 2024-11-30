@@ -18,7 +18,7 @@ import java.util.Objects;
 
 @JsonIgnoreProperties({"seatNumber", "occupied", "seatReady"})
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_SEATS")
 public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     @JsonIgnore
@@ -27,8 +27,20 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     @ManyToOne
     @JoinColumn(name = "seated_player_id")
     private YipeePlayer seatedPlayer;
-    private String tableId;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_table_id")
+    private YipeeTable parentTable;
+
     private boolean isSeatReady = false;
+
+    public YipeeTable getParentTable() {
+        return parentTable;
+    }
+
+    public void setParentTable(YipeeTable parentTable) {
+        this.parentTable = parentTable;
+    }
 
     public void setSeatedPlayer(YipeePlayer seatedPlayer) {
         this.seatedPlayer = seatedPlayer;
@@ -38,25 +50,27 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     public YipeeSeat() {
     }
 
-    public YipeeSeat(String tableId, int seatNumber) {
+    public YipeeSeat(YipeeTable table, int seatNumber) {
         if (seatNumber < 0 || seatNumber > 7) throw new IllegalArgumentException("Seat number must be between 0 - 7.");
-        setTableId(tableId);
-        setName(tableId + ATTR_SEAT_NUM_SEPARATOR + seatNumber);
+        setParentTable(table);
+        setName(getTableId() + ATTR_SEAT_NUM_SEPARATOR + seatNumber);
     }
 
     public boolean sitDown(YipeePlayer player) {
-        if (!isOccupied()) {
+        if (!isOccupied() && player != null) {
             seatedPlayer = player;
+            player.addSeat(this);
             return true;
         }
         return false;
     }
 
-    public YipeePlayer standUp(){
-        YipeePlayer var = seatedPlayer;
+    public YipeePlayer standUp() {
+        YipeePlayer player = seatedPlayer;
+        seatedPlayer.removeSeat(this);
         seatedPlayer = null;
         setSeatReady(false);
-        return var;
+        return player;
     }
 
     public boolean isOccupied(){
@@ -87,11 +101,10 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     }
 
     public String getTableId() {
-        return tableId;
-    }
-
-    public void setTableId(String tableId) {
-        this.tableId = tableId;
+        if (parentTable != null) {
+            return getParentTable().getId();
+        }
+        return null;
     }
 
     @Override

@@ -26,9 +26,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Custom JSON Deserializer for YipeeRoom Game Object
@@ -58,7 +57,7 @@ public class YipeeRoomDeserializer extends StdDeserializer<YipeeRoom> {
         room.setModified(node.get("modified").asLong());
         room.setLoungeName(node.get("loungeName").asText());
 
-        List<YipeePlayer> allPlayers = Util.jsonNodeToCollection(YipeePlayer.class, node.get("allPlayers"));
+        Set<YipeePlayer> allPlayers = Util.listToSet(Util.jsonNodeToCollection(YipeePlayer.class, node.get("allPlayers")));
         Map<Integer, YipeeTable> allTables = Util.jsonNodeToTableIndexMap(YipeeTable.class, node.get("allTables"));
         room.setAllPlayers(allPlayers);
         room.setAllTables(allTables);

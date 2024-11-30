@@ -24,6 +24,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.Objects;
@@ -35,6 +37,8 @@ import java.util.Objects;
  * @author Blakbro2k
  */
 
+@Setter
+@Getter
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = YipeeSeat.class, name = "YipeeSeat"),
@@ -45,11 +49,11 @@ import java.util.Objects;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @MappedSuperclass
 public abstract class AbstractYipeeObject implements YipeeObject {
-    @JsonProperty()
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid")
     @Column(name = "id", nullable = false, length = 32)
+    @JsonProperty()
     protected String id;
     protected String name;
     protected long created;
@@ -76,43 +80,6 @@ public abstract class AbstractYipeeObject implements YipeeObject {
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "[" + this.getId() + "," + this.getName() + "]";
-    }
-
-    /**
-     * Sets the unique UUID of the object
-     *
-     * @param id String
-     */
-    public void setId(String id){ this.id = id;}
-
-    /**
-     * Returns the unique UUID of the object
-     * @return
-     */
-    public String getId(){ return id;}
-
-    public void setName(String name){
-        this.name = name;
-    }
-
-    public String getName(){
-        return this.name;
-    }
-
-    public void setCreated(long dateTime) {
-        this.created = dateTime;
-    }
-
-    public long getCreated() {
-        return created;
-    }
-
-    public void setModified(long dateTime) {
-        this.modified = dateTime;
-    }
-
-    public long getModified() {
-        return modified;
     }
 
     protected void copyParent(YipeeObject o){
