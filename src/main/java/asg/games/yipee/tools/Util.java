@@ -6,8 +6,10 @@ import asg.games.yipee.objects.YipeeSeat;
 import asg.games.yipee.objects.YipeeTable;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.StreamReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.jetbrains.annotations.Contract;
@@ -23,43 +25,25 @@ public class Util {
     public static final String[] EMPTY_STRING_ARRAY = new String[0];
     /**
      * Represents a failed index search.
+     *
      * @since 2.1
      */
     public static final int INDEX_NOT_FOUND = -1;
 
-    private final static String LEFT_CURLY_BRACET_HTML = "&#123;";
-    private final static String RIGHTT_CURLY_BRACET_HTML = "&#125;";
+    private static final String LEFT_CURLY_BRACET_HTML = "&#123;";
+    private static final String RIGHTT_CURLY_BRACET_HTML = "&#125;";
 
-    private final static ObjectMapper json = new ObjectMapper();
-    private final static SimpleModule module = new SimpleModule();
+    private static final ObjectMapper json;
+    private static final SimpleModule module = new SimpleModule();
 
     static {
         module.addDeserializer(YipeeRoom.class, new YipeeRoomDeserializer());
+        json = JsonMapper.builder()
+                .enable(StreamReadFeature.STRICT_DUPLICATE_DETECTION)
+                .disable(StreamReadFeature.AUTO_CLOSE_SOURCE)
+                .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
+                .build();
         json.registerModule(module);
-    }
-
-    public static int getNextTableName(final YipeeRoom yokelRoom) {
-        int tableIndex = -1;
-        if(yokelRoom != null) {
-            List<Integer> tables = iterableToList(yokelRoom.getAllTableIndexes());
-            int size = size(tables);
-            if(size > 0){
-                int[] indices = new int[size];
-                for(int i = 0; i < size; i++) {
-                    indices[i] = tables.get(i);
-                }
-                Arrays.sort(indices);
-                int max = indices[size - 1];
-                int num = findMissingNumber(indices, max);
-                if(num == -1) {
-                    return max + 1;
-                }
-                return num;
-            } else if(size == 0) {
-                return 1;
-            }
-        }
-        return tableIndex;
     }
 
     public static int getNextTableNumber(final YipeeRoom yokelRoom) {
@@ -81,7 +65,7 @@ public class Util {
                 }
                 return num;
             } else if(size == 0) {
-                return 1;
+                return 0;
             }
         }
         return tableIndex;
@@ -116,9 +100,7 @@ public class Util {
     }
 
 
-
-
-    public static <T> Collection<T> arrayToList(T[] o) {
+    public static <T> List<T> arrayToList(T[] o) {
         //int size = o.length;
         List<T> array = new LinkedList<>();
         array.addAll(Arrays.asList(o));

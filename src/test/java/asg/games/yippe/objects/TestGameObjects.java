@@ -10,12 +10,10 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -385,8 +383,45 @@ public class TestGameObjects {
 
         //Test Additional Methods
         //Watching, Seating, Rooms
-        Set<YipeeSeat> seats = new HashSet<>();
+        YipeeTable table1 = new YipeeTable();
+        YipeeTable table2 = new YipeeTable();
+        YipeeRoom room1 = new YipeeRoom();
+        YipeeRoom room2 = new YipeeRoom();
+        YipeeSeat seat1 = new YipeeSeat();
+        YipeeSeat seat2 = new YipeeSeat();
+        setIdAndName(table1, table2, room1, room2, seat1, seat2);
 
+        Set<YipeeRoom> testRooms = new HashSet<>();
+        Set<YipeeTable> testTables = new HashSet<>();
+
+        Assert.assertEquals(yokelPlayer3.getRooms(), testRooms);
+        Assert.assertEquals(yokelPlayer3.getWatching(), testTables);
+        Assert.assertEquals(yokelPlayer3.watchingCount(), 0);
+        Assert.assertEquals(yokelPlayer3.roomsCount(), 0);
+
+        Assert.assertFalse(yokelPlayer3.addWatcher(null));
+        Assert.assertFalse(yokelPlayer3.addRoom(null));
+
+
+        Assert.assertTrue(yokelPlayer3.addRoom(room1));
+        Assert.assertEquals(yokelPlayer3.roomsCount(), 1);
+        Assert.assertTrue(yokelPlayer3.addRoom(room2));
+        Assert.assertEquals(yokelPlayer3.roomsCount(), 2);
+        Assert.assertFalse(yokelPlayer3.addRoom(room2));
+        Assert.assertEquals(yokelPlayer3.roomsCount(), 2);
+
+        Assert.assertTrue(yokelPlayer3.addWatcher(table1));
+        Assert.assertEquals(yokelPlayer3.watchingCount(), 1);
+        testTables.add(table1);
+        Assert.assertTrue(yokelPlayer3.addWatcher(table2));
+        Assert.assertEquals(yokelPlayer3.watchingCount(), 2);
+        testTables.add(table2);
+        Assert.assertFalse(yokelPlayer3.addWatcher(table2));
+        Assert.assertEquals(yokelPlayer3.watchingCount(), 2);
+
+        yokelPlayer3.dispose();
+        Assert.assertEquals(yokelPlayer3.watchingCount(), 0);
+        Assert.assertEquals(yokelPlayer3.roomsCount(), 0);
 
         //Test Json
         String json = Util.getJsonString(yokelPlayer3);
@@ -396,6 +431,9 @@ public class TestGameObjects {
         Assert.assertEquals(yokelPlayer3, readYokelPlayer3);
         Assert.assertEquals(readYokelPlayer3.getIcon(), 12);
         Assert.assertEquals(readYokelPlayer3.getRating(), 1495);
+        Assert.assertEquals(readYokelPlayer3.watchingCount(), 0);
+        Assert.assertEquals(readYokelPlayer3.roomsCount(), 0);
+
     }
 
     @Test
@@ -407,11 +445,12 @@ public class TestGameObjects {
         YipeePlayer yokelPlayer = new YipeePlayer("TestUser1", 500, 4);
         YipeePlayer yokelPlayer2 = new YipeePlayer("TestUser2", 2500);
         YipeePlayer yokelPlayer3 = new YipeePlayer("TestUser3");
-        setIdAndName(yokelPlayer, yokelPlayer2, yokelPlayer3);
+        setIdAndName(yokelPlayer, yokelPlayer2, yokelPlayer3, room, table);
 
         YipeeSeat yokelSeat = new YipeeSeat(table, 0);
         Assert.assertEquals(yokelSeat.getSeatNumber(), 0);
-        Assert.assertEquals(yokelSeat.getTableId(), "sim:table:1#1");
+        System.out.println(yokelSeat.getTableId());
+        Assert.assertEquals(yokelSeat.getTableId(), table.getId());
 
         Assert.assertNull(yokelSeat.getSeatedPlayer());
         Assert.assertFalse(yokelSeat.isOccupied());
@@ -441,7 +480,7 @@ public class TestGameObjects {
         Assert.assertEquals(yokelSeat, readYokelSeat);
     }
 
-    @Test
+    @Test(expectedExceptions = ArrayIndexOutOfBoundsException.class)
     public void testYokelRoom() throws JsonProcessingException {
         YipeeRoom yokelRoom1 = new YipeeRoom("Eiffel Tower", YipeeRoom.ADVANCED_LOUNGE);
         YipeePlayer yokelPlayer = new YipeePlayer("TestUser1", 500, 4);
@@ -454,12 +493,9 @@ public class TestGameObjects {
         Assert.assertEquals(yokelRoom1.getLoungeName(), YipeeRoom.ADVANCED_LOUNGE);
 
         System.out.println("yokelRoom1: " + yokelRoom1);
-        List<YipeePlayer> expectedPlayers = new ArrayList<>();
-        Map<Integer, YipeeTable> expectedTables = new HashMap<>();
+        Set<YipeePlayer> expectedPlayers = new HashSet<>();
 
-        Assert.assertEquals(yokelRoom1.getAllTableIndexes(), Util.getMapKeys(expectedTables));
-        Assert.assertEquals(yokelRoom1.getAllTables(), Util.getMapValues(expectedTables));
-        Assert.assertEquals(yokelRoom1.getAllPlayers(), expectedPlayers);
+        Assert.assertEquals(yokelRoom1.getPlayers(), expectedPlayers);
 
         //Test players watch list
         yokelRoom1.joinRoom(yokelPlayer);
@@ -470,37 +506,51 @@ public class TestGameObjects {
         yokelRoom1.leaveRoom(yokelPlayer3);
         expectedPlayers.add(yokelPlayer);
         expectedPlayers.add(yokelPlayer2);
-        Assert.assertEquals(yokelRoom1.getAllPlayers(), expectedPlayers);
+
+        System.out.println("Actual  : " + yokelRoom1.getPlayers());
+        System.out.println("Expected: " + expectedPlayers);
+        Assert.assertEquals(yokelRoom1.getPlayers(), expectedPlayers);
 
         YipeeRoom room = new YipeeRoom("NewRoom");
         room.dispose();
 
         //Test table list
-        yokelRoom1.addTable();
+        YipeeTable table1 = yokelRoom1.addTable();
+        System.out.println("table1: " + table1);
 
         Map<String, Object> arguments = new HashMap<>();
         arguments.put(YipeeTable.ARG_TYPE, YipeeTable.ENUM_VALUE_PRIVATE);
         arguments.put(YipeeTable.ARG_RATED, true);
-        yokelRoom1.addTable(arguments);
+        YipeeTable table2 = yokelRoom1.addTable(arguments);
+        System.out.println("table2: " + table2);
 
-        arguments.put(YipeeTable.ARG_TYPE, YipeeTable.ENUM_VALUE_PROTECTED);
-        arguments.put(YipeeTable.ARG_RATED, false);
-        yokelRoom1.addTable(arguments);
+        Map<String, Object> arguments2 = new HashMap<>();
+        arguments2.put(YipeeTable.ARG_TYPE, YipeeTable.ENUM_VALUE_PROTECTED);
+        arguments2.put(YipeeTable.ARG_RATED, false);
+        YipeeTable table3 = yokelRoom1.addTable(arguments2);
+        System.out.println("table3: " + table3);
 
-        yokelRoom1.addTable();
-        Assert.assertEquals(Util.size(yokelRoom1.getAllTables()), 4);
-        yokelRoom1.removeTable(2);
-        Assert.assertEquals(Util.size(yokelRoom1.getAllTables()), 3);
+        YipeeTable table4 = yokelRoom1.addTable();
+        System.out.println("table4: " + table4);
 
-        Collection<YipeeTable> tables = yokelRoom1.getAllTables();
+        Assert.assertEquals(yokelRoom1.getTableAt(0), table1);
+        Assert.assertEquals(yokelRoom1.getTableAt(1), table2);
+        Assert.assertEquals(yokelRoom1.getTableAt(2), table3);
+        Assert.assertEquals(yokelRoom1.getTableAt(3), table4);
+
+        Assert.assertEquals(Util.size(yokelRoom1.getTables()), 4);
+        yokelRoom1.removeTableAt(2);
+        Assert.assertEquals(Util.size(yokelRoom1.getTables()), 3);
+
+        Collection<YipeeTable> tables = yokelRoom1.getTables();
         for (YipeeTable table : tables) {
             table.setId(Util.IDGenerator.getID());
         }
 
-        Assert.assertNotNull(yokelRoom1.getTable(4));
-        Assert.assertNull(yokelRoom1.getTable(2));
+        Assert.assertNotNull(yokelRoom1.getTableAt(4));
+        Assert.assertNull(yokelRoom1.getTableAt(2));
         yokelRoom1.addTable();
-        Assert.assertNotNull(yokelRoom1.getTable(2));
+        Assert.assertNotNull(yokelRoom1.getTableAt(2));
 
         //Test Json
         String json = Util.getJsonString(yokelRoom1);

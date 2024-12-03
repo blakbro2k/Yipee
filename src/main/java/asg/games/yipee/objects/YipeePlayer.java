@@ -2,19 +2,17 @@ package asg.games.yipee.objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -36,18 +34,17 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
 
     @JsonProperty("rooms")
     @ManyToMany
-    @JoinTable(name = "YT_PLAYERS_ROOMS_IDX",
+    @JoinTable(name = "YT_PLAYER_ROOM_IDX",
             joinColumns = @JoinColumn(name = "player_id"),
             inverseJoinColumns = @JoinColumn(name = "room_id"))
-    private Set<YipeeRoom> rooms = new HashSet<>();
+    private Set<YipeeRoom> rooms = new LinkedHashSet<>();
 
     @JsonProperty("watching")
-    @ManyToMany(mappedBy = "watchers")
-    private Set<YipeeTable> watching = new HashSet<>();
-
-    @JsonProperty("seats")
-    @OneToMany(mappedBy = "seatedPlayer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<YipeeSeat> seats = new HashSet<>();
+    @ManyToMany
+    @JoinTable(name = "YT_PLAYER_TABLE_IDX",
+            joinColumns = @JoinColumn(name = "player_id"),
+            inverseJoinColumns = @JoinColumn(name = "table_id"))
+    private Set<YipeeTable> watching = new LinkedHashSet<>();
 
     //Empty Constructor required for Json.Serializable
     public YipeePlayer() {
@@ -86,16 +83,6 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
         return rooms.remove(room);
     }
 
-    public boolean addSeat(YipeeSeat seat) {
-        if (seat == null) return false;
-        return seats.add(seat);
-    }
-
-    public boolean removeSeat(YipeeSeat seat) {
-        if (seat == null) return false;
-        return seats.remove(seat);
-    }
-
     public boolean addWatcher(YipeeTable tableToWatch) {
         if (tableToWatch == null) return false;
         return watching.add(tableToWatch);
@@ -106,8 +93,12 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
         return watching.remove(tableToWatch);
     }
 
-    public void clearSeats() {
-        seats.clear();
+    public long watchingCount() {
+        return watching.stream().count();
+    }
+
+    public long roomsCount() {
+        return rooms.stream().count();
     }
 
     public void clearWatchers() {
@@ -132,7 +123,6 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
         YipeePlayer copy = copy();
         copy.setRooms(this.getRooms());
         copy.setWatching(this.getWatching());
-        copy.setSeats(this.getSeats());
         return copy;
     }
 
@@ -142,18 +132,17 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         YipeePlayer that = (YipeePlayer) o;
-        return rating == that.rating && icon == that.icon && Objects.equals(rooms, that.rooms) && Objects.equals(watching, that.watching) && Objects.equals(seats, that.seats);
+        return rating == that.rating && icon == that.icon && Objects.equals(rooms, that.rooms) && Objects.equals(watching, that.watching);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), rating, icon, rooms, watching, seats);
+        return Objects.hash(super.hashCode(), rating, icon, rooms, watching);
     }
 
     @Override
     public void dispose() {
         clearRooms();
         clearWatchers();
-        clearSeats();
     }
 }
