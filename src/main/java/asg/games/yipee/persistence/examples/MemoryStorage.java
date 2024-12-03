@@ -49,12 +49,12 @@ public class MemoryStorage extends AbstractStorage {
     }
 
     @Override
-    public <T extends YipeeObject> List<T> getObjects(Class<T> clazz) {
+    public <T extends YipeeObject> List<T> getAllObjects(Class<T> clazz) {
         return null;
     }
 
     @Override
-    public <T extends YipeeObject> int countObjects(Class<T> clazz) {
+    public <T extends YipeeObject> int countAllObjects(Class<T> clazz) {
         return 0;
     }
 

@@ -62,16 +62,16 @@ public class YipeeBlockMove extends AbstractYipeeObject {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         YipeeBlockMove blockMove = (YipeeBlockMove) o;
-        return col == blockMove.getCol() && row == blockMove.getRow() && targetRow == blockMove.getTargetRow();
+        return col == blockMove.getCol() && row == blockMove.getRow() && targetRow == blockMove.getTargetRow() && cellId == blockMove.getCellID() && block == blockMove.getBlock();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), col, row, targetRow);
+        return Objects.hash(super.hashCode(), col, row, targetRow, cellId, block);
     }
 
     @Override
     public String toString() {
-        return super.toString() + "{" + block + "@(col: " + col + ", row: " + row + ") to targetRow: " + targetRow + "}";
+        return super.toString() + "{[cellId: " + cellId + "]" + block + "@(col: " + col + ", row: " + row + ") to targetRow: " + targetRow + "}";
     }
 }

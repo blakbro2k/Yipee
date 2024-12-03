@@ -33,7 +33,7 @@ public abstract class AbstractStorage implements Storage {
     abstract public <T extends YipeeObject> T getObjectById(Class<T> clazz, String id);
 
     @Override
-    abstract public <T extends YipeeObject> Iterable<T> getObjects(Class<T> clazz);
+    abstract public <T extends YipeeObject> Iterable<T> getAllObjects(Class<T> clazz);
 
     @Override
     abstract public void saveObject(Object object);

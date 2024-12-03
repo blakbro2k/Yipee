@@ -4,27 +4,27 @@ import asg.games.yipee.persistence.YipeeObjectJPAVisitor;
 import asg.games.yipee.persistence.YipeeStorageAdapter;
 import asg.games.yipee.tools.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Set;
 
 /**
  * Created by Blakbro2k on 1/28/2018.
  */
 
-@JsonIgnoreProperties({"allTableIndexes"})
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_ROOMS")
 public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisitor, Copyable<YipeeRoom>, Disposable {
     @JsonIgnore
@@ -36,13 +36,14 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
     @JsonIgnore
     public static final String ADVANCED_LOUNGE = "Advanced";
 
-    @JsonProperty("allPlayers")
-    private List<YipeePlayer> players = new ArrayList<>();
-    @JsonProperty("allTables")
-    //@JsonSerialize(keyUsing = MapSerializer.class)
-    private Map<Integer, YipeeTable> tables = new HashMap<>();
+    @ManyToMany(mappedBy = "rooms")
+    private Set<YipeePlayer> players = new LinkedHashSet<>();
 
-    private String loungeName = "_NoTableName";
+    @OneToMany(mappedBy = "parentRoom")
+    private Set<YipeeTable> tables = new LinkedHashSet<>();
+
+    @JsonProperty("lounge")
+    private String loungeName = "_NoLoungeSelected";
 
     //Empty Constructor required for Json.Serializable
     public YipeeRoom() {
@@ -57,28 +58,24 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
         setLoungeName(loungeName);
     }
 
-    public Collection<YipeeTable> getAllTables() {
-        return Util.getMapValues(tables);
+    public Collection<YipeeTable> getTables() {
+        return tables;
     }
 
-    public Collection<Integer> getAllTableIndexes() {
-        return Util.getMapKeys(tables);
-    }
-
-    public void setAllTables(Map<Integer, YipeeTable> tables) {
+    public void setTables(Set<YipeeTable> tables) {
         this.tables = tables;
     }
 
-    public List<YipeePlayer> getAllPlayers() {
+    public Set<YipeePlayer> getPlayers() {
         return players;
     }
 
-    public void setAllPlayers(List<YipeePlayer> players) {
+    public void setPlayers(Set<YipeePlayer> players) {
         this.players = players;
     }
 
     public void joinRoom(YipeePlayer player) {
-        if (player != null && !players.contains(player)) {
+        if (player != null) {
             players.add(player);
         }
     }
@@ -92,24 +89,67 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
     }
 
     public YipeeTable addTable(Map<String, Object> arguments) {
-        YipeeTable table;
         int tableNumber = Util.getNextTableNumber(this);
+        return addTable(tableNumber, arguments);
+    }
+
+    public YipeeTable addTable(int tableNumber, Map<String, Object> arguments) {
+        YipeeTable table;
 
         if (arguments != null) {
-            table = new YipeeTable(getId(), tableNumber, arguments);
+            table = new YipeeTable(this, tableNumber, arguments);
         } else {
-            table = new YipeeTable(getId(), tableNumber);
+            table = new YipeeTable(this, tableNumber);
         }
-        tables.put(tableNumber, table);
+        tables.add(table);
         return table;
     }
 
-    public YipeeTable getTable(int tableNumber) {
-        return tables.get(tableNumber);
+    public void removeTable(YipeeTable table) {
+        tables.remove(table);
     }
 
-    public void removeTable(int tableNumber) {
-        tables.remove(tableNumber);
+    public void removeTableAt(int index) {
+        if (index > tables.size() + 1) {
+            return;
+        }
+        removeTable(getTableAt(index));
+    }
+
+    public YipeeTable getTable(YipeeTable table) {
+        return getTableAt(getTableIndexValue(table));
+    }
+
+    public int getTableIndexValue(YipeeTable table) {
+        int index = -1;
+        if (tables.contains(table)) {
+            for (YipeeTable _table : tables) {
+                index++;
+                if (_table != null) {
+                    if (_table.equals(table)) {
+                        break;
+                    }
+                }
+            }
+        }
+        return index;
+    }
+
+    public List<Integer> getAllTableIndexes() {
+        int _size = tables.size();
+        Integer[] indexes = new Integer[_size];
+
+        // Setting the value in the array
+        Arrays.setAll(indexes, p -> p > _size - 1 ? 0 : p);
+
+        return Util.arrayToList(indexes);
+    }
+
+    public YipeeTable getTableAt(int index) {
+        if (index > tables.size() + 1) {
+            return null;
+        }
+        return tables.toArray(new YipeeTable[0])[index];
     }
 
     public String getLoungeName() {
@@ -122,16 +162,13 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
 
     @Override
     public void dispose() {
-        Util.clearArrays(players);
-        if (tables != null) {
-            tables.clear();
-        }
+        Util.clearArrays(players, tables);
     }
 
     @Override
     public YipeeRoom copy() {
         YipeeRoom copy = new YipeeRoom();
-        copy.setName(this.name);
+        copyParent(copy);
         copy.setLoungeName(this.loungeName);
         return copy;
     }
@@ -139,9 +176,8 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
     @Override
     public YipeeRoom deepCopy() {
         YipeeRoom copy = copy();
-        copyParent(copy);
-        copy.setAllPlayers(players);
-        copy.setAllTables(tables);
+        copy.setTables(tables);
+        copy.setPlayers(players);
         return copy;
     }
 
@@ -149,25 +185,12 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
     public void visitSave(YipeeStorageAdapter adapter) {
         try {
             if (adapter != null) {
-                adapter.putAllTables(Util.getMapValues(tables));
-                adapter.putAllPlayers(players);
+                //adapter.putAllTables(tables);
+                //adapter.putAllPlayers(players);
             }
         } catch (Exception e) {
             throw new RuntimeException("Issue visiting save for " + this.getClass().getSimpleName(), e);
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        YipeeRoom yokelRoom = (YipeeRoom) o;
-        return players.equals(yokelRoom.players) && tables.equals(yokelRoom.tables) && getLoungeName().equals(yokelRoom.getLoungeName());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), players, tables, getLoungeName());
-    }
 }
