@@ -1,4 +1,4 @@
-package asg.games.yipee.json;
+package asg.games.yipee.persistence.json;
 /*******************************************************************************
  * Copyright 2011 See AUTHORS file.
  *
