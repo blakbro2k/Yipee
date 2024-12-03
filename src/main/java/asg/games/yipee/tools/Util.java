@@ -1,9 +1,9 @@
 package asg.games.yipee.tools;
 
-import asg.games.yipee.json.YipeeRoomDeserializer;
 import asg.games.yipee.objects.YipeeRoom;
 import asg.games.yipee.objects.YipeeSeat;
 import asg.games.yipee.objects.YipeeTable;
+import asg.games.yipee.persistence.json.YipeeRoomDeserializer;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.StreamReadFeature;
