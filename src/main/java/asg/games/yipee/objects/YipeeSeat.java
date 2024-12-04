@@ -49,7 +49,7 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
 
     public boolean sitDown(YipeePlayer player) {
         if (!isOccupied() && player != null) {
-            seatedPlayer = player;
+            setSeatedPlayer(player);
             return true;
         }
         return false;
@@ -57,7 +57,7 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
 
     public YipeePlayer standUp() {
         YipeePlayer player = seatedPlayer;
-        seatedPlayer = null;
+        setSeatedPlayer(null);
         setSeatReady(false);
         return player;
     }
@@ -102,7 +102,7 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     }
 
     public String getTableId() {
-        if (parentTable != null) {//return parentTable;
+        if (parentTable != null) {
             return getParentTable().getId();
         }
         return null;
