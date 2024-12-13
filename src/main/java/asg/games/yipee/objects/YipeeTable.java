@@ -284,8 +284,8 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     public void visitSave(YipeeStorageAdapter adapter) {
         try{
             if(adapter != null) {
-                //adapter.putAllPlayers(watchers);
-                //adapter.putAllSeats(seats);
+                adapter.putAllPlayers(watchers);
+                adapter.putAllSeats(seats);
             }
         } catch (Exception e) {
             throw new RuntimeException("Issue visiting save for " + this.getClass().getSimpleName() + ": ", e);

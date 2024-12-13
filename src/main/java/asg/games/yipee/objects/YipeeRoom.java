@@ -185,8 +185,8 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
     public void visitSave(YipeeStorageAdapter adapter) {
         try {
             if (adapter != null) {
-                //adapter.putAllTables(tables);
-                //adapter.putAllPlayers(players);
+                adapter.putAllTables(tables);
+                adapter.putAllPlayers(players);
             }
         } catch (Exception e) {
             throw new RuntimeException("Issue visiting save for " + this.getClass().getSimpleName(), e);
