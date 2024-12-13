@@ -32,6 +32,8 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     @JsonIgnore
     public static final String ARG_RATED = "rated";
     @JsonIgnore
+    public static final String ARG_SOUND = "sound";
+    @JsonIgnore
     public static final String ENUM_VALUE_PRIVATE = "PRIVATE";
     @JsonIgnore
     public static final String ENUM_VALUE_PUBLIC = "PUBLIC";
@@ -137,6 +139,8 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
                 setAccessType(Util.otos(value));
             } else if (Util.equalsIgnoreCase(ARG_RATED, arg)) {
                 setRated(Util.otob(value));
+            } else if (Util.equalsIgnoreCase(ARG_SOUND, arg)) {
+                setSound(Util.otob(value));
             }
         }
     }
