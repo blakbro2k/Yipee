@@ -55,6 +55,7 @@ public abstract class AbstractYipeeObject implements YipeeObject {
     @Column(name = "id", nullable = false, length = 32)
     @JsonProperty()
     protected String id;
+    @Column(name = "name", nullable = false, unique = true)
     protected String name;
     protected long created;
     protected long modified;
