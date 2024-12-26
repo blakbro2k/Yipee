@@ -60,7 +60,7 @@ public abstract class AbstractYipeeObject implements YipeeObject {
     protected long created;
     protected long modified;
 
-    AbstractYipeeObject(){
+    AbstractYipeeObject() {
         setCreated(TimeUtils.millis());
         setModified(TimeUtils.millis());
     }

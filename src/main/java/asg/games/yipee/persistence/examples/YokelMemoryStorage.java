@@ -233,7 +233,7 @@ public class YokelMemoryStorage extends MemoryStorage implements YipeeStorageAda
         }
     }
 
-    private void save(Object o){
+    private void save(YipeeObject o) {
         saveObject(o);
         commitTransactions();
     }

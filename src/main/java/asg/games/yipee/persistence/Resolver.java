@@ -3,11 +3,17 @@ package asg.games.yipee.persistence;
 import asg.games.yipee.objects.YipeeObject;
 
 public interface Resolver {
-    /** Gets Object given name */
+    /**
+     * Gets Object given name
+     */
     <T extends YipeeObject> T getObjectByName(Class<T> clazz, String name);
 
-    /** Gets Object given id */
-    <T extends YipeeObject> T getObjectById(Class<T> clazz, String id);
+    /**
+     * Gets Object given id
+     *
+     * @return
+     */
+    <T extends YipeeObject> Object getObjectById(Class<T> clazz, String id) throws Exception;
 
     /**
      * Gets All Objects given class

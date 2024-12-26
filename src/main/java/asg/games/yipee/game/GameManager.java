@@ -1,5 +1,6 @@
 package asg.games.yipee.game;
 
+import asg.games.yipee.objects.Disposable;
 import asg.games.yipee.objects.YipeeBlock;
 import asg.games.yipee.objects.YipeeBlockEval;
 import asg.games.yipee.objects.YipeeGameBoard;
@@ -8,7 +9,6 @@ import asg.games.yipee.objects.YipeePiece;
 import asg.games.yipee.objects.YipeePlayer;
 import asg.games.yipee.objects.YipeeSeat;
 import asg.games.yipee.objects.YipeeTable;
-import asg.games.yipee.objects.Disposable;
 import asg.games.yipee.tools.MathUtils;
 import asg.games.yipee.tools.Util;
 
@@ -147,7 +147,7 @@ public class GameManager implements Disposable {
                 gameBoard.reset(seed);
             } else {
                 YipeeGameBoard newBoard = new YipeeGameBoard(seed);
-                newBoard.setName(i + "");
+                newBoard.setName(i + "@" + this.hashCode());
                 gameBoards[i] = newBoard;
             }
             if (i % 2 == 1) {

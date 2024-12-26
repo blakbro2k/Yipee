@@ -42,6 +42,8 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     @JsonIgnore
     public static final String ATT_NAME_PREPEND = "#";
     @JsonIgnore
+    public static final String ATT_TABLE_SPACER = "_room_tbl";
+    @JsonIgnore
     public static final int MAX_SEATS = 8;
 
     public enum ACCESS_TYPE {
@@ -104,7 +106,7 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     }
 
     public void setTableName(int tableNumber) {
-        setName(getParentRoomId() + ATT_NAME_PREPEND + tableNumber);
+        setName(parentRoom.getName() + ATT_TABLE_SPACER + ATT_NAME_PREPEND + tableNumber);
     }
 
     private String getParentRoomId() {
@@ -288,8 +290,17 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     public void visitSave(YipeeStorageAdapter adapter) {
         try{
             if(adapter != null) {
+                System.out.println("Saving adapter for : " + this);
                 adapter.putAllPlayers(watchers);
+                for (YipeeSeat seat : seats) {
+                    if (seat != null) {
+                        System.out.println("setting parent of seat: " + seat.getParentTable());
+                        seat.setParentTable(this);
+                        System.out.println("Seat: " + seat.getParentTable());
+                    }
+                }
                 adapter.putAllSeats(seats);
+                seats.forEach(System.out::println);
             }
         } catch (Exception e) {
             throw new RuntimeException("Issue visiting save for " + this.getClass().getSimpleName() + ": ", e);

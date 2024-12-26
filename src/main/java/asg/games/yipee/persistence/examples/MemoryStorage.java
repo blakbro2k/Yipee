@@ -59,7 +59,7 @@ public class MemoryStorage extends AbstractStorage {
     }
 
     @Override
-    public void saveObject(Object object) {
+    public <T extends YipeeObject> void saveObject(T object) {
         _transactions.offer(object);
     }
 

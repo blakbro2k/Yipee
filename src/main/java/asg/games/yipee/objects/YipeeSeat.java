@@ -33,7 +33,7 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     private YipeePlayer seatedPlayer;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_table_id", unique = true, nullable = false)
+    @JoinColumn(name = "parent_table_id")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     private YipeeTable parentTable;
 
@@ -44,7 +44,11 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     public YipeeSeat(YipeeTable table, int seatNumber) {
         if (seatNumber < 0 || seatNumber > 7) throw new IllegalArgumentException("Seat number must be between 0 - 7.");
         setParentTable(table);
-        setName(getTableId() + ATTR_SEAT_NUM_SEPARATOR + seatNumber);
+        setName(getSeatName() + seatNumber);
+    }
+
+    private String getSeatName() {
+        return getTableId() + ATTR_SEAT_NUM_SEPARATOR;
     }
 
     public boolean sitDown(YipeePlayer player) {
@@ -67,6 +71,9 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     }
 
     public void setParentTable(YipeeTable parentTable) {
+        if (parentTable != null) {
+            setName(getSeatName() + getSeatNumber());
+        }
         this.parentTable = parentTable;
     }
 
@@ -91,6 +98,7 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     }
 
     public int getSeatNumber(){
+        if (getName() == null) return -1;
         return Integer.parseInt(Util.split(getName(), ATTR_SEAT_NUM_SEPARATOR)[1]);
     }
 
