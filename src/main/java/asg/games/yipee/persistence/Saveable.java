@@ -1,16 +1,16 @@
 package asg.games.yipee.persistence;
 
+import asg.games.yipee.objects.YipeeObject;
+
 /**
  * Database Saving Interface
- *
- * @param <T>
  */
-public interface Saveable<T> {
+public interface Saveable {
 
     /**
      * Saves an persistence object
      */
-    void saveObject(T object);
+    <T extends YipeeObject> void saveObject(T object);
 
     /**
      * Commit transactions

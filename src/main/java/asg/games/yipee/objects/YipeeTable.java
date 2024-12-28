@@ -22,15 +22,17 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-@JsonIgnoreProperties({"tableNumber", "tableStartReady", "upArguments", "tableName", "roomId"})
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_TABLES")
+@JsonIgnoreProperties({"tableNumber", "tableStartReady", "upArguments", "tableName", "roomId"})
 public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVisitor, Copyable<YipeeTable>, Disposable {
     @JsonIgnore
     public static final String ARG_TYPE = "type";
     @JsonIgnore
     public static final String ARG_RATED = "rated";
+    @JsonIgnore
+    public static final String ARG_SOUND = "sound";
     @JsonIgnore
     public static final String ENUM_VALUE_PRIVATE = "PRIVATE";
     @JsonIgnore
@@ -39,6 +41,8 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     public static final String ENUM_VALUE_PROTECTED = "PROTECTED";
     @JsonIgnore
     public static final String ATT_NAME_PREPEND = "#";
+    @JsonIgnore
+    public static final String ATT_TABLE_SPACER = "_room_tbl";
     @JsonIgnore
     public static final int MAX_SEATS = 8;
 
@@ -102,7 +106,7 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     }
 
     public void setTableName(int tableNumber) {
-        setName(getParentRoomId() + ATT_NAME_PREPEND + tableNumber);
+        setName(parentRoom.getName() + ATT_TABLE_SPACER + ATT_NAME_PREPEND + tableNumber);
     }
 
     private String getParentRoomId() {
@@ -137,6 +141,8 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
                 setAccessType(Util.otos(value));
             } else if (Util.equalsIgnoreCase(ARG_RATED, arg)) {
                 setRated(Util.otob(value));
+            } else if (Util.equalsIgnoreCase(ARG_SOUND, arg)) {
+                setSound(Util.otob(value));
             }
         }
     }
@@ -284,8 +290,17 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     public void visitSave(YipeeStorageAdapter adapter) {
         try{
             if(adapter != null) {
+                System.out.println("Saving adapter for : " + this);
                 adapter.putAllPlayers(watchers);
+                for (YipeeSeat seat : seats) {
+                    if (seat != null) {
+                        System.out.println("setting parent of seat: " + seat.getParentTable());
+                        seat.setParentTable(this);
+                        System.out.println("Seat: " + seat.getParentTable());
+                    }
+                }
                 adapter.putAllSeats(seats);
+                seats.forEach(System.out::println);
             }
         } catch (Exception e) {
             throw new RuntimeException("Issue visiting save for " + this.getClass().getSimpleName() + ": ", e);

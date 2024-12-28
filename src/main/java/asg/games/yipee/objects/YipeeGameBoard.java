@@ -93,6 +93,7 @@ public class YipeeGameBoard extends AbstractYipeeObject implements Disposable {
     private YipeeGameBoard partnerBoard = null;
     private boolean isPartnerRight = true;
     private boolean debug;
+    private String name;
 
     //Empty Constructor required for Json.Serializable
     public YipeeGameBoard() {}
@@ -163,6 +164,10 @@ public class YipeeGameBoard extends AbstractYipeeObject implements Disposable {
     public void setPartnerBoard(YipeeGameBoard partnerB, boolean b) {
         this.partnerBoard = partnerB;
         this.isPartnerRight = b;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public static class TestRandomBlockArray extends RandomUtil.RandomNumberArray {
