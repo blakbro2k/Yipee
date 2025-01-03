@@ -1,12 +1,15 @@
 package asg.games.yippe.objects;
 
-import asg.games.yipee.objects.*;
+import asg.games.yipee.objects.YipeeBlock;
+import asg.games.yipee.objects.YipeeBlockEval;
+import asg.games.yipee.objects.YipeeObject;
 import asg.games.yipee.tools.Util;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TestBlockEval {
@@ -492,7 +495,7 @@ public class TestBlockEval {
         block = YipeeBlock.EX_BLOCK;
         Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
         actual = YipeeBlockEval.addPartnerBreakFlag(block);
-        Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
+        Assert.assertTrue(YipeeBlockEval.hasPartnerBreakFlag(actual));
         actual = YipeeBlockEval.removePartnerBreakFlag(block);
         Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
         System.out.println("End testHasPartnerBreakFlags()");

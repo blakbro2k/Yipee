@@ -1,3 +1,18 @@
+/**
+ * Copyright 2024 See AUTHORS file.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package asg.games.yipee.tools;
 
 import asg.games.yipee.objects.YipeeRoom;
@@ -158,7 +173,7 @@ public class Util {
         }
     }
 
-   public static <Object> Collection<Object> getMapValues(Map<?, Object> map) {
+    public static <Object> Collection<Object> getMapValues(Map<?, Object> map) {
         return map == null ? Collections.emptyList() : map.values();
     }
 
@@ -266,6 +281,7 @@ public class Util {
         }
         return ret;
     }
+
     public static boolean isEmpty(String text) {
         return text == null || text.isEmpty();
     }
@@ -297,13 +313,14 @@ public class Util {
 
     /**
      * Creates a new Iterable Array object.
+     *
      * @param //array
      * @param //<T>
      * @return
      */
     //@NotNull
-   public static <T> Iterable<T> toIterable(Collection<T> collection){
-        if(isEmpty(collection)){
+    public static <T> Iterable<T> toIterable(Collection<T> collection) {
+        if (isEmpty(collection)) {
             return Collections.emptyList();
         }
         return collection.stream().toList();
@@ -330,7 +347,7 @@ public class Util {
                     try {
                         Class<?> clazz = Class.forName(localClassName);
                         Object object = getObjectFromJsonString(clazz, o.toString());
-                        if(inClass.isInstance(object)) {
+                        if (inClass.isInstance(object)) {
                             collection.add(inClass.cast(object));
                         }
                     } catch (ClassNotFoundException | JsonProcessingException e) {
@@ -338,12 +355,12 @@ public class Util {
                     }
                 }
             }
-       }
-       return collection;
+        }
+        return collection;
     }
 
     public static <T> Map<Integer, YipeeTable> jsonNodeToTableIndexMap(Class<T> inClass, JsonNode node) {
-       Map<Integer, YipeeTable> tableMap = new HashMap<>();
+        Map<Integer, YipeeTable> tableMap = new HashMap<>();
         List<YipeeTable> collection = jsonNodeToCollection(YipeeTable.class, node);
         for(YipeeTable table : collection) {
             if(table != null) {
