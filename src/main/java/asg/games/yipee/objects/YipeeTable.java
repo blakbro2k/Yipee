@@ -1,3 +1,18 @@
+/**
+ * Copyright 2024 See AUTHORS file.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package asg.games.yipee.objects;
 
 import asg.games.yipee.persistence.YipeeObjectJPAVisitor;
@@ -290,17 +305,13 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     public void visitSave(YipeeStorageAdapter adapter) {
         try{
             if(adapter != null) {
-                System.out.println("Saving adapter for : " + this);
                 adapter.putAllPlayers(watchers);
                 for (YipeeSeat seat : seats) {
                     if (seat != null) {
-                        System.out.println("setting parent of seat: " + seat.getParentTable());
                         seat.setParentTable(this);
-                        System.out.println("Seat: " + seat.getParentTable());
                     }
                 }
                 adapter.putAllSeats(seats);
-                seats.forEach(System.out::println);
             }
         } catch (Exception e) {
             throw new RuntimeException("Issue visiting save for " + this.getClass().getSimpleName() + ": ", e);

@@ -1,19 +1,18 @@
-/*******************************************************************************
- * Copyright 2011 See AUTHORS file.
- *
+/**
+ * Copyright 2024 See AUTHORS file.
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
-
+ */
 package asg.games.yipee.tools;
 /**
  * <p>
@@ -23,9 +22,6 @@ package asg.games.yipee.tools;
  * </p>
  *
  * <p>
- * Instead of polling for events, one can process all input events with an {@link InputProcessor}. You can set the InputProcessor
- * via the {@link #setInputProcessor(InputProcessor)} method. It will be called before the {@link ApplicationListener#render()}
- * method in each frame.
  * </p>
  *
  * <p>
@@ -40,13 +36,15 @@ package asg.games.yipee.tools;
  *
  * @author mzechner */
 public interface Input {
-    /** Callback interface for {@link Input#getTextInput(TextInputListener, String, String, String)}
+    /**
+     * Callback interface }
      *
-     * @author mzechner */
+     * @author mzechner
+     */
     static public interface TextInputListener {
-        public void input (String text);
+        public void input(String text);
 
-        public void canceled ();
+        public void canceled();
     }
 
     /** Mouse buttons.
@@ -269,8 +267,9 @@ public interface Input {
 
         public static final int MAX_KEYCODE = 255;
 
-        /** @return a human readable representation of the keycode. The returned value can be used in
-         *         {@link Input.Keys#valueOf(String)} */
+        /**
+         * @return a human readable representation of the keycode. The returned value can be used in
+         */
         public static String toString (int keycode) {
             if (keycode < 0) throw new IllegalArgumentException("keycode cannot be negative, keycode: " + keycode);
             if (keycode > MAX_KEYCODE) throw new IllegalArgumentException("keycode cannot be greater than 255, keycode: " + keycode);

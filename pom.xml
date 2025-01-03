@@ -29,6 +29,7 @@
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <maven.license.version>1.9.0</maven.license.version>
         <hbm.version>6.2.11.Final</hbm.version>
         <json.version>2.17.2</json.version>
         <junit.version>4.13.2</junit.version>
@@ -124,6 +125,25 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>com.mycila.maven-license-plugin</groupId>
+                    <artifactId>maven-license-plugin</artifactId>
+                    <version>${maven.license.version}</version>
+                    <executions>
+                        <execution>
+                            <id>add-license</id>
+                            <goals>
+                                <goal>format</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <header>src/main/resources/license-header.txt</header>
+                        <includes>
+                            <include>**/*.java</include>
+                        </includes>
+                    </configuration>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
