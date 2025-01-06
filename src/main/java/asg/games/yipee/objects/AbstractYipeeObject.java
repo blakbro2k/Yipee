@@ -39,7 +39,10 @@ import java.util.Objects;
 
 @Setter
 @Getter
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.CLASS,
+        property = "@class"
+)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = YipeeSeat.class, name = "YipeeSeat"),
         @JsonSubTypes.Type(value = YipeeClock.class, name = "YipeeClock"),
@@ -70,7 +73,7 @@ public abstract class AbstractYipeeObject implements YipeeObject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AbstractYipeeObject object = (AbstractYipeeObject) o;
-        return getCreated() == object.getCreated() && getModified() == object.getModified() && Objects.equals(getId(), object.getId()) && Objects.equals(getName(), object.getName());
+        return Objects.equals(getId(), object.getId()) && Objects.equals(getName(), object.getName());
     }
 
     @Override
@@ -85,10 +88,10 @@ public abstract class AbstractYipeeObject implements YipeeObject {
 
     protected void copyParent(YipeeObject o){
         if(o != null) {
-            o.setId(this.getId());
+            o.setId(null);
             o.setName(this.getName());
-            o.setCreated(this.getCreated());
-            o.setModified(this.getModified());
+            o.setCreated(TimeUtils.millis());
+            o.setModified(TimeUtils.millis());
         }
     }
 }

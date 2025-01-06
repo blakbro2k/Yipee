@@ -16,20 +16,14 @@
 package asg.games.yipee.objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.LinkedHashSet;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Created by Blakbro2k on 1/28/2018.
@@ -46,20 +40,7 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
 
     private int rating;
     private int icon;
-
-    @JsonProperty("rooms")
-    @ManyToMany
-    @JoinTable(name = "YT_PLAYER_ROOM_IDX",
-            joinColumns = @JoinColumn(name = "player_id"),
-            inverseJoinColumns = @JoinColumn(name = "room_id"))
-    private Set<YipeeRoom> rooms = new LinkedHashSet<>();
-
-    @JsonProperty("watching")
-    @ManyToMany
-    @JoinTable(name = "YT_PLAYER_TABLE_IDX",
-            joinColumns = @JoinColumn(name = "player_id"),
-            inverseJoinColumns = @JoinColumn(name = "table_id"))
-    private Set<YipeeTable> watching = new LinkedHashSet<>();
+    private YipeeKeyMap keys = new YipeeKeyMap();
 
     //Empty Constructor required for Json.Serializable
     public YipeePlayer() {
@@ -88,42 +69,6 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
         rating -= dec;
     }
 
-    public boolean addRoom(YipeeRoom room) {
-        if (room == null) return false;
-        return rooms.add(room);
-    }
-
-    public boolean removeRoom(YipeeRoom room) {
-        if (room == null) return false;
-        return rooms.remove(room);
-    }
-
-    public boolean addWatcher(YipeeTable tableToWatch) {
-        if (tableToWatch == null) return false;
-        return watching.add(tableToWatch);
-    }
-
-    public boolean removeWatcher(YipeeTable tableToWatch) {
-        if (tableToWatch == null) return false;
-        return watching.remove(tableToWatch);
-    }
-
-    public long watchingCount() {
-        return watching.stream().count();
-    }
-
-    public long roomsCount() {
-        return rooms.stream().count();
-    }
-
-    public void clearWatchers() {
-        watching.clear();
-    }
-
-    public void clearRooms() {
-        rooms.clear();
-    }
-
     @Override
     public YipeePlayer copy() {
         YipeePlayer copy = new YipeePlayer();
@@ -136,8 +81,7 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
     @Override
     public YipeePlayer deepCopy() {
         YipeePlayer copy = copy();
-        copy.setRooms(this.getRooms());
-        copy.setWatching(this.getWatching());
+        copy.setKeys(this.keys);
         return copy;
     }
 
@@ -147,17 +91,17 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         YipeePlayer that = (YipeePlayer) o;
-        return rating == that.rating && icon == that.icon && Objects.equals(rooms, that.rooms) && Objects.equals(watching, that.watching);
+        return rating == that.rating && icon == that.icon;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), rating, icon, rooms, watching);
+        return Objects.hash(super.hashCode(), rating, icon);
     }
 
     @Override
     public void dispose() {
-        clearRooms();
-        clearWatchers();
+        //clearRooms();
+        //clearWatchers();
     }
 }

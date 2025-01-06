@@ -1,5 +1,6 @@
 package asg.games.yippe.objects;
 
+import asg.games.yipee.game.YipeeGameBoard;
 import asg.games.yipee.objects.*;
 import asg.games.yipee.tools.Input;
 import asg.games.yipee.tools.RandomUtil;
@@ -76,17 +77,26 @@ public class TestGameObjects {
         //test Deep Copy
         if (y1 instanceof Copyable<?>) {
             Object copy1 = ((Copyable<?>) y1).deepCopy();
+            setAbstractObjectId(copy1, y1);
             Assert.assertEquals(copy1, y1);
         }
 
         if (y2 instanceof Copyable<?>) {
             Object copy1 = ((Copyable<?>) y2).deepCopy();
+            setAbstractObjectId(copy1, y2);
             Assert.assertEquals(copy1, y2);
         }
 
         if (x1 instanceof Copyable<?>) {
             Object copy1 = ((Copyable<?>) x1).deepCopy();
+            setAbstractObjectId(copy1, x1);
             Assert.assertEquals(copy1, x1);
+        }
+    }
+
+    private void setAbstractObjectId(Object object, AbstractYipeeObject copy) {
+        if (object instanceof AbstractYipeeObject) {
+            ((AbstractYipeeObject) object).setId(copy.getId());
         }
     }
 
@@ -204,10 +214,10 @@ public class TestGameObjects {
 
     @Test
     public void testYokelBoardPair() throws JsonProcessingException {
-        YipeeGameBoard board1 = new YipeeGameBoard();
-        YipeeGameBoard board2 = new YipeeGameBoard(14);
-        YipeeGameBoard board3 = new YipeeGameBoard(234);
-        YipeeGameBoard board4 = new YipeeGameBoard(154);
+        YipeeGameBoardState board1 = new YipeeGameBoardState();
+        YipeeGameBoardState board2 = new YipeeGameBoardState();
+        YipeeGameBoardState board3 = new YipeeGameBoardState();
+        YipeeGameBoardState board4 = new YipeeGameBoardState();
         YipeeBoardPair pair = new YipeeBoardPair(board1, board2);
         setIdAndName(board1, board2, pair);
 
@@ -228,8 +238,8 @@ public class TestGameObjects {
         System.out.println("pair: " + jsonStringPair);
 
         //Json Test
-        YipeeGameBoard readStringBoard1 = Util.getObjectFromJsonString(YipeeGameBoard.class, jsonStringBoard1);
-        YipeeGameBoard readStringBoard2 = Util.getObjectFromJsonString(YipeeGameBoard.class, jsonStringBoard2);
+        YipeeGameBoardState readStringBoard1 = Util.getObjectFromJsonString(YipeeGameBoardState.class, jsonStringBoard1);
+        YipeeGameBoardState readStringBoard2 = Util.getObjectFromJsonString(YipeeGameBoardState.class, jsonStringBoard2);
         YipeeBoardPair readStringPair = Util.getObjectFromJsonString(YipeeBoardPair.class, jsonStringPair);
 
         Assert.assertEquals(jsonStringBoard1, Util.getJsonString(board1));
@@ -472,8 +482,10 @@ public class TestGameObjects {
         //Test Json
         yokelSeat.sitDown(yokelPlayer2);
         String json = Util.getJsonString(yokelSeat);
+        System.out.println("yokelSeat: " + yokelSeat);
         System.out.println("json: " + json);
         YipeeSeat readYokelSeat = Util.getObjectFromJsonString(YipeeSeat.class, json);
+        System.out.println("readYokelSeat: " + readYokelSeat);
         Assert.assertEquals(json, Util.getJsonString(yokelSeat));
         System.out.println("Expected: " + Util.getJsonString(readYokelSeat));
         System.out.println("Actual: " + Util.getJsonString(yokelSeat));
@@ -495,7 +507,7 @@ public class TestGameObjects {
         System.out.println("yokelRoom1: " + yokelRoom1);
         Set<YipeePlayer> expectedPlayers = new HashSet<>();
 
-        Assert.assertEquals(yokelRoom1.getPlayers(), expectedPlayers);
+        Assert.assertEquals(yokelRoom1.getWatchers(), expectedPlayers);
 
         //Test players watch list
         yokelRoom1.joinRoom(yokelPlayer);
@@ -507,9 +519,9 @@ public class TestGameObjects {
         expectedPlayers.add(yokelPlayer);
         expectedPlayers.add(yokelPlayer2);
 
-        System.out.println("Actual  : " + yokelRoom1.getPlayers());
+        System.out.println("Actual  : " + yokelRoom1.getWatchers());
         System.out.println("Expected: " + expectedPlayers);
-        Assert.assertEquals(yokelRoom1.getPlayers(), expectedPlayers);
+        Assert.assertEquals(yokelRoom1.getWatchers(), expectedPlayers);
 
         YipeeRoom room = new YipeeRoom("NewRoom");
         room.dispose();
@@ -547,7 +559,8 @@ public class TestGameObjects {
             table.setId(Util.IDGenerator.getID());
         }
 
-        Assert.assertNotNull(yokelRoom1.getTableAt(4));
+        Assert.expectThrows(IndexOutOfBoundsException.class, () -> yokelRoom1.getTableAt(4));
+        //Assert.assertNotNull(yokelRoom1.getTableAt(4));
         Assert.assertNull(yokelRoom1.getTableAt(2));
         yokelRoom1.addTable();
         Assert.assertNotNull(yokelRoom1.getTableAt(2));
@@ -666,21 +679,30 @@ public class TestGameObjects {
         yokelTable.removeWatcher(yokelPlayer2);
         Assert.assertEquals(Util.size(yokelTable.getWatchers()), 1);
 
+        //Test Json
+        System.out.println("yokelTable: " + yokelTable.getSeats());
+        String json = Util.getJsonString(yokelTable);
+        System.out.println("table json: " + json);
+        YipeeTable readYokelTable = Util.getObjectFromJsonString(YipeeTable.class, json);
+        System.out.println("readYokelTable: " + readYokelTable.getSeats());
+        Assert.assertEquals(json, Util.getJsonString(yokelTable));
+        System.out.println("Expected: " + Util.getJsonString(yokelTable));
+        System.out.println("Actual  : " + Util.getJsonString(readYokelTable));
+        Assert.assertEquals(readYokelTable, yokelTable);
+    }
+
+    @Test
+    public void testYipeeTableIsGroupReady() {
+        YipeeTable yokelTable = new YipeeTable(new YipeeRoom("room1", "lounge"), 1);
+
         Assert.assertFalse(yokelTable.isGroupReady(-3));
         Assert.assertFalse(yokelTable.isGroupReady(23));
 
         for (int i = 0; i < 9; i++) {
             Assert.assertFalse(yokelTable.isGroupReady(i));
         }
-
-        //Test Json
-        String json = Util.getJsonString(yokelTable);
-        System.out.println("json: " + json);
-        YipeeTable readYokelTable = Util.getObjectFromJsonString(YipeeTable.class, json);
-        Assert.assertEquals(json,  Util.getJsonString(yokelTable));
-        System.out.println("Expected: " + Util.getJsonString(yokelTable));
-        System.out.println("Actual  : " + Util.getJsonString(readYokelTable));
-        Assert.assertEquals(readYokelTable, yokelTable);
+        yokelTable.getSeat(0).setSeatReady(true);
+        Assert.assertTrue(yokelTable.isGroupReady(0));
     }
 
     @DataProvider(name = "yokel_objects")
@@ -688,52 +710,52 @@ public class TestGameObjects {
         YipeeBlock yokelBlock1 = new YipeeBlock();
         YipeeBlock yokelBlock2 = new YipeeBlock();
         YipeeBlock yokelBlock3 = new YipeeBlock();
-        yokelBlock3.setModified(TimeUtils.millis() + 1);
+        yokelBlock3.setName(TimeUtils.millis() + 1 + "");
 
         YipeeClock yokelClock1 = new YipeeClock();
         YipeeClock yokelClock2 = new YipeeClock();
         YipeeClock yokelClock3 = new YipeeClock();
-        yokelClock3.setModified(TimeUtils.millis() + 1);
+        yokelClock3.setName(TimeUtils.millis() + 1 + "");
 
         YipeePlayer player1 = new YipeePlayer();
         YipeePlayer player2 = new YipeePlayer();
         YipeePlayer player3 = new YipeePlayer();
-        player3.setModified(TimeUtils.millis() + 1);
+        player3.setName(TimeUtils.millis() + 1 + "");
 
         YipeePiece piece1 = new YipeePiece();
         YipeePiece piece2 = new YipeePiece();
         YipeePiece piece3 = new YipeePiece();
-        piece3.setModified(TimeUtils.millis() + 1);
+        piece3.setName(TimeUtils.millis() + 1 + "");
 
         YipeeBlockMove yokelBlockMove1 = new YipeeBlockMove();
         YipeeBlockMove yokelBlockMove2 = new YipeeBlockMove();
         YipeeBlockMove yokelBlockMove3 = new YipeeBlockMove();
-        yokelBlockMove3.setModified(TimeUtils.millis() + 1);
+        yokelBlockMove3.setName(TimeUtils.millis() + 1 + "");
 
         YipeeBoardPair yokelBoardPair1 = new YipeeBoardPair();
         YipeeBoardPair yokelBoardPair2 = new YipeeBoardPair();
         YipeeBoardPair yokelBoardPair3 = new YipeeBoardPair();
-        yokelBoardPair3.setModified(TimeUtils.millis() + 1);
+        yokelBoardPair3.setName(TimeUtils.millis() + 1 + "");
 
         YipeeRoom yokelRoom1 = new YipeeRoom();
         YipeeRoom yokelRoom2 = new YipeeRoom();
         YipeeRoom yokelRoom3 = new YipeeRoom();
-        yokelRoom3.setModified(TimeUtils.millis() + 1);
+        yokelRoom3.setName(TimeUtils.millis() + 1 + "");
 
         YipeeSeat yokelSeat1 = new YipeeSeat();
         YipeeSeat yokelSeat2 = new YipeeSeat();
         YipeeSeat yokelSeat3 = new YipeeSeat();
-        yokelSeat3.setModified(TimeUtils.millis() + 1);
+        yokelSeat3.setName(TimeUtils.millis() + 1 + "");
 
         YipeeTable yokelTablet1 = new YipeeTable();
         YipeeTable yokelTablet2 = new YipeeTable();
         YipeeTable yokelTablet3 = new YipeeTable();
-        yokelTablet3.setModified(TimeUtils.millis() + 1);
+        yokelTablet3.setName(TimeUtils.millis() + 1 + "");
 
         YipeeBrokenBlock YokelBrokenBlock1 = new YipeeBrokenBlock();
         YipeeBrokenBlock YokelBrokenBlock2 = new YipeeBrokenBlock();
         YipeeBrokenBlock YokelBrokenBlock3 = new YipeeBrokenBlock();
-        YokelBrokenBlock3.setModified(TimeUtils.millis() + 1);
+        YokelBrokenBlock3.setName(TimeUtils.millis() + 1 + "");
 
         return new Object[][]{
                 {yokelBlock1, yokelBlock2, yokelBlock3},

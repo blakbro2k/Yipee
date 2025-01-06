@@ -15,6 +15,8 @@
  */
 package asg.games.yipee.objects;
 
+import asg.games.yipee.game.YipeeBlockEval;
+
 import java.util.Objects;
 
 /**

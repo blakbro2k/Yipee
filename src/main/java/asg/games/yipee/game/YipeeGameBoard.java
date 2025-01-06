@@ -13,8 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.objects;
+package asg.games.yipee.game;
 
+import asg.games.yipee.objects.Disposable;
+import asg.games.yipee.objects.YipeeBlock;
+import asg.games.yipee.objects.YipeeBlockMove;
+import asg.games.yipee.objects.YipeeBrokenBlock;
+import asg.games.yipee.objects.YipeeClock;
+import asg.games.yipee.objects.YipeeGameBoardState;
+import asg.games.yipee.objects.YipeePiece;
 import asg.games.yipee.tools.RandomUtil;
 import asg.games.yipee.tools.TimeUtils;
 import asg.games.yipee.tools.Util;
@@ -33,7 +40,7 @@ import java.util.Vector;
  * @author Blakbro2k
  */
 @JsonIgnoreProperties({"brokenCells", "brokenByPartnerCellIDs", "brokenCellCount", "brokenCellCount", "nextBlock", "gameState"})
-public class YipeeGameBoard extends AbstractYipeeObject implements Disposable {
+public class YipeeGameBoard implements Disposable {
     public static final int MAX_RANDOM_BLOCK_NUMBER = 2048;
     public static final int MAX_COLS = 6;
     public static final int MAX_ROWS = 16;
@@ -101,17 +108,20 @@ public class YipeeGameBoard extends AbstractYipeeObject implements Disposable {
     Queue<YipeeBlockMove> cellsToDrop = new LinkedList<>();
 
 
-    private int yahooDuration, brokenBlockCount = 0;
-    private boolean hasGameStarted;
+    private int yahooDuration = 0;
+    private int brokenBlockCount = 0;
+    private boolean hasGameStarted = false;
 
-    private final YipeeGameBoardState state = new YipeeGameBoardState();
     private YipeeGameBoard partnerBoard = null;
     private boolean isPartnerRight = true;
-    private boolean debug;
-    private String name;
+    private boolean debug = false;
+    private String name = null;
+
+    private static final YipeeGameBoardState state = new YipeeGameBoardState();
 
     //Empty Constructor required for Json.Serializable
-    public YipeeGameBoard() {}
+    public YipeeGameBoard() {
+    }
 
     public YipeeGameBoard(long seed) {
         cells = new int[MAX_ROWS][MAX_COLS];
@@ -123,30 +133,40 @@ public class YipeeGameBoard extends AbstractYipeeObject implements Disposable {
         setGameState();
     }
 
+    private void loadFromState(asg.games.yipee.objects.YipeeGameBoardState state) {
+        if (state != null) {
+
+        }
+    }
+
     private void setGameState() {
-        state.setBrokenBlockCount(countOfBreaks);
-        state.setPowersCount(powersKeep);
-        state.setBlockIds(ids);
+        state.setBrokenBlockCount(brokenBlockCount);
+        state.setFastDown(fastDown);
+        state.setCurrentBlockPointer(currentBlockPointer);
+        state.setNextBlocks(nextBlocks);
+        state.setCountOfBreaks(countOfBreaks);
+        state.setPowersKeep(powersKeep);
+        state.setGameClock(gameClock);
+        state.setIds(ids);
         state.setIdIndex(idIndex);
         state.setDebug(debug);
         state.setName(name);
         state.setCurrentStateTimeStamp(TimeUtils.nanoTime());
         state.setPiece(piece);
+        state.setNextPiece(nextPiece);
         state.setPlayerCells(cells);
         state.setPieceFallTimer(pieceFallTimer);
         state.setPieceLockTimer(pieceLockTimer);
         state.setBlockAnimationTimer(blockAnimationTimer);
         state.setYahooDuration(yahooDuration);
         state.setPlayerCells(cells);
-        state.setPartnerIsRight(isPartnerRight);
-        state.setPlayerPiece(piece);
-        state.setPlayerPiece(piece);
-        state.setPowersQueue(powers);
+        state.setPartnerRight(isPartnerRight);
+        state.setPowers(powers);
         state.setBrokenCells(brokenCells);
-        state.setNextPiecePreview(nextPiece);
         state.setSpecialPieces(specialPieces);
+        state.setHasGameStarted(hasGameStarted);
         if (partnerBoard != null) {
-            state.setPartnerCells(partnerBoard.getCells());
+            state.setPartnerBoard(partnerBoard.getGameState());
         }
     }
 
@@ -1708,6 +1728,10 @@ public class YipeeGameBoard extends AbstractYipeeObject implements Disposable {
         cells[r][c] = YipeeBlock.CLEAR_BLOCK;
     }
 
+    public void updateState(YipeeGameBoardState state) {
+        loadFromState(state);
+    }
+
     public void update(float delta) {
         //If the player is alive
         if (!hasPlayerDied() && hasGameStarted) {
@@ -1725,7 +1749,7 @@ public class YipeeGameBoard extends AbstractYipeeObject implements Disposable {
             if (brokenBlockCount > 0 || Util.size(cellsToDrop) > 0 || blockAnimationTimer < 1) {
                 //System.out.println("}}}}drop cell block");
                 //Reset Piece Set
-                state.setIsPieceSet(false);
+                state.setPieceSet(false);
 
                 //Get rows to drop
                 getCellsToBeDropped();
@@ -1926,7 +1950,7 @@ public class YipeeGameBoard extends AbstractYipeeObject implements Disposable {
 
             //Place piece
             placeBlockAt(piece, piece.column, piece.row);
-            state.setIsPieceSet(true);
+            state.setPieceSet(true);
 
             //Handle special O then remove powers from placed block so they can be marked broken
             if (block == YipeeBlock.MEDUSA || block == YipeeBlock.TOP_MIDAS || block == YipeeBlock.MID_MIDAS || block == YipeeBlock.BOT_MIDAS) {

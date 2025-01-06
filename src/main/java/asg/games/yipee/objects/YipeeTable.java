@@ -18,23 +18,16 @@ package asg.games.yipee.objects;
 import asg.games.yipee.persistence.YipeeObjectJPAVisitor;
 import asg.games.yipee.persistence.YipeeStorageAdapter;
 import asg.games.yipee.tools.Util;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -76,15 +69,20 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
 
     private ACCESS_TYPE accessType = ACCESS_TYPE.PUBLIC;
 
-    @OneToMany(mappedBy = "parentTable")
+    @OneToMany(mappedBy = "parentTable", cascade = CascadeType.ALL, orphanRemoval = true)
+    //@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
+    @JsonManagedReference
     private Set<YipeeSeat> seats = new LinkedHashSet<>();
 
     @ManyToMany(mappedBy = "watching")
+    //@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
+    @JsonBackReference
     private Set<YipeePlayer> watchers = new LinkedHashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_room_id", unique = true, nullable = false)
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JoinColumn(name = "parent_room_id", nullable = false)
+    //@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
+    @JsonBackReference
     private YipeeRoom parentRoom;
 
     @JsonProperty("rated")
@@ -216,17 +214,10 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     }
 
     public boolean isTableStartReady() {
-        if (isGroupReady(0)) {
-            return isGroupReady(1) || isGroupReady(2) || isGroupReady(3);
-        }
-        if (isGroupReady(1)) {
-            return isGroupReady(0) || isGroupReady(2) || isGroupReady(3);
-        }
-        if (isGroupReady(2)) {
-            return isGroupReady(0) || isGroupReady(1) || isGroupReady(3);
-        }
-        if (isGroupReady(3)) {
-            return isGroupReady(0) || isGroupReady(1) || isGroupReady(2);
+        int readyGroups = 0;
+        for (int i = 0; i < 4; i++) {
+            if (isGroupReady(i)) readyGroups++;
+            if (readyGroups > 1) return true;
         }
         return false;
     }
@@ -269,7 +260,7 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         }
     }
 
-    private void setWatchers(Set<YipeePlayer> watchers) {
+    public void setWatchers(Set<YipeePlayer> watchers) {
         this.watchers = watchers;
     }
 
@@ -316,5 +307,19 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         } catch (Exception e) {
             throw new RuntimeException("Issue visiting save for " + this.getClass().getSimpleName() + ": ", e);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        YipeeTable that = (YipeeTable) o;
+        return isRated == that.isRated && isSoundOn == that.isSoundOn && accessType == that.accessType && Objects.equals(seats, that.seats) && Objects.equals(watchers, that.watchers) && Objects.equals(parentRoom, that.parentRoom);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), accessType, watchers, parentRoom, isRated, isSoundOn);
     }
 }

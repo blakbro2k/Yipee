@@ -16,10 +16,9 @@
 package asg.games.yipee.objects;
 
 import asg.games.yipee.tools.Util;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
@@ -27,16 +26,22 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Objects;
 
 /**
  * Created by Blakbro2k on 1/28/2018.
  */
 
-@JsonIgnoreProperties({"seatNumber", "occupied", "tableId"})
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_SEATS")
+@JsonIgnoreProperties({"seatNumber", "occupied", "tableId"})
 public class YipeeSeat extends AbstractYipeeObject implements Disposable {
+    Logger logger = LoggerFactory.getLogger(YipeeSeat.class);
+
     @JsonIgnore
     private static final String ATTR_SEAT_NUM_SEPARATOR = "-";
 
@@ -44,12 +49,14 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seated_player_id", unique = true)
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    //@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
+    @JsonBackReference
     private YipeePlayer seatedPlayer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_table_id")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    //@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
+    @JsonBackReference
     private YipeeTable parentTable;
 
     //Empty Constructor required for Json.Serializable
@@ -67,11 +74,15 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     }
 
     public boolean sitDown(YipeePlayer player) {
-        if (!isOccupied() && player != null) {
-            setSeatedPlayer(player);
-            return true;
+        if (player == null) {
+            throw new IllegalArgumentException("Player cannot be null.");
         }
-        return false;
+        if (isOccupied()) {
+            logger.info("Seat is already occupied.");
+            return false;
+        }
+        setSeatedPlayer(player);
+        return true;
     }
 
     public YipeePlayer standUp() {
@@ -86,10 +97,10 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     }
 
     public void setParentTable(YipeeTable parentTable) {
+        this.parentTable = parentTable;
         if (parentTable != null) {
             setName(getSeatName() + getSeatNumber());
         }
-        this.parentTable = parentTable;
     }
 
     public void setSeatedPlayer(YipeePlayer seatedPlayer) {
@@ -131,4 +142,17 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
         return null;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof YipeeSeat)) return false;
+        if (!super.equals(o)) return false;
+        YipeeSeat yipeeSeat = (YipeeSeat) o;
+        return isSeatReady() == yipeeSeat.isSeatReady() && Objects.equals(getSeatedPlayer(), yipeeSeat.getSeatedPlayer()) && Objects.equals(getParentTable(), yipeeSeat.getParentTable());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), isSeatReady(), getSeatedPlayer(), getParentTable());
+    }
 }

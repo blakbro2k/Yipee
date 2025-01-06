@@ -21,30 +21,31 @@ import java.util.Objects;
 
 @JsonIgnoreProperties({"brokenCells", "tableStartReady", "upArguments", "tableName"})
 public class YipeeBoardPair extends AbstractYipeeObject {
-    YipeeGameBoard leftBoard;
-    YipeeGameBoard rightBoard;
+    YipeeGameBoardState leftBoard;
+    YipeeGameBoardState rightBoard;
 
     //Empty Contractor required for Json.Serializable
-    public YipeeBoardPair() {}
+    public YipeeBoardPair() {
+    }
 
-    public YipeeBoardPair(YipeeGameBoard left, YipeeGameBoard right) {
+    public YipeeBoardPair(YipeeGameBoardState left, YipeeGameBoardState right) {
         setLeftBoard(left);
         setRightBoard(right);
     }
 
-    public void setLeftBoard(YipeeGameBoard leftBoard) {
+    public void setLeftBoard(YipeeGameBoardState leftBoard) {
         this.leftBoard = leftBoard;
     }
 
-    public void setRightBoard(YipeeGameBoard rightBoard){
+    public void setRightBoard(YipeeGameBoardState rightBoard) {
         this.rightBoard = rightBoard;
     }
 
-    public YipeeGameBoard getLeftBoard() {
+    public YipeeGameBoardState getLeftBoard() {
         return leftBoard;
     }
 
-    public YipeeGameBoard getRightBoard() {
+    public YipeeGameBoardState getRightBoard() {
         return rightBoard;
     }
 

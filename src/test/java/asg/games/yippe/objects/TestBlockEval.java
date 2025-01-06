@@ -1,7 +1,7 @@
 package asg.games.yippe.objects;
 
+import asg.games.yipee.game.YipeeBlockEval;
 import asg.games.yipee.objects.YipeeBlock;
-import asg.games.yipee.objects.YipeeBlockEval;
 import asg.games.yipee.objects.YipeeObject;
 import asg.games.yipee.tools.Util;
 import org.testng.Assert;
