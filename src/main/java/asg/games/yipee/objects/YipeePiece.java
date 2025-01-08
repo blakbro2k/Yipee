@@ -16,10 +16,14 @@
 package asg.games.yipee.objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Arrays;
 import java.util.Objects;
 
+@Getter
+@Setter
 public class YipeePiece extends AbstractYipeeObject {
     @JsonIgnore
     public static final int MEDUSA_GAME_PIECE = 1;
@@ -39,10 +43,6 @@ public class YipeePiece extends AbstractYipeeObject {
         setBlock1(block1);
         setBlock2(block2);
         setBlock3(block3);
-    }
-
-    public int[] getCells(){
-        return cells;
     }
 
     public int getBlock1(){
@@ -67,14 +67,6 @@ public class YipeePiece extends AbstractYipeeObject {
 
     public void setBlock3(int block){
         cells[0] = block;
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public void setIndex(int index){
-        this.index = index;
     }
 
     public void setPosition(int r, int c) {

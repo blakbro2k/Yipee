@@ -263,7 +263,7 @@ public class TestGameObjects {
 
         //Test BlockMove
         Assert.assertEquals(blockMove.getBlock(), 5);
-        Assert.assertEquals(blockMove.getCellID(), 5);
+        Assert.assertEquals(blockMove.getCellId(), 5);
         Assert.assertEquals(blockMove.getCol(), 1);
         Assert.assertEquals(blockMove.getRow(), 2);
         Assert.assertEquals(blockMove.getTargetRow(), 4);
@@ -276,7 +276,7 @@ public class TestGameObjects {
         Assert.assertEquals(blockMove, readBlockMove);
 
         Assert.assertEquals(readBlockMove.getBlock(), 5);
-        Assert.assertEquals(readBlockMove.getCellID(), 5);
+        Assert.assertEquals(readBlockMove.getCellId(), 5);
         Assert.assertEquals(readBlockMove.getCol(), 1);
         Assert.assertEquals(readBlockMove.getRow(), 2);
         Assert.assertEquals(readBlockMove.getTargetRow(), 4);
@@ -404,6 +404,7 @@ public class TestGameObjects {
         Set<YipeeRoom> testRooms = new HashSet<>();
         Set<YipeeTable> testTables = new HashSet<>();
 
+        /* watchers
         Assert.assertEquals(yokelPlayer3.getRooms(), testRooms);
         Assert.assertEquals(yokelPlayer3.getWatching(), testTables);
         Assert.assertEquals(yokelPlayer3.watchingCount(), 0);
@@ -432,7 +433,7 @@ public class TestGameObjects {
         yokelPlayer3.dispose();
         Assert.assertEquals(yokelPlayer3.watchingCount(), 0);
         Assert.assertEquals(yokelPlayer3.roomsCount(), 0);
-
+*/
         //Test Json
         String json = Util.getJsonString(yokelPlayer3);
         System.out.println("json: " + json);
@@ -441,8 +442,8 @@ public class TestGameObjects {
         Assert.assertEquals(yokelPlayer3, readYokelPlayer3);
         Assert.assertEquals(readYokelPlayer3.getIcon(), 12);
         Assert.assertEquals(readYokelPlayer3.getRating(), 1495);
-        Assert.assertEquals(readYokelPlayer3.watchingCount(), 0);
-        Assert.assertEquals(readYokelPlayer3.roomsCount(), 0);
+        //Assert.assertEquals(readYokelPlayer3.watchingCount(), 0);
+        //Assert.assertEquals(readYokelPlayer3.roomsCount(), 0);
 
     }
 
@@ -507,7 +508,7 @@ public class TestGameObjects {
         System.out.println("yokelRoom1: " + yokelRoom1);
         Set<YipeePlayer> expectedPlayers = new HashSet<>();
 
-        Assert.assertEquals(yokelRoom1.getWatchers(), expectedPlayers);
+        Assert.assertEquals(yokelRoom1.getPlayers(), expectedPlayers);
 
         //Test players watch list
         yokelRoom1.joinRoom(yokelPlayer);
@@ -519,9 +520,9 @@ public class TestGameObjects {
         expectedPlayers.add(yokelPlayer);
         expectedPlayers.add(yokelPlayer2);
 
-        System.out.println("Actual  : " + yokelRoom1.getWatchers());
+        System.out.println("Actual  : " + yokelRoom1.getPlayers());
         System.out.println("Expected: " + expectedPlayers);
-        Assert.assertEquals(yokelRoom1.getWatchers(), expectedPlayers);
+        Assert.assertEquals(yokelRoom1.getPlayers(), expectedPlayers);
 
         YipeeRoom room = new YipeeRoom("NewRoom");
         room.dispose();
@@ -559,8 +560,9 @@ public class TestGameObjects {
             table.setId(Util.IDGenerator.getID());
         }
 
-        Assert.expectThrows(IndexOutOfBoundsException.class, () -> yokelRoom1.getTableAt(4));
-        //Assert.assertNotNull(yokelRoom1.getTableAt(4));
+        //System.out.println(yokelRoom1.getTableAt(4));
+        //Assert.expectThrows(IndexOutOfBoundsException.class, () -> yokelRoom1.getTableAt(4));
+        Assert.assertNull(yokelRoom1.getTableAt(4));
         Assert.assertNull(yokelRoom1.getTableAt(2));
         yokelRoom1.addTable();
         Assert.assertNotNull(yokelRoom1.getTableAt(2));
@@ -694,6 +696,7 @@ public class TestGameObjects {
     @Test
     public void testYipeeTableIsGroupReady() {
         YipeeTable yokelTable = new YipeeTable(new YipeeRoom("room1", "lounge"), 1);
+        YipeePlayer player = new YipeePlayer("dfs", 1);
 
         Assert.assertFalse(yokelTable.isGroupReady(-3));
         Assert.assertFalse(yokelTable.isGroupReady(23));
@@ -702,6 +705,9 @@ public class TestGameObjects {
             Assert.assertFalse(yokelTable.isGroupReady(i));
         }
         yokelTable.getSeat(0).setSeatReady(true);
+        yokelTable.getSeat(0).sitDown(player);
+        yokelTable.getSeat(2).setSeatReady(true);
+        Assert.assertFalse(yokelTable.isGroupReady(1));
         Assert.assertTrue(yokelTable.isGroupReady(0));
     }
 

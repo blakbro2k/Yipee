@@ -15,15 +15,21 @@
  */
 package asg.games.yipee.objects;
 
+import asg.games.yipee.persistence.YipeeObjectJPAVisitor;
+import asg.games.yipee.persistence.YipeeStorageAdapter;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Created by Blakbro2k on 1/28/2018.
@@ -34,13 +40,26 @@ import java.util.Objects;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_PLAYERS")
-public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePlayer>, Disposable {
+public class YipeePlayer extends AbstractYipeeObject implements YipeeObjectJPAVisitor, Copyable<YipeePlayer> {
     @JsonIgnore
     public final static int DEFAULT_RATING_NUMBER = 1500;
 
     private int rating;
     private int icon;
-    private YipeeKeyMap keys = new YipeeKeyMap();
+
+    @ManyToMany(mappedBy = "players")
+    @JsonBackReference("room-players")
+    private Set<YipeeRoom> rooms = new LinkedHashSet<>();
+
+    @ManyToMany(mappedBy = "watchers")
+    @JsonBackReference("table-players")
+    private Set<YipeeTable> watching = new LinkedHashSet<>();
+
+    //@Lob
+    //private String serializedKeyConfig;
+
+    //@Transient
+    //private YipeeKeyMap keyConfig = new YipeeKeyMap();
 
     //Empty Constructor required for Json.Serializable
     public YipeePlayer() {
@@ -60,6 +79,26 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
         setRating(rating);
         setIcon(icon);
     }
+/*
+    public YipeeKeyMap getKeyConfig() {
+        if (keyConfig == null && serializedKeyConfig != null) {
+            try {
+                keyConfig = Util.readValue(serializedKeyConfig, YipeeKeyMap.class);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Failed to deserialize keyConfig in getKeysConfig()", e);
+            }
+        }
+        return keyConfig;
+    }
+
+    public void setKeyConfig(YipeeKeyMap keyConfig) {
+        this.keyConfig = keyConfig;
+        try {
+            this.serializedKeyConfig = Util.writeValueAsString(keyConfig);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to serialize keyConfig in getKeysConfig()", e);
+        }
+    }*/
 
     public void increaseRating(int inc) {
         rating += inc;
@@ -81,7 +120,7 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
     @Override
     public YipeePlayer deepCopy() {
         YipeePlayer copy = copy();
-        copy.setKeys(this.keys);
+        // copy.setKeyConfig(this.getKeyConfig().deepCopy());
         return copy;
     }
 
@@ -94,14 +133,29 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
         return rating == that.rating && icon == that.icon;
     }
 
+    public void joinRoom(YipeeRoom room) {
+        rooms.add(room);
+        room.getPlayers().add(this); // Maintain bidirectional consistency
+    }
+
+    public void leaveRoom(YipeeRoom room) {
+        rooms.remove(room);
+        room.getPlayers().add(this); // Maintain bidirectional consistency
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), rating, icon);
     }
 
     @Override
-    public void dispose() {
-        //clearRooms();
-        //clearWatchers();
+    public void visitSave(YipeeStorageAdapter adapter) {
+        try {
+            if (adapter != null) {
+                adapter.visitYipeePlayer(this);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Issue visiting save for " + this.getClass().getSimpleName(), e);
+        }
     }
 }

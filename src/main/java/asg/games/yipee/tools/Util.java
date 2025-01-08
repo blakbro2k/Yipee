@@ -68,7 +68,7 @@ public class Util {
     public static int getNextTableNumber(final YipeeRoom yokelRoom) {
         int tableIndex = -1;
         if (yokelRoom != null) {
-            List<Integer> tables = iterableToList(yokelRoom.getAllTableIndexes());
+            List<Integer> tables = iterableToList(yokelRoom.getTableIndexes());
 
             int size = size(tables);
             if (size > 0) {
@@ -230,6 +230,15 @@ public class Util {
         }
         return null;
     }
+
+    public static <T> T readValue(String jsonValue, Class<T> clazz) throws JsonProcessingException {
+        return json.readValue(jsonValue, clazz);
+    }
+
+    public static String writeValueAsString(Object object) throws JsonProcessingException {
+        return json.writeValueAsString(object);
+    }
+
 
     public static class IDGenerator {
         private IDGenerator() {

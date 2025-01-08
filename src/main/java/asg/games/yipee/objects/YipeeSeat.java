@@ -26,6 +26,9 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,12 +38,15 @@ import java.util.Objects;
  * Created by Blakbro2k on 1/28/2018.
  */
 
+@Getter
+@Setter
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_SEATS")
 @JsonIgnoreProperties({"seatNumber", "occupied", "tableId"})
 public class YipeeSeat extends AbstractYipeeObject implements Disposable {
-    Logger logger = LoggerFactory.getLogger(YipeeSeat.class);
+    @Transient
+    private static final Logger logger = LoggerFactory.getLogger(YipeeSeat.class);
 
     @JsonIgnore
     private static final String ATTR_SEAT_NUM_SEPARATOR = "-";
@@ -49,14 +55,11 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seated_player_id", unique = true)
-    //@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
-    @JsonBackReference
     private YipeePlayer seatedPlayer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_table_id")
-    //@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
-    @JsonBackReference
+    @JsonBackReference("parentTable")
     private YipeeTable parentTable;
 
     //Empty Constructor required for Json.Serializable
@@ -103,24 +106,13 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
         }
     }
 
-    public void setSeatedPlayer(YipeePlayer seatedPlayer) {
-        this.seatedPlayer = seatedPlayer;
-    }
 
     public boolean isOccupied() {
         return seatedPlayer != null;
     }
 
-    public void setSeatReady(boolean isSeatReady) {
-        this.isSeatReady = isSeatReady;
-    }
-
     public boolean isSeatReady() {
         return isOccupied() && isSeatReady;
-    }
-
-    public YipeePlayer getSeatedPlayer(){
-        return seatedPlayer;
     }
 
     public int getSeatNumber(){
@@ -148,11 +140,11 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
         if (!(o instanceof YipeeSeat)) return false;
         if (!super.equals(o)) return false;
         YipeeSeat yipeeSeat = (YipeeSeat) o;
-        return isSeatReady() == yipeeSeat.isSeatReady() && Objects.equals(getSeatedPlayer(), yipeeSeat.getSeatedPlayer()) && Objects.equals(getParentTable(), yipeeSeat.getParentTable());
+        return isSeatReady == yipeeSeat.isSeatReady && Objects.equals(seatedPlayer, yipeeSeat.seatedPlayer) && Objects.equals(parentTable, yipeeSeat.parentTable);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), isSeatReady(), getSeatedPlayer(), getParentTable());
+        return Objects.hash(super.hashCode(), isSeatReady, seatedPlayer, parentTable);
     }
 }

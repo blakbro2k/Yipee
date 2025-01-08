@@ -17,7 +17,7 @@ package asg.games.yipee.objects;
 
 import asg.games.yipee.tools.Input;
 
-public class YipeeKeyMap {
+public class YipeeKeyMap implements Copyable<YipeeKeyMap> {
     private final int[] keyMap = {
             Input.Keys.RIGHT,
             Input.Keys.LEFT,
@@ -139,12 +139,23 @@ public class YipeeKeyMap {
         keyMap[11] = key;
     }
 
-    public int getTarget8(){
+    public int getTarget8() {
         return keyMap[12];
     }
 
-    public void setTarget8(int key){
+    public void setTarget8(int key) {
         keyMap[12] = key;
     }
 
+    @Override
+    public YipeeKeyMap copy() {
+        YipeeKeyMap copy = new YipeeKeyMap();
+        System.arraycopy(this.keyMap, 0, new int[keyMap.length], 0, keyMap.length);
+        return copy;
+    }
+
+    @Override
+    public YipeeKeyMap deepCopy() {
+        return copy();
+    }
 }

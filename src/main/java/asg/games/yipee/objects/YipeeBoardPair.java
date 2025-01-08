@@ -16,9 +16,13 @@
 package asg.games.yipee.objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Objects;
 
+@Getter
+@Setter
 @JsonIgnoreProperties({"brokenCells", "tableStartReady", "upArguments", "tableName"})
 public class YipeeBoardPair extends AbstractYipeeObject {
     YipeeGameBoardState leftBoard;
@@ -31,22 +35,6 @@ public class YipeeBoardPair extends AbstractYipeeObject {
     public YipeeBoardPair(YipeeGameBoardState left, YipeeGameBoardState right) {
         setLeftBoard(left);
         setRightBoard(right);
-    }
-
-    public void setLeftBoard(YipeeGameBoardState leftBoard) {
-        this.leftBoard = leftBoard;
-    }
-
-    public void setRightBoard(YipeeGameBoardState rightBoard) {
-        this.rightBoard = rightBoard;
-    }
-
-    public YipeeGameBoardState getLeftBoard() {
-        return leftBoard;
-    }
-
-    public YipeeGameBoardState getRightBoard() {
-        return rightBoard;
     }
 
     @Override

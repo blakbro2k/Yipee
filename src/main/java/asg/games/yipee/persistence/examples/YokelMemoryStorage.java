@@ -183,6 +183,16 @@ public class YokelMemoryStorage extends MemoryStorage implements YipeeStorageAda
 
     }
 
+    @Override
+    public List<YipeePlayer> getAllWatchers() throws Exception {
+        return null;
+    }
+
+    @Override
+    public void putAllWatchers(Iterable<YipeePlayer> players) throws Exception {
+
+    }
+
 
     @Override
     public void putGame(String id, GameManager game) {
@@ -292,7 +302,7 @@ public class YokelMemoryStorage extends MemoryStorage implements YipeeStorageAda
             for(String seatId : Util.safeIterable(seats)){
                 if(seatId != null){
                     YipeeSeat seat = get(YipeeSeat.class, seatId);
-                    if(seat != null){
+                    if (seat != null) {
                         seat.standUp();
                     }
                     saveObject(seat);
@@ -300,5 +310,20 @@ public class YokelMemoryStorage extends MemoryStorage implements YipeeStorageAda
             }
             commitTransactions();
         }
+    }
+
+    @Override
+    public void visitYipeeRoom(YipeeRoom room) {
+
+    }
+
+    @Override
+    public void visitYipeeTable(YipeeTable room) {
+
+    }
+
+    @Override
+    public void visitYipeePlayer(YipeePlayer player) {
+
     }
 }

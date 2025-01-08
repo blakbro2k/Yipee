@@ -44,9 +44,16 @@ import java.util.Objects;
         property = "@class"
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = YipeeSeat.class, name = "YipeeSeat"),
+        @JsonSubTypes.Type(value = YipeeBlock.class, name = "YipeeBlock"),
+        @JsonSubTypes.Type(value = YipeeBlockMove.class, name = "YipeeBlockMove"),
+        @JsonSubTypes.Type(value = YipeeBoardPair.class, name = "YipeeBoardPair"),
+        @JsonSubTypes.Type(value = YipeeBrokenBlock.class, name = "YipeeBrokenBlock"),
         @JsonSubTypes.Type(value = YipeeClock.class, name = "YipeeClock"),
+        @JsonSubTypes.Type(value = YipeeGameBoardState.class, name = "YipeeGameBoardState"),
+        @JsonSubTypes.Type(value = YipeePiece.class, name = "YipeePiece"),
+        @JsonSubTypes.Type(value = YipeePlayer.class, name = "YipeePlayer"),
         @JsonSubTypes.Type(value = YipeeRoom.class, name = "YipeeRoom"),
+        @JsonSubTypes.Type(value = YipeeSeat.class, name = "YipeeSeat"),
         @JsonSubTypes.Type(value = YipeeTable.class, name = "YipeeTable")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)

@@ -84,7 +84,7 @@ public class YipeeRoomDeserializer extends StdDeserializer<YipeeRoom> {
                 System.out.println("table: " + table);
                 allTables.add(table);
             }
-            room.setTables(allTables);
+            //room.setTables(allTables);
         }
         System.out.println("Enter YipeeRoom deserialize()");
         return room;

@@ -16,6 +16,8 @@
 package asg.games.yipee.objects;
 
 import asg.games.yipee.game.YipeeBlockEval;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
@@ -23,6 +25,8 @@ import java.util.Objects;
  * Created by Blakbro2k on 12/29/2017.
  */
 public class YipeeBlock extends AbstractYipeeObject implements Disposable {
+    private static final Logger logger = LoggerFactory.getLogger(YipeeBlock.class);
+
     /* Retrieves power "level"
      * - Even represents defensive powers ( 2, 4, 6 )
      * - Odd represents attack powers ( 3, 5, 7 )

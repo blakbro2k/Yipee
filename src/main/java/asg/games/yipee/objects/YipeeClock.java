@@ -17,10 +17,14 @@ package asg.games.yipee.objects;
 
 import asg.games.yipee.tools.TimeUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Objects;
 
-@JsonIgnoreProperties({ "seconds", "minutes", "elapsedSeconds" })
+@Getter
+@Setter
+@JsonIgnoreProperties({"seconds", "minutes", "elapsedSeconds"})
 public class YipeeClock extends AbstractYipeeObject {
     private long start;
     private boolean running;
@@ -46,10 +50,6 @@ public class YipeeClock extends AbstractYipeeObject {
     private void resetTimer(){
         start = -1;
         running = false;
-    }
-
-    public long getStart() {
-        return start;
     }
 
     public int getSeconds() {

@@ -15,7 +15,6 @@
  */
 package asg.games.yipee.persistence.json;
 
-import asg.games.yipee.objects.YipeePlayer;
 import asg.games.yipee.objects.YipeeRoom;
 import asg.games.yipee.objects.YipeeSeat;
 import asg.games.yipee.objects.YipeeTable;
@@ -110,6 +109,7 @@ public class YipeeTableDeserializer extends StdDeserializer<YipeeTable> {
             table.setSeats(allSeats);
         }
 
+        /*
         // Handle seats (deserialize nested objects)
         if (node.has("watchers")) {
             JsonNode watchersNode = node.get("watchers");
@@ -124,7 +124,7 @@ public class YipeeTableDeserializer extends StdDeserializer<YipeeTable> {
                 allPlayers.add(player);
             }
             table.setWatchers(allPlayers);
-        }
+        }*/
 
         //seat.setParentTable(table);
         System.out.println("table: " + table);
