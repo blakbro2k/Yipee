@@ -86,7 +86,7 @@ public class GameManager implements Disposable {
         boolean wasPieceJustSet = false;
         if(board != null){
             //Move Piece down, flag matches
-            board.update(delta);
+            board.update(board.getGameState(), delta);
         }
         //logger.exit("updateBoard", wasPieceJustSet);
     }

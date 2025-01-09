@@ -25,7 +25,6 @@ import asg.games.yipee.objects.YipeePiece;
 import asg.games.yipee.tools.RandomUtil;
 import asg.games.yipee.tools.TimeUtils;
 import asg.games.yipee.tools.Util;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -39,7 +38,6 @@ import java.util.Vector;
  *
  * @author Blakbro2k
  */
-@JsonIgnoreProperties({"brokenCells", "brokenByPartnerCellIDs", "brokenCellCount", "brokenCellCount", "nextBlock", "gameState"})
 public class YipeeGameBoard implements Disposable {
     public static final int MAX_RANDOM_BLOCK_NUMBER = 2048;
     public static final int MAX_COLS = 6;
@@ -1728,11 +1726,16 @@ public class YipeeGameBoard implements Disposable {
         cells[r][c] = YipeeBlock.CLEAR_BLOCK;
     }
 
-    public void updateState(YipeeGameBoardState state) {
+    public void update(YipeeGameBoardState state, float delta) {
+        updateState(state);
+        updateGame(delta);
+    }
+
+    private void updateState(YipeeGameBoardState state) {
         loadFromState(state);
     }
 
-    public void update(float delta) {
+    private void updateGame(float delta) {
         //If the player is alive
         if (!hasPlayerDied() && hasGameStarted) {
             //if there are cells to break, handle
@@ -1779,7 +1782,7 @@ public class YipeeGameBoard implements Disposable {
                         //Put moved cell back now that animation is complete
                         for (YipeeBlockMove move : Util.safeIterable(cellsToDrop)) {
                             if (move != null) {
-                                setCell(move.getRow(), move.getCol(), move.getCellID());
+                                setCell(move.getRow(), move.getCol(), move.getCellId());
                             }
                         }
                         //RESET STATE OF ANIMATIONS AND BROKEN BLOCKS AND CELLS TO DROP
