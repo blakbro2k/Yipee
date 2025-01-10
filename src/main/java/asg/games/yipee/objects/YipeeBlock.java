@@ -198,12 +198,11 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
      * - Odd represents attack powers ( 3, 5, 7 )
      * ( MINOR, REGULAR, MEGA )
      * <p>
-     *
      * @return powerIntensity
      */
     public int getPowerIntensity() {
         // Starts at 3 to start with an attack block first
-        if (powerIntensity < 1) {
+        if (powerIntensity <= 1) {
             if (logger.isInfoEnabled()) {
                 logger.info("Setting power to lower bound: [{}]", POWER_INTENSITY_LOWER_BOUNDS);
             }

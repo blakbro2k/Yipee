@@ -16,7 +16,7 @@
 package asg.games.yipee.persistence;
 
 /**
- * Visitor Class to save child complex YipeeObjects
+ * Visitor Class to save complex child YipeeObjects
  *
  * @author Blakbro2k
  */

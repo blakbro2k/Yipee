@@ -15,8 +15,6 @@
  */
 package asg.games.yipee.objects;
 
-import asg.games.yipee.persistence.YipeeObjectJPAVisitor;
-import asg.games.yipee.persistence.YipeeStorageAdapter;
 import asg.games.yipee.tools.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,16 +33,22 @@ import org.slf4j.LoggerFactory;
 import java.util.Objects;
 
 /**
- * Represents a player in Yipee.  The player has a rating and an icon represented by an int
- * <p>
+ * Represents a player in the Yipee game. Each player has a rating and an icon.
+ * The player's rating determines their skill level, and the icon represents the player's avatar.
+ * </p>
+ * This class also contains the configuration for the player's keys
+ * </p>
  * Created by Blakbro2k on 1/28/2018.
+ * Updated for enhanced documentation and clarity.
+ *
+ * @see YipeeKeyMap
  */
 @Setter
 @Getter
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_PLAYERS")
-public class YipeePlayer extends AbstractYipeeObject implements YipeeObjectJPAVisitor, Copyable<YipeePlayer>, Disposable {
+public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePlayer>, Disposable {
     @Transient
     private static final Logger logger = LoggerFactory.getLogger(YipeePlayer.class);
 
@@ -103,6 +107,7 @@ public class YipeePlayer extends AbstractYipeeObject implements YipeeObjectJPAVi
         setName(name);
         setRating(rating);
         setIcon(icon);
+        System.out.println("keyConfig: " + getSerializedKeyConfig());
     }
 
     /**
@@ -115,6 +120,9 @@ public class YipeePlayer extends AbstractYipeeObject implements YipeeObjectJPAVi
                 if (keyConfig == null) {
                     try {
                         keyConfig = Util.readValue(serializedKeyConfig, YipeeKeyMap.class);
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Serialized keyCofig: " + keyConfig);
+                        }
                     } catch (JsonProcessingException e) {
                         logger.error("Failed to deserialize keyConfig", e);
                         throw new RuntimeException("Failed to deserialize keyConfig", e);
@@ -133,6 +141,9 @@ public class YipeePlayer extends AbstractYipeeObject implements YipeeObjectJPAVi
         this.keyConfig = keyConfig;
         try {
             this.serializedKeyConfig = Util.writeValueAsString(keyConfig);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Serialized serializedKeyConfig: " + serializedKeyConfig);
+            }
         } catch (JsonProcessingException e) {
             logger.error("Failed to serialize keyConfig  in getKeysConfig()", e);
             throw new RuntimeException("Failed to serialize keyConfig in getKeysConfig()", e);
@@ -145,7 +156,14 @@ public class YipeePlayer extends AbstractYipeeObject implements YipeeObjectJPAVi
      * @param inc
      */
     public void increaseRating(int inc) {
+        if (inc < 0) throw new IllegalArgumentException("Increment must be non-negative.");
+        if (logger.isDebugEnabled()) {
+            logger.debug("Increasing current rating:[{}] by {}", rating, inc);
+        }
         rating += inc;
+        if (logger.isDebugEnabled()) {
+            logger.debug("rating={}", rating);
+        }
     }
 
     /**
@@ -154,7 +172,14 @@ public class YipeePlayer extends AbstractYipeeObject implements YipeeObjectJPAVi
      * @param dec
      */
     public void decreaseRating(int dec) {
-        rating -= dec;
+        if (dec < 0) throw new IllegalArgumentException("Decrement must be non-negative.");
+        if (logger.isDebugEnabled()) {
+            logger.debug("Decreasing current rating:[{}] by {}", rating, dec);
+        }
+        rating = Math.max(0, rating - dec);
+        if (logger.isDebugEnabled()) {
+            logger.debug("rating={}", rating);
+        }
     }
 
     @Override
@@ -176,26 +201,15 @@ public class YipeePlayer extends AbstractYipeeObject implements YipeeObjectJPAVi
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof YipeePlayer player)) return false;
+        if (!(o instanceof YipeePlayer)) return false;
         if (!super.equals(o)) return false;
-        return rating == player.rating && icon == player.icon && serializedKeyConfig.equals(player.serializedKeyConfig) && keyConfig.equals(player.keyConfig);
+        YipeePlayer player = (YipeePlayer) o;
+        return rating == player.rating && icon == player.icon && Objects.equals(keyConfig, player.keyConfig);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), rating, icon, serializedKeyConfig, keyConfig);
-    }
-
-    @Override
-    public void visitSave(YipeeStorageAdapter adapter) {
-        try {
-            if (adapter != null) {
-                adapter.visitYipeePlayer(this);
-            }
-        } catch (Exception e) {
-            logger.error("Issue visiting save for " + this.getClass().getSimpleName(), e);
-            throw new RuntimeException("Issue visiting save for " + this.getClass().getSimpleName(), e);
-        }
+        return Objects.hash(super.hashCode(), rating, icon, keyConfig);
     }
 
     @Override

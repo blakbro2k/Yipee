@@ -15,8 +15,6 @@
  */
 package asg.games.yipee.objects;
 
-import asg.games.yipee.tools.Util;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
@@ -43,7 +41,7 @@ import java.util.Objects;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_SEATS")
-@JsonIgnoreProperties({"seatNumber", "occupied", "tableId"})
+@JsonIgnoreProperties({"occupied", "tableId"})
 public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     @Transient
     private static final Logger logger = LoggerFactory.getLogger(YipeeSeat.class);
@@ -57,10 +55,9 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     @JoinColumn(name = "seated_player_id", unique = true)
     private YipeePlayer seatedPlayer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_table_id")
-    @JsonBackReference("parentTable")
-    private YipeeTable parentTable;
+    private int seatNumber;
+
+    private String parentTableId;
 
     //Empty Constructor required for Json.Serializable
     public YipeeSeat() {
@@ -69,7 +66,12 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     public YipeeSeat(YipeeTable table, int seatNumber) {
         if (seatNumber < 0 || seatNumber > 7) throw new IllegalArgumentException("Seat number must be between 0 - 7.");
         setParentTable(table);
-        setName(getSeatName() + seatNumber);
+        setSeatNumber(seatNumber);
+        setSeatName();
+    }
+
+    public void setSeatName() {
+        super.setName(getSeatName() + seatNumber);
     }
 
     private String getSeatName() {
@@ -81,7 +83,9 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
             throw new IllegalArgumentException("Player cannot be null.");
         }
         if (isOccupied()) {
-            logger.info("Seat is already occupied.");
+            if (logger.isInfoEnabled()) {
+                logger.info("Seat is already occupied.");
+            }
             return false;
         }
         setSeatedPlayer(player);
@@ -95,13 +99,13 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
         return player;
     }
 
-    public YipeeTable getParentTable() {
-        return parentTable;
+    public void setSeatedPlayer(YipeePlayer player) {
+        seatedPlayer = player;
     }
 
     public void setParentTable(YipeeTable parentTable) {
-        this.parentTable = parentTable;
         if (parentTable != null) {
+            parentTableId = parentTable.getId();
             setName(getSeatName() + getSeatNumber());
         }
     }
@@ -115,11 +119,6 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
         return isOccupied() && isSeatReady;
     }
 
-    public int getSeatNumber(){
-        if (getName() == null) return -1;
-        return Integer.parseInt(Util.split(getName(), ATTR_SEAT_NUM_SEPARATOR)[1]);
-    }
-
     @Override
     public void dispose() {
         if(isOccupied()){
@@ -128,10 +127,7 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     }
 
     public String getTableId() {
-        if (parentTable != null) {
-            return getParentTable().getId();
-        }
-        return null;
+        return parentTableId;
     }
 
     @Override
@@ -140,11 +136,11 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
         if (!(o instanceof YipeeSeat)) return false;
         if (!super.equals(o)) return false;
         YipeeSeat yipeeSeat = (YipeeSeat) o;
-        return isSeatReady == yipeeSeat.isSeatReady && Objects.equals(seatedPlayer, yipeeSeat.seatedPlayer) && Objects.equals(parentTable, yipeeSeat.parentTable);
+        return seatNumber == yipeeSeat.seatNumber && isSeatReady == yipeeSeat.isSeatReady && Objects.equals(parentTableId, yipeeSeat.parentTableId) && Objects.equals(seatedPlayer, yipeeSeat.seatedPlayer);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), isSeatReady, seatedPlayer, parentTable);
+        return Objects.hash(super.hashCode(), seatNumber, isSeatReady, seatedPlayer, parentTableId);
     }
 }

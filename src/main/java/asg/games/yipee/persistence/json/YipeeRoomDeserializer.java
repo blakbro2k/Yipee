@@ -23,9 +23,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -36,6 +41,7 @@ import java.util.Set;
  */
 
 public class YipeeRoomDeserializer extends StdDeserializer<YipeeRoom> {
+    private final Logger logger = LoggerFactory.getLogger(YipeeRoomDeserializer.class);
 
     public YipeeRoomDeserializer() {
         this(null);
@@ -48,7 +54,10 @@ public class YipeeRoomDeserializer extends StdDeserializer<YipeeRoom> {
     @Override
     public YipeeRoom deserialize(JsonParser jp, DeserializationContext ctx) throws IOException, JsonProcessingException {
         System.out.println("Enter YipeeRoom deserialize()");
+
         JsonNode node = jp.getCodec().readTree(jp);
+
+        System.out.println("deserialize()  node: " + node.toPrettyString());
         YipeeRoom room = new YipeeRoom();
         room.setId(node.get("id").asText());
         room.setName(node.get("name").asText());
@@ -57,36 +66,60 @@ public class YipeeRoomDeserializer extends StdDeserializer<YipeeRoom> {
         room.setLoungeName(node.get("lounge").asText());
 
         Set<YipeePlayer> allPlayers = new LinkedHashSet<>();
-        Set<YipeeTable> allTables = new LinkedHashSet<>();
 
-        // Handle seats (deserialize nested objects)
-        if (node.has("players")) {
-            JsonNode playersNode = node.get("players");
-            System.out.println("playersNode: " + playersNode);
-            for (JsonNode playerNode : playersNode) {
-                YipeePlayer player = jp.getCodec().treeToValue(playersNode, YipeePlayer.class);
-                //table.getSeats().add(seat);
-                System.out.println("playersNode: " + playersNode);
-                System.out.println("player: " + player);
-                allPlayers.add(player);
+        // Deserialize players
+        if (node.has("players") && !node.get("players").isNull()) {
+            for (JsonNode playerNode : node.get("players")) {
+                try {
+                    YipeePlayer player = jp.getCodec().treeToValue(playerNode, YipeePlayer.class);
+                    allPlayers.add(player);
+                } catch (Exception e) {
+                    logger.error("Failed to deserialize player: " + playerNode + ", error: " + e.getMessage());
+                }
             }
             room.setPlayers(allPlayers);
         }
 
-        // Handle seats (deserialize nested objects)
-        if (node.has("tables")) {
-            JsonNode seatsNode = node.get("tables");
-            System.out.println("seatsNode: " + seatsNode);
-            for (JsonNode seatNode : seatsNode) {
-                YipeeTable table = jp.getCodec().treeToValue(seatNode, YipeeTable.class);
-                //table.getSeats().add(seat);
-                System.out.println("seatNode: " + seatNode);
-                System.out.println("table: " + table);
-                allTables.add(table);
+/*
+        // Deserialize tables
+
+            for (JsonNode tableNode : node.get("tables")) {
+                System.out.println("tableNode: " + tableNode);
+
+                try {
+                    YipeeTable table = jp.getCodec().treeToValue(tableNode, YipeeTable.class);
+                    allTables.add(table);
+                } catch (Exception e) {
+                    logger.error("Failed to deserialize table: " + tableNode + ", error: " + e.getMessage());
+                }
             }
             //room.setTables(allTables);
+        }*/
+
+        System.out.println("deserialize(tableIndexMap)");
+        System.out.println("node: " + node);
+
+        if (node.has("tableIndexMap") && !node.get("tableIndexMap").isNull()) {
+            Map<Integer, YipeeTable> map = new HashMap<>();
+            //System.out.println("node: " + node.get("tableIndexMap"));
+            JsonNode mapNode = node.get("tableIndexMap");
+
+            Iterator<Map.Entry<String, JsonNode>> fields = mapNode.fields();
+            System.out.println("fields: " + mapNode);
+
+            while (fields.hasNext()) {
+                Map.Entry<String, JsonNode> entry = fields.next();
+                System.out.println("entry: " + entry);
+                Integer tableNumber = Integer.valueOf(entry.getKey());
+                YipeeTable table = jp.getCodec().treeToValue(entry.getValue(), YipeeTable.class);
+
+                map.put(tableNumber, table);
+            }
+            room.setTableIndexMap(map);
         }
-        System.out.println("Enter YipeeRoom deserialize()");
+
+        System.out.println("Exit YipeeRoom deserialize()");
         return room;
     }
 }
+

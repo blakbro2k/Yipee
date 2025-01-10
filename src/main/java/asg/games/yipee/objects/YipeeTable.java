@@ -18,13 +18,18 @@ package asg.games.yipee.objects;
 import asg.games.yipee.persistence.YipeeObjectJPAVisitor;
 import asg.games.yipee.persistence.YipeeStorageAdapter;
 import asg.games.yipee.tools.Util;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -75,27 +80,18 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
 
     private ACCESS_TYPE accessType = ACCESS_TYPE.PUBLIC;
 
-    @OneToMany(mappedBy = "parentTable", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
-    @JsonManagedReference("parentTable")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<YipeeSeat> seats = new LinkedHashSet<>();
 
-    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(
             name = "YT_TABLE_PLAYERS", // Join table name
             joinColumns = @JoinColumn(name = "table_id"), // Foreign key to YipeeRoom
             inverseJoinColumns = @JoinColumn(name = "player_id") // Foreign key to YipeePlayer
     )
-    @JsonManagedReference("table-players")
     private Set<YipeePlayer> watchers = new LinkedHashSet<>();
 
-    @JsonBackReference("parentRoom")
-    @ManyToOne
-    @JoinColumn(name = "room_id")
-    private YipeeRoom parentRoom;
-
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     private Integer tableNumber;
 
     @JsonProperty("rated")
@@ -104,24 +100,15 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     @JsonProperty("soundOn")
     private boolean isSoundOn = true;
 
-    public void setParentRoom(YipeeRoom parentRoom) {
-        this.parentRoom = parentRoom;
-    }
-
-    public YipeeRoom getParentRoom() {
-        return parentRoom;
-    }
-
     //Empty Constructor required for Json.Serializable
     public YipeeTable() {
     }
 
-    public YipeeTable(YipeeRoom parentRoom, int nameNumber) {
-        this(parentRoom, nameNumber, null);
+    public YipeeTable(int nameNumber) {
+        this(nameNumber, null);
     }
 
-    public YipeeTable(YipeeRoom parentRoom, int nameNumber, Map<String, Object> arguments) {
-        this.parentRoom = parentRoom;
+    public YipeeTable(int nameNumber, Map<String, Object> arguments) {
         initialize(nameNumber, arguments);
     }
 
@@ -132,15 +119,7 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     }
 
     public void setTableName(int tableNumber) {
-        setName(parentRoom.getName() + ATT_TABLE_SPACER + ATT_NAME_PREPEND + tableNumber);
-    }
-
-    private String getParentRoomId() {
-        String roomId = "_NoRoomId_";
-        if (parentRoom != null) {
-            roomId = parentRoom.getId();
-        }
-        return roomId;
+        setName(getId() + ATT_TABLE_SPACER + ATT_NAME_PREPEND + tableNumber);
     }
 
     public int getTableNumber() {
@@ -264,14 +243,12 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     public void addWatcher(YipeePlayer player) {
         if (player != null) {
             watchers.add(player);
-            player.getWatching().add(this);
         }
     }
 
     public void removeWatcher(YipeePlayer player) {
         if (player != null) {
             watchers.remove(player);
-            player.getWatching().remove(this);
         }
     }
 
@@ -288,15 +265,14 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         copy.setAccessType(accessType);
         copy.setRated(isRated);
         copy.setSound(isSoundOn);
-        copy.setParentRoom(parentRoom);
         return copy;
     }
 
     @Override
     public YipeeTable deepCopy() {
         YipeeTable copy = copy();
-        copy.setSeats(seats);
-        copy.setWatchers(watchers);
+        copy.setSeats(new LinkedHashSet<>(seats));
+        copy.setWatchers(new LinkedHashSet<>(watchers));
         return copy;
     }
 
@@ -317,11 +293,11 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         if (!(o instanceof YipeeTable)) return false;
         if (!super.equals(o)) return false;
         YipeeTable that = (YipeeTable) o;
-        return isRated == that.isRated && isSoundOn == that.isSoundOn && accessType == that.accessType && Objects.equals(seats, that.seats) && Objects.equals(watchers, that.watchers) && Objects.equals(parentRoom, that.parentRoom);
+        return isRated == that.isRated && isSoundOn == that.isSoundOn && accessType == that.accessType && Objects.equals(seats, that.seats) && Objects.equals(watchers, that.watchers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), accessType, parentRoom, isRated, isSoundOn);
+        return Objects.hash(super.hashCode(), accessType, isRated, isSoundOn);
     }
 }

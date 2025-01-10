@@ -17,7 +17,9 @@ package asg.games.yipee.objects;
 
 import asg.games.yipee.tools.Input;
 
-public class YipeeKeyMap implements Copyable<YipeeKeyMap> {
+import java.util.Arrays;
+
+public class YipeeKeyMap implements Copyable<YipeeKeyMap>, Disposable {
     private final int[] keyMap = {
             Input.Keys.RIGHT,
             Input.Keys.LEFT,
@@ -157,5 +159,23 @@ public class YipeeKeyMap implements Copyable<YipeeKeyMap> {
     @Override
     public YipeeKeyMap deepCopy() {
         return copy();
+    }
+
+    @Override
+    public void dispose() {
+        Arrays.fill(keyMap, 0);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof YipeeKeyMap)) return false;
+        YipeeKeyMap that = (YipeeKeyMap) o;
+        return Arrays.equals(keyMap, that.keyMap);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(keyMap);
     }
 }

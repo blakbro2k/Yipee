@@ -323,7 +323,7 @@ public class YokelMemoryStorage extends MemoryStorage implements YipeeStorageAda
     }
 
     @Override
-    public void visitYipeePlayer(YipeePlayer player) {
+    public void visitYipeeSeat(YipeeSeat seat) {
 
     }
 }

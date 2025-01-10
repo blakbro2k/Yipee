@@ -15,12 +15,11 @@
  */
 package asg.games.yipee.tools;
 
+import asg.games.yipee.objects.AbstractYipeeObject;
 import asg.games.yipee.objects.YipeeRoom;
 import asg.games.yipee.objects.YipeeSeat;
 import asg.games.yipee.objects.YipeeTable;
 import asg.games.yipee.persistence.json.YipeeRoomDeserializer;
-import asg.games.yipee.persistence.json.YipeeSeatDeserializer;
-import asg.games.yipee.persistence.json.YipeeTableDeserializer;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.StreamReadFeature;
@@ -55,8 +54,6 @@ public class Util {
 
     static {
         module.addDeserializer(YipeeRoom.class, new YipeeRoomDeserializer());
-        module.addDeserializer(YipeeSeat.class, new YipeeSeatDeserializer());
-        module.addDeserializer(YipeeTable.class, new YipeeTableDeserializer());
         json = JsonMapper.builder()
                 .enable(StreamReadFeature.STRICT_DUPLICATE_DETECTION)
                 .disable(StreamReadFeature.AUTO_CLOSE_SOURCE)
@@ -336,7 +333,7 @@ public class Util {
         return collection.stream().toList();
     }
 
-    public static String getJsonString(asg.games.yipee.objects.AbstractYipeeObject o) throws JsonProcessingException {
+    public static String getJsonString(AbstractYipeeObject o) throws JsonProcessingException {
         return json.writeValueAsString(o);
     }
 
