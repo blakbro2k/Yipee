@@ -25,6 +25,8 @@ import asg.games.yipee.objects.YipeePiece;
 import asg.games.yipee.tools.RandomUtil;
 import asg.games.yipee.tools.TimeUtils;
 import asg.games.yipee.tools.Util;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -38,6 +40,8 @@ import java.util.Vector;
  *
  * @author Blakbro2k
  */
+@Getter
+@Setter
 public class YipeeGameBoard implements Disposable {
     public static final int MAX_RANDOM_BLOCK_NUMBER = 2048;
     public static final int MAX_COLS = 6;
@@ -80,8 +84,8 @@ public class YipeeGameBoard implements Disposable {
     private final int[] countOfPieces = new int[MAX_COLS];
 
     //Added
-    private final int[] countOfBreaks = new int[MAX_COLS];
-    private final int[] powersKeep = new int[MAX_COLS];
+    private int[] countOfBreaks = new int[MAX_COLS];
+    private int[] powersKeep = new int[MAX_COLS];
 
     private final boolean[] cellMatches = new boolean[7];
     private final int[] cellIndices = {0, 1, 2, 3, 4, 5, 6};
@@ -100,8 +104,8 @@ public class YipeeGameBoard implements Disposable {
     private RandomUtil.RandomNumberArray nextBlocks;
     private int currentBlockPointer = -1;
     private boolean fastDown;
-    private Queue<Integer> powers;
-    private Queue<Integer> specialPieces;
+    private Queue<Integer> powers = new LinkedList<>();
+    private Queue<Integer> specialPieces = new LinkedList<>();
     Queue<YipeeBrokenBlock> brokenCells = new LinkedList<>();
     Queue<YipeeBlockMove> cellsToDrop = new LinkedList<>();
 
@@ -131,9 +135,32 @@ public class YipeeGameBoard implements Disposable {
         setGameState();
     }
 
-    private void loadFromState(asg.games.yipee.objects.YipeeGameBoardState state) {
+    private void loadFromState(YipeeGameBoardState state) {
         if (state != null) {
-
+            setBrokenBlockCount(state.getBrokenBlockCount());
+            setFastDown(state.isFastDown());
+            setCurrentBlockPointer(state.getCurrentBlockPointer());
+            setNextBlocks(state.getNextBlocks());
+            setCountOfBreaks(state.getCountOfBreaks());
+            setPowersKeep(state.getPowersKeep());
+            setGameClock(state.getGameClock());
+            setIds(state.getIds());
+            setIdIndex(state.getIdIndex());
+            setDebug(state.isDebug());
+            setName(state.getName());
+            setPiece(state.getPiece());
+            setNextPiece(state.getNextPiece());
+            setCells(state.getPlayerCells());
+            setPieceFallTimer(state.getPieceFallTimer());
+            setPieceLockTimer(state.getPieceLockTimer());
+            setBlockAnimationTimer(state.getBlockAnimationTimer());
+            setYahooDuration(state.getYahooDuration());
+            setPartnerRight(state.isPartnerRight());
+            setPowers(state.getPowers());
+            setBrokenCells(state.getBrokenCells());
+            setSpecialPieces(state.getSpecialPieces());
+            setHasGameStarted(state.isHasGameStarted());
+            setPartnerBoard(state.getPartnerBoard());
         }
     }
 
@@ -157,7 +184,6 @@ public class YipeeGameBoard implements Disposable {
         state.setPieceLockTimer(pieceLockTimer);
         state.setBlockAnimationTimer(blockAnimationTimer);
         state.setYahooDuration(yahooDuration);
-        state.setPlayerCells(cells);
         state.setPartnerRight(isPartnerRight);
         state.setPowers(powers);
         state.setBrokenCells(brokenCells);
@@ -165,6 +191,8 @@ public class YipeeGameBoard implements Disposable {
         state.setHasGameStarted(hasGameStarted);
         if (partnerBoard != null) {
             state.setPartnerBoard(partnerBoard.getGameState());
+        } else {
+            state.setPartnerBoard(null);
         }
     }
 
@@ -197,6 +225,10 @@ public class YipeeGameBoard implements Disposable {
     public void setPartnerBoard(YipeeGameBoard partnerB, boolean b) {
         this.partnerBoard = partnerB;
         this.isPartnerRight = b;
+    }
+
+    public void setPartnerBoard(YipeeGameBoardState partnerB) {
+        this.partnerBoard.updateState(partnerB);
     }
 
     public void setName(String name) {
@@ -243,14 +275,13 @@ public class YipeeGameBoard implements Disposable {
         gameClock.stop();
         clearBoard();
         resetPiece();
-        powers.clear();
+        Util.clearArrays(powers);
         end();
     }
 
     @Override
     public void dispose() {
-        specialPieces.clear();
-        powers.clear();
+        Util.clearArrays(specialPieces, powers);
     }
 
     public void begin() {

@@ -35,10 +35,11 @@ public class YipeeGameBoardState extends AbstractYipeeObject {
     private YipeePiece nextPiece = null;
     private YipeeClock gameClock = null;
     private int[][] playerCells = new int[YipeeGameBoard.MAX_ROWS][YipeeGameBoard.MAX_COLS];
+    private int[][] partnerCells = new int[YipeeGameBoard.MAX_ROWS][YipeeGameBoard.MAX_COLS];
     private YipeeGameBoardState partnerBoard;
-    private Iterable<YipeeBrokenBlock> brokenCells = null;
-    private Iterable<YipeeBlockMove> cellsToDrop = null;
-    private Iterable<Integer> powers = null;
+    private Queue<YipeeBrokenBlock> brokenCells = null;
+    private Queue<YipeeBlockMove> cellsToDrop = null;
+    private Queue<Integer> powers = null;
     private int yahooDuration;
     private float pieceFallTimer;
     private float pieceLockTimer;
@@ -112,12 +113,10 @@ public class YipeeGameBoardState extends AbstractYipeeObject {
     }
 
     private int[][] getPartnerCells(YipeeGameBoardState partnerBoardState) {
-        int[][] cells = new int[YipeeGameBoard.MAX_ROWS][YipeeGameBoard.MAX_COLS];
-        ;
         if (partnerBoardState != null) {
-            cells = partnerBoardState.getPlayerCells();
+            partnerCells = partnerBoardState.getPlayerCells();
         }
-        return cells;
+        return partnerCells;
     }
 
     private void printRow(StringBuilder out, int r) {
