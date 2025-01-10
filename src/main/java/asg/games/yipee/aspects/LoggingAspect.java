@@ -51,7 +51,6 @@ public class LoggingAspect {
 
         try {
             Object[] args = joinPoint.getArgs();
-
             logEnter(logger, joinPoint, args);
 
             // Execute the target method and capture the return value
@@ -59,7 +58,6 @@ public class LoggingAspect {
 
             // Log method exit and return value
             logExit(logger, joinPoint, result);
-            //logger.debug("Exiting method [{}] with result: {}", joinPoint.getSignature(), result);
 
             // Return the result
             return result;

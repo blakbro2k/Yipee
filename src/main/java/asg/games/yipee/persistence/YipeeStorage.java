@@ -67,22 +67,44 @@ public interface YipeeStorage {
     /** Puts a lounge into storage. */
     void putPlayer(YipeePlayer player) throws Exception;
 
-    /** Gets a player from the storage */
+    /**
+     * Gets a player from the storage
+     */
     YipeePlayer getPlayer(String nameOrId) throws Exception;
 
-    /** Get all Players from store. */
+    /**
+     * Get all Players from store.
+     */
     List<YipeePlayer> getAllPlayers() throws Exception;
 
-    /** Save all Players from store. */
+    /**
+     * Save all Players from store.
+     */
     void putAllPlayers(Iterable<YipeePlayer> players) throws Exception;
 
-    /** Releases all resources of this object. */
+    /**
+     * Get all Players from store.
+     */
+    List<YipeePlayer> getAllWatchers() throws Exception;
+
+    /**
+     * Save all Players from store.
+     */
+    void putAllWatchers(Iterable<YipeePlayer> players) throws Exception;
+
+    /**
+     * Releases all resources of this object.
+     */
     void putGame(String id, GameManager game) throws Exception;
 
-    /** Releases all resources of this object. */
+    /**
+     * Releases all resources of this object.
+     */
     GameManager getGame(String gameId) throws Exception;
 
-    /** Get all active GameManager objects from the store. */
+    /**
+     * Get all active GameManager objects from the store.
+     */
     Collection<GameManager> getAllGames() throws Exception;
 
     /** Save all given GameManger objects into store. */

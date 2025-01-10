@@ -18,30 +18,34 @@ package asg.games.yipee.objects;
 import asg.games.yipee.persistence.YipeeObjectJPAVisitor;
 import asg.games.yipee.persistence.YipeeStorageAdapter;
 import asg.games.yipee.tools.Util;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
+@Getter
+@Setter
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_TABLES")
 @JsonIgnoreProperties({"tableNumber", "tableStartReady", "upArguments", "tableName", "roomId"})
 public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVisitor, Copyable<YipeeTable>, Disposable {
+
     @JsonIgnore
     public static final String ARG_TYPE = "type";
     @JsonIgnore
@@ -76,16 +80,19 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
 
     private ACCESS_TYPE accessType = ACCESS_TYPE.PUBLIC;
 
-    @OneToMany(mappedBy = "parentTable")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<YipeeSeat> seats = new LinkedHashSet<>();
 
-    @ManyToMany(mappedBy = "watching")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(
+            name = "YT_TABLE_PLAYERS", // Join table name
+            joinColumns = @JoinColumn(name = "table_id"), // Foreign key to YipeeRoom
+            inverseJoinColumns = @JoinColumn(name = "player_id") // Foreign key to YipeePlayer
+    )
     private Set<YipeePlayer> watchers = new LinkedHashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_room_id", unique = true, nullable = false)
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    private YipeeRoom parentRoom;
+    @Column(nullable = true, unique = true)
+    private Integer tableNumber;
 
     @JsonProperty("rated")
     private boolean isRated = false;
@@ -93,24 +100,15 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     @JsonProperty("soundOn")
     private boolean isSoundOn = true;
 
-    public void setParentRoom(YipeeRoom parentRoom) {
-        this.parentRoom = parentRoom;
-    }
-
-    public YipeeRoom getParentRoom() {
-        return parentRoom;
-    }
-
     //Empty Constructor required for Json.Serializable
     public YipeeTable() {
     }
 
-    public YipeeTable(YipeeRoom parentRoom, int nameNumber) {
-        this(parentRoom, nameNumber, null);
+    public YipeeTable(int nameNumber) {
+        this(nameNumber, null);
     }
 
-    public YipeeTable(YipeeRoom parentRoom, int nameNumber, Map<String, Object> arguments) {
-        this.parentRoom = parentRoom;
+    public YipeeTable(int nameNumber, Map<String, Object> arguments) {
         initialize(nameNumber, arguments);
     }
 
@@ -121,15 +119,7 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     }
 
     public void setTableName(int tableNumber) {
-        setName(parentRoom.getName() + ATT_TABLE_SPACER + ATT_NAME_PREPEND + tableNumber);
-    }
-
-    private String getParentRoomId() {
-        String roomId = "_NoRoomId_";
-        if (parentRoom != null) {
-            roomId = parentRoom.getId();
-        }
-        return roomId;
+        setName(getId() + ATT_TABLE_SPACER + ATT_NAME_PREPEND + tableNumber);
     }
 
     public int getTableNumber() {
@@ -216,17 +206,10 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     }
 
     public boolean isTableStartReady() {
-        if (isGroupReady(0)) {
-            return isGroupReady(1) || isGroupReady(2) || isGroupReady(3);
-        }
-        if (isGroupReady(1)) {
-            return isGroupReady(0) || isGroupReady(2) || isGroupReady(3);
-        }
-        if (isGroupReady(2)) {
-            return isGroupReady(0) || isGroupReady(1) || isGroupReady(3);
-        }
-        if (isGroupReady(3)) {
-            return isGroupReady(0) || isGroupReady(1) || isGroupReady(2);
+        int readyGroups = 0;
+        for (int i = 0; i < 4; i++) {
+            if (isGroupReady(i)) readyGroups++;
+            if (readyGroups > 1) return true;
         }
         return false;
     }
@@ -269,13 +252,6 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         }
     }
 
-    private void setWatchers(Set<YipeePlayer> watchers) {
-        this.watchers = watchers;
-    }
-
-    public Set<YipeePlayer> getWatchers() {
-        return watchers;
-    }
 
     @Override
     public void dispose() {
@@ -289,15 +265,14 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         copy.setAccessType(accessType);
         copy.setRated(isRated);
         copy.setSound(isSoundOn);
-        copy.setParentRoom(parentRoom);
         return copy;
     }
 
     @Override
     public YipeeTable deepCopy() {
         YipeeTable copy = copy();
-        copy.setSeats(seats);
-        copy.setWatchers(watchers);
+        copy.setSeats(new LinkedHashSet<>(seats));
+        copy.setWatchers(new LinkedHashSet<>(watchers));
         return copy;
     }
 
@@ -305,16 +280,24 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     public void visitSave(YipeeStorageAdapter adapter) {
         try{
             if(adapter != null) {
-                adapter.putAllPlayers(watchers);
-                for (YipeeSeat seat : seats) {
-                    if (seat != null) {
-                        seat.setParentTable(this);
-                    }
-                }
-                adapter.putAllSeats(seats);
+                adapter.visitYipeeTable(this);
             }
         } catch (Exception e) {
             throw new RuntimeException("Issue visiting save for " + this.getClass().getSimpleName() + ": ", e);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof YipeeTable)) return false;
+        if (!super.equals(o)) return false;
+        YipeeTable that = (YipeeTable) o;
+        return isRated == that.isRated && isSoundOn == that.isSoundOn && accessType == that.accessType && Objects.equals(seats, that.seats) && Objects.equals(watchers, that.watchers);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), accessType, isRated, isSoundOn);
     }
 }

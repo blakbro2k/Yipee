@@ -15,20 +15,30 @@
  */
 package asg.games.yipee.objects;
 
+import asg.games.yipee.game.YipeeBlockEval;
+import asg.games.yipee.game.YipeeGameBoard;
+import asg.games.yipee.tools.RandomUtil;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Arrays;
 import java.util.Queue;
 
+@Getter
+@Setter
 public class YipeeGameBoardState extends AbstractYipeeObject {
+
     private long serverGameStartTime = 0;
     private long currentStateTimeStamp = 0;
     private long previousStateTimeStamp = 0;
     private YipeePiece piece = null;
-    private YipeePiece nextPiecePreview = null;
+    private YipeePiece nextPiece = null;
+    private YipeeClock gameClock = null;
     private int[][] playerCells = new int[YipeeGameBoard.MAX_ROWS][YipeeGameBoard.MAX_COLS];
-    private int[][] partnerCells = new int[YipeeGameBoard.MAX_ROWS][YipeeGameBoard.MAX_COLS];
+    private YipeeGameBoardState partnerBoard;
     private Iterable<YipeeBrokenBlock> brokenCells = null;
     private Iterable<YipeeBlockMove> cellsToDrop = null;
-    private Iterable<Integer> powersQueue = null;
+    private Iterable<Integer> powers = null;
     private int yahooDuration;
     private float pieceFallTimer;
     private float pieceLockTimer;
@@ -41,129 +51,20 @@ public class YipeeGameBoardState extends AbstractYipeeObject {
     private int[] powersKeep;
     private boolean[] ids;
     private int idIndex;
+    private int[] randomColumnIndices = new int[YipeeGameBoard.MAX_COLS];
+    private RandomUtil.RandomNumberArray nextBlocks = null;
+    private int currentBlockPointer = -1;
+    private boolean fastDown;
+    private int brokenBlockCount = 0;
+    private boolean hasGameStarted = false;
+    private String name;
 
-    public YipeeGameBoardState() {}
-
-    public long getServerGameStartTime() {
-        return serverGameStartTime;
-    }
-
-    public void setServerGameStartTime(long serverTime) {
-        this.serverGameStartTime = serverTime;
-    }
-
-    public long getCurrentStateTimeStamp() {
-        return currentStateTimeStamp;
+    public YipeeGameBoardState() {
     }
 
     public void setCurrentStateTimeStamp(long currentStateTimeStamp) {
         setPreviousStateTimeStamp(currentStateTimeStamp);
         this.currentStateTimeStamp = currentStateTimeStamp;
-    }
-
-    public long getPreviousStateTimeStamp() {
-        return previousStateTimeStamp;
-    }
-
-    public void setPreviousStateTimeStamp(long previousStateTimeStamp) {
-        this.previousStateTimeStamp = previousStateTimeStamp;
-    }
-
-    public YipeePiece getNextPiecePreview() {
-        return nextPiecePreview;
-    }
-
-    public void setNextPiecePreview(YipeePiece nextPiecePreview) {
-        this.nextPiecePreview = nextPiecePreview;
-    }
-
-
-    public YipeePiece getPiece() {
-        return piece;
-    }
-
-    public void setPiece(YipeePiece piece) {
-        this.piece = piece;
-    }
-
-    public Iterable<YipeeBrokenBlock> getBrokenCells() {
-        return brokenCells;
-    }
-
-    public void setBrokenCells(Iterable<YipeeBrokenBlock> brokenCells) {
-        this.brokenCells = brokenCells;
-    }
-
-    public void setCellsToDrop(Iterable<YipeeBlockMove> cellsToDrop) {
-        this.cellsToDrop = cellsToDrop;
-    }
-
-    public void setPowersQueue(Iterable<Integer> powersQueue) {
-        this.powersQueue = powersQueue;
-    }
-
-    public Iterable<Integer> getPowersQueue() {
-        return powersQueue;
-    }
-
-    public Iterable<YipeeBlockMove> getCellsToDrop() {
-        return this.cellsToDrop;
-    }
-
-    public void setYahooDuration(int yahooDuration) {
-        this.yahooDuration = yahooDuration;
-    }
-
-    public int getYahooDuration() {
-        return this.yahooDuration;
-    }
-
-    public void setPieceFallTimer(float pieceFallTimer) {
-        this.pieceFallTimer = pieceFallTimer;
-    }
-
-    public float getPieceFallTimer() {
-        return this.pieceFallTimer;
-    }
-
-    public void setPieceLockTimer(float pieceLockTimer) {
-        this.pieceLockTimer = pieceLockTimer;
-    }
-
-    public float getPieceLockTimer() {
-        return this.pieceLockTimer;
-    }
-
-    public void setPartnerCells(int[][] partnerBoard) {
-        this.partnerCells = partnerBoard;
-    }
-
-    public int[][] getPartnerCells() {
-        return partnerCells;
-    }
-
-    public void setPlayerCells(int[][] playerCells) {
-        this.playerCells = playerCells;
-    }
-
-    public int[][] getPlayerCells() {
-        return playerCells;
-    }
-
-    public void setPartnerIsRight(boolean isPartnerRight) {
-        this.isPartnerRight = isPartnerRight;
-    }
-
-    public boolean getPartnerIsRight() {
-        return isPartnerRight;
-    }
-
-    public void setPlayerPiece(YipeePiece piece) {
-        this.piece = piece;
-    }
-
-    public YipeePiece getPlayerPiece() {
-        return piece;
     }
 
     // Print State
@@ -182,15 +83,15 @@ public class YipeeGameBoardState extends AbstractYipeeObject {
         out.append("Cells to drop: ").append(getCellsToDrop()).append("\n");
         out.append("#################").append("\n");
         out.append("Current 3Piece: ").append(getPiece()).append("\n");
-        out.append("Next 3Piece: ").append(getNextPiecePreview()).append("\n");
+        out.append("Next 3Piece: ").append(getNextPiece()).append("\n");
         out.append("#################").append("\n");
 
         if(isDebug()) {
             out.append("Debug Info: ").append("\n");
             out.append("#################").append("\n");
-            out.append("Broken Block Count [Y,A,H,O,0,!]): ").append(Arrays.toString(getBrokenBlockCount())).append("\n");
-            out.append("Powers Break Count [Y,A,H,O,0,!]): ").append(Arrays.toString(getPowersCount())).append("\n");
-            out.append("Boolean Ids: ").append(Arrays.toString(getBlockIds())).append("\n");
+            out.append("Broken Block Count [Y,A,H,O,0,!]): ").append(Arrays.toString(getCountOfBreaks())).append("\n");
+            out.append("Powers Break Count [Y,A,H,O,0,!]): ").append(Arrays.toString(getPowersKeep())).append("\n");
+            out.append("Boolean Ids: ").append(Arrays.toString(getIds())).append("\n");
             out.append("idIndex: ").append(getIdIndex()).append("\n");
             out.append("#################").append("\n");
         }
@@ -210,19 +111,20 @@ public class YipeeGameBoardState extends AbstractYipeeObject {
         return out.toString();
     }
 
-    private boolean isDebug() {
-        return isDebug;
-    }
-
-    public void setDebug(boolean isDebug) {
-        this.isDebug = isDebug;
+    private int[][] getPartnerCells(YipeeGameBoardState partnerBoardState) {
+        int[][] cells = new int[YipeeGameBoard.MAX_ROWS][YipeeGameBoard.MAX_COLS];
+        ;
+        if (partnerBoardState != null) {
+            cells = partnerBoardState.getPlayerCells();
+        }
+        return cells;
     }
 
     private void printRow(StringBuilder out, int r) {
         if (isPartnerRight) {
-            printPlayerRows(playerCells, partnerCells, r, out);
+            printPlayerRows(playerCells, getPartnerCells(partnerBoard), r, out);
         } else {
-            printPlayerRows(partnerCells, playerCells, r, out);
+            printPlayerRows(getPartnerCells(partnerBoard), playerCells, r, out);
         }
     }
 
@@ -280,61 +182,5 @@ public class YipeeGameBoardState extends AbstractYipeeObject {
 
     private int getPieceValue(int[][] cells, int c, int r) {
         return YipeeBlockEval.getCellFlag(cells[r][c]);
-    }
-
-    public void setBlockAnimationTimer(float blockAnimationTimer) {
-        this.blockAnimationTimer = blockAnimationTimer;
-    }
-
-    public float getBlockAnimationTimer() {
-        return blockAnimationTimer;
-    }
-
-    public void setIsPieceSet(boolean isPieceSet) {
-        this.isPieceSet = isPieceSet;
-    }
-
-    public boolean getIsPieceSet() {
-        return isPieceSet;
-    }
-
-    public void setSpecialPieces(Queue<Integer> specialPieces) {
-        this.specialPieces = specialPieces;
-    }
-
-    public Queue<Integer> getSpecialPieces() {
-        return specialPieces;
-    }
-
-    public void setBrokenBlockCount(int[] countOfBreaks) {
-        this.countOfBreaks = countOfBreaks;
-    }
-
-    public int[] getBrokenBlockCount() {
-        return countOfBreaks;
-    }
-
-    public void setPowersCount(int[] powersKeep) {
-        this.powersKeep = powersKeep;
-    }
-
-    public int[] getPowersCount() {
-        return powersKeep;
-    }
-
-    public void setBlockIds(boolean[] ids) {
-        this.ids = ids;
-    }
-
-    public boolean[] getBlockIds() {
-        return ids;
-    }
-
-    public void setIdIndex(int idIndex) {
-        this.idIndex = idIndex;
-    }
-
-    public int getIdIndex() {
-        return idIndex;
     }
 }

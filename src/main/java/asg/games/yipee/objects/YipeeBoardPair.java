@@ -16,36 +16,25 @@
 package asg.games.yipee.objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Objects;
 
+@Getter
+@Setter
 @JsonIgnoreProperties({"brokenCells", "tableStartReady", "upArguments", "tableName"})
 public class YipeeBoardPair extends AbstractYipeeObject {
-    YipeeGameBoard leftBoard;
-    YipeeGameBoard rightBoard;
+    YipeeGameBoardState leftBoard;
+    YipeeGameBoardState rightBoard;
 
     //Empty Contractor required for Json.Serializable
-    public YipeeBoardPair() {}
+    public YipeeBoardPair() {
+    }
 
-    public YipeeBoardPair(YipeeGameBoard left, YipeeGameBoard right) {
+    public YipeeBoardPair(YipeeGameBoardState left, YipeeGameBoardState right) {
         setLeftBoard(left);
         setRightBoard(right);
-    }
-
-    public void setLeftBoard(YipeeGameBoard leftBoard) {
-        this.leftBoard = leftBoard;
-    }
-
-    public void setRightBoard(YipeeGameBoard rightBoard){
-        this.rightBoard = rightBoard;
-    }
-
-    public YipeeGameBoard getLeftBoard() {
-        return leftBoard;
-    }
-
-    public YipeeGameBoard getRightBoard() {
-        return rightBoard;
     }
 
     @Override

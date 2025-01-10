@@ -16,6 +16,17 @@
 package asg.games.yipee.persistence;
 
 import asg.games.yipee.objects.Disposable;
+import asg.games.yipee.objects.YipeeRoom;
+import asg.games.yipee.objects.YipeeSeat;
+import asg.games.yipee.objects.YipeeTable;
 
+/**
+ *
+ */
 public interface YipeeStorageAdapter extends YipeeStorage, ClientPlayerController, Disposable {
+    void visitYipeeRoom(YipeeRoom room);
+
+    void visitYipeeTable(YipeeTable table);
+
+    void visitYipeeSeat(YipeeSeat seat);
 }

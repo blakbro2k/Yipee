@@ -17,8 +17,6 @@ package asg.games.yipee.game;
 
 import asg.games.yipee.objects.Disposable;
 import asg.games.yipee.objects.YipeeBlock;
-import asg.games.yipee.objects.YipeeBlockEval;
-import asg.games.yipee.objects.YipeeGameBoard;
 import asg.games.yipee.objects.YipeeGameBoardState;
 import asg.games.yipee.objects.YipeePiece;
 import asg.games.yipee.objects.YipeePlayer;
@@ -88,7 +86,7 @@ public class GameManager implements Disposable {
         boolean wasPieceJustSet = false;
         if(board != null){
             //Move Piece down, flag matches
-            board.update(delta);
+            board.update(board.getGameState(), delta);
         }
         //logger.exit("updateBoard", wasPieceJustSet);
     }

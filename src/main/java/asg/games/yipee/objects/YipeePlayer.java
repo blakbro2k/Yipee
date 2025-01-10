@@ -15,113 +15,171 @@
  */
 package asg.games.yipee.objects;
 
+import asg.games.yipee.tools.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.LinkedHashSet;
 import java.util.Objects;
-import java.util.Set;
 
 /**
+ * Represents a player in the Yipee game. Each player has a rating and an icon.
+ * The player's rating determines their skill level, and the icon represents the player's avatar.
+ * </p>
+ * This class also contains the configuration for the player's keys
+ * </p>
  * Created by Blakbro2k on 1/28/2018.
+ * Updated for enhanced documentation and clarity.
+ *
+ * @see YipeeKeyMap
  */
-
 @Setter
 @Getter
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_PLAYERS")
 public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePlayer>, Disposable {
+    @Transient
+    private static final Logger logger = LoggerFactory.getLogger(YipeePlayer.class);
+
     @JsonIgnore
     public final static int DEFAULT_RATING_NUMBER = 1500;
+    @JsonIgnore
+    public final static int DEFAULT_ICON_NUMBER = 1;
 
+    @Column(name = "rating", nullable = false, columnDefinition = "INT DEFAULT 1500")
     private int rating;
+
+    @Column(name = "icon", nullable = false, columnDefinition = "INT DEFAULT 1")
     private int icon;
 
-    @JsonProperty("rooms")
-    @ManyToMany
-    @JoinTable(name = "YT_PLAYER_ROOM_IDX",
-            joinColumns = @JoinColumn(name = "player_id"),
-            inverseJoinColumns = @JoinColumn(name = "room_id"))
-    private Set<YipeeRoom> rooms = new LinkedHashSet<>();
+    @Lob
+    @Column(name = "serialized_key_config", columnDefinition = "TEXT")
+    @JsonIgnore
+    private String serializedKeyConfig;
 
-    @JsonProperty("watching")
-    @ManyToMany
-    @JoinTable(name = "YT_PLAYER_TABLE_IDX",
-            joinColumns = @JoinColumn(name = "player_id"),
-            inverseJoinColumns = @JoinColumn(name = "table_id"))
-    private Set<YipeeTable> watching = new LinkedHashSet<>();
+    @Transient
+    private YipeeKeyMap keyConfig = new YipeeKeyMap();
 
-    //Empty Constructor required for Json.Serializable
+    /**
+     * Default constructor required for JSON serialization/deserialization.
+     */
     public YipeePlayer() {
     }
 
+    /**
+     * Creates a new YipeePlayer with default rating and defaut icon
+     * @param name
+     */
     public YipeePlayer(String name) {
-        this(name, DEFAULT_RATING_NUMBER, 1);
+        this(name, DEFAULT_RATING_NUMBER, DEFAULT_ICON_NUMBER);
     }
 
+    /**
+     * Creates a new @{link YipeePlayer} given a starting rating
+     *
+     * @param name
+     * @param rating
+     */
     public YipeePlayer(String name, int rating) {
-        this(name, rating, 1);
+        this(name, rating, DEFAULT_ICON_NUMBER);
     }
 
-    public YipeePlayer(String name, int rating, int icon){
+    /**
+     * Creates a new @{link YipeePlayer} given a starting rating and icon
+     *
+     * @param name
+     * @param rating
+     * @param icon
+     */
+    public YipeePlayer(String name, int rating, int icon) {
         this();
         setName(name);
         setRating(rating);
         setIcon(icon);
+        System.out.println("keyConfig: " + getSerializedKeyConfig());
     }
 
+    /**
+     * Gets the {@code YipeeKeyMap} which holds the player key configuration map
+     * @return
+     */
+    public YipeeKeyMap getKeyConfig() {
+        if (keyConfig == null && serializedKeyConfig != null) {
+            synchronized (this) {
+                if (keyConfig == null) {
+                    try {
+                        keyConfig = Util.readValue(serializedKeyConfig, YipeeKeyMap.class);
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Serialized keyCofig: " + keyConfig);
+                        }
+                    } catch (JsonProcessingException e) {
+                        logger.error("Failed to deserialize keyConfig", e);
+                        throw new RuntimeException("Failed to deserialize keyConfig", e);
+                    }
+                }
+            }
+        }
+        return keyConfig;
+    }
+
+    /**
+     * Sets the {@code YipeeKeyMap} which holds the player key configuration map
+     * @param keyConfig
+     */
+    public void setKeyConfig(YipeeKeyMap keyConfig) {
+        this.keyConfig = keyConfig;
+        try {
+            this.serializedKeyConfig = Util.writeValueAsString(keyConfig);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Serialized serializedKeyConfig: " + serializedKeyConfig);
+            }
+        } catch (JsonProcessingException e) {
+            logger.error("Failed to serialize keyConfig  in getKeysConfig()", e);
+            throw new RuntimeException("Failed to serialize keyConfig in getKeysConfig()", e);
+        }
+    }
+
+    /**
+     * Increases the player rating by a given amount
+     *
+     * @param inc
+     */
     public void increaseRating(int inc) {
+        if (inc < 0) throw new IllegalArgumentException("Increment must be non-negative.");
+        if (logger.isDebugEnabled()) {
+            logger.debug("Increasing current rating:[{}] by {}", rating, inc);
+        }
         rating += inc;
+        if (logger.isDebugEnabled()) {
+            logger.debug("rating={}", rating);
+        }
     }
 
+    /**
+     * Decreases the player rating by a given amount
+     *
+     * @param dec
+     */
     public void decreaseRating(int dec) {
-        rating -= dec;
-    }
-
-    public boolean addRoom(YipeeRoom room) {
-        if (room == null) return false;
-        return rooms.add(room);
-    }
-
-    public boolean removeRoom(YipeeRoom room) {
-        if (room == null) return false;
-        return rooms.remove(room);
-    }
-
-    public boolean addWatcher(YipeeTable tableToWatch) {
-        if (tableToWatch == null) return false;
-        return watching.add(tableToWatch);
-    }
-
-    public boolean removeWatcher(YipeeTable tableToWatch) {
-        if (tableToWatch == null) return false;
-        return watching.remove(tableToWatch);
-    }
-
-    public long watchingCount() {
-        return watching.stream().count();
-    }
-
-    public long roomsCount() {
-        return rooms.stream().count();
-    }
-
-    public void clearWatchers() {
-        watching.clear();
-    }
-
-    public void clearRooms() {
-        rooms.clear();
+        if (dec < 0) throw new IllegalArgumentException("Decrement must be non-negative.");
+        if (logger.isDebugEnabled()) {
+            logger.debug("Decreasing current rating:[{}] by {}", rating, dec);
+        }
+        rating = Math.max(0, rating - dec);
+        if (logger.isDebugEnabled()) {
+            logger.debug("rating={}", rating);
+        }
     }
 
     @Override
@@ -136,28 +194,26 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
     @Override
     public YipeePlayer deepCopy() {
         YipeePlayer copy = copy();
-        copy.setRooms(this.getRooms());
-        copy.setWatching(this.getWatching());
+        copy.setKeyConfig(this.getKeyConfig() != null ? this.getKeyConfig().deepCopy() : null);
         return copy;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof YipeePlayer)) return false;
         if (!super.equals(o)) return false;
-        YipeePlayer that = (YipeePlayer) o;
-        return rating == that.rating && icon == that.icon && Objects.equals(rooms, that.rooms) && Objects.equals(watching, that.watching);
+        YipeePlayer player = (YipeePlayer) o;
+        return rating == player.rating && icon == player.icon && Objects.equals(keyConfig, player.keyConfig);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), rating, icon, rooms, watching);
+        return Objects.hash(super.hashCode(), rating, icon, keyConfig);
     }
 
     @Override
     public void dispose() {
-        clearRooms();
-        clearWatchers();
+        keyConfig.dispose();
     }
 }

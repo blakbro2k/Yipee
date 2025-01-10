@@ -15,6 +15,8 @@
  */
 package asg.games.yipee.tools;
 
+import java.time.Instant;
+
 /**
  * Wrapper around System.nanoTime() and System.currentTimeMillis(). Use this if you want to be compatible across all platforms!
  *
@@ -30,7 +32,8 @@ public final class TimeUtils {
 
     /** @return the difference, measured in milliseconds, between the current time and midnight, January 1, 1970 UTC. */
     public static long millis () {
-        return System.currentTimeMillis();
+        Instant now = Instant.now();
+        return now.toEpochMilli();
     }
 
     private static final long nanosPerMilli = 1000000;

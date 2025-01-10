@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.tools;
 
+import asg.games.yipee.objects.AbstractYipeeObject;
 import asg.games.yipee.objects.YipeeRoom;
 import asg.games.yipee.objects.YipeeSeat;
 import asg.games.yipee.objects.YipeeTable;
@@ -64,7 +65,7 @@ public class Util {
     public static int getNextTableNumber(final YipeeRoom yokelRoom) {
         int tableIndex = -1;
         if (yokelRoom != null) {
-            List<Integer> tables = iterableToList(yokelRoom.getAllTableIndexes());
+            List<Integer> tables = iterableToList(yokelRoom.getTableIndexes());
 
             int size = size(tables);
             if (size > 0) {
@@ -117,10 +118,7 @@ public class Util {
 
     public static <T> List<T> arrayToList(T[] o) {
         //int size = o.length;
-        List<T> array = new LinkedList<>();
-        array.addAll(Arrays.asList(o));
-
-        return array;
+        return new LinkedList<>(Arrays.asList(o));
     }
 
     public static <T> Iterable<T> safeIterable(Iterable<T> collection){
@@ -230,6 +228,15 @@ public class Util {
         return null;
     }
 
+    public static <T> T readValue(String jsonValue, Class<T> clazz) throws JsonProcessingException {
+        return json.readValue(jsonValue, clazz);
+    }
+
+    public static String writeValueAsString(Object object) throws JsonProcessingException {
+        return json.writeValueAsString(object);
+    }
+
+
     public static class IDGenerator {
         private IDGenerator() {
         }
@@ -283,7 +290,7 @@ public class Util {
     }
 
     public static boolean isEmpty(String text) {
-        return text == null || text.isEmpty();
+        return text == null || text.isEmpty() || text.isBlank();
     }
 
     public static boolean isEmpty(Iterable<?> collection) {
@@ -326,7 +333,7 @@ public class Util {
         return collection.stream().toList();
     }
 
-    public static String getJsonString(asg.games.yipee.objects.AbstractYipeeObject o) throws JsonProcessingException {
+    public static String getJsonString(AbstractYipeeObject o) throws JsonProcessingException {
         return json.writeValueAsString(o);
     }
 

@@ -15,9 +15,18 @@
  */
 package asg.games.yipee.objects;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Objects;
 
+@Getter
+@Setter
 public class YipeeBlockMove extends AbstractYipeeObject {
+    private static final Logger logger = LoggerFactory.getLogger(YipeeBlockMove.class);
+
     private int block;
     private int cellId;
     private int col;
@@ -25,50 +34,15 @@ public class YipeeBlockMove extends AbstractYipeeObject {
     private int targetRow;
 
     //Empty Constructor required for Json.Serializable
-    public YipeeBlockMove() {}
+    public YipeeBlockMove() {
+    }
 
     public YipeeBlockMove(int cellID, int block, int col, int row, int targetRow) {
         setBlock(block);
-        setCellID(cellID);
+        setCellId(cellID);
         setCol(col);
         setRow(row);
         this.targetRow = targetRow;
-    }
-
-    public void setCellID(int cellId) {
-        this.cellId = cellId;
-    }
-
-    public int getCellID() {
-        return cellId;
-    }
-
-    public void setBlock(int block) {
-        this.block = block;
-    }
-
-    public int getBlock() {
-        return block;
-    }
-
-    public void setRow(int row) {
-        this.row = row;
-    }
-
-    public int getRow() {
-        return row;
-    }
-
-    public void setCol(int col) {
-        this.col = col;
-    }
-
-    public int getCol() {
-        return col;
-    }
-
-    public int getTargetRow() {
-        return targetRow;
     }
 
     @Override
@@ -77,7 +51,7 @@ public class YipeeBlockMove extends AbstractYipeeObject {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         YipeeBlockMove blockMove = (YipeeBlockMove) o;
-        return col == blockMove.getCol() && row == blockMove.getRow() && targetRow == blockMove.getTargetRow() && cellId == blockMove.getCellID() && block == blockMove.getBlock();
+        return col == blockMove.getCol() && row == blockMove.getRow() && targetRow == blockMove.getTargetRow() && cellId == blockMove.getCellId() && block == blockMove.getBlock();
     }
 
     @Override

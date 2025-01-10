@@ -15,16 +15,70 @@
  */
 package asg.games.yipee.objects;
 
+import asg.games.yipee.game.YipeeBlockEval;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Objects;
 
 /**
  * Created by Blakbro2k on 12/29/2017.
  */
+/**
+ * Represents an individual block in the Yipee game, which may have unique
+ * properties and power intensities. Each {@code YipeeBlock} has a specific
+ * type, position, and potentially a power level that determines its effect in the game.
+ *
+ * <p>Blocks can be categorized into various types such as offensive, defensive,
+ * and special blocks. The type and power level of a block influence its behavior
+ * and interactions during gameplay.</p>
+ *
+ * <h2>Key Features:</h2>
+ * <ul>
+ *   <li>Maintains a {@code blockType} that identifies the block's role or effect.</li>
+ *   <li>Tracks position on the game grid with {@code x} and {@code y} coordinates.</li>
+ *   <li>Supports power intensities ranging from minor to mega, which can be adjusted
+ *       within predefined bounds.</li>
+ *   <li>Includes reset functionality to reinitialize the block to a default state.</li>
+ * </ul>
+ *
+ * <h2>Block Types:</h2>
+ * <ul>
+ *   <li>{@link #CLEAR_BLOCK} - Represents an empty or clear block.</li>
+ *   <li>{@link #OFFENSIVE_MINOR}, {@link #DEFENSIVE_MINOR}, etc. -
+ *       Represent blocks with varying levels of offensive or defensive power.</li>
+ *   <li>{@link #MEDUSA}, {@link #TOP_MIDAS} - Special types of blocks.</li>
+ * </ul>
+ *
+ * <h2>Usage Example:</h2>
+ * <pre>
+ *     // Create a new block of a specific type
+ *     YipeeBlock block = new YipeeBlock(5, 7, YipeeBlock.OFFENSIVE_MINOR);
+ *
+ *     // Set power intensity
+ *     block.setPowerIntensity(5);
+ *
+ *     // Check if the block has power
+ *     if (block.hasPower()) {
+ *         System.out.println("Block has active power.");
+ *     }
+ *
+ *     // Reset the block
+ *     block.reset();
+ * </pre>
+ *
+ * <h2>Reset Functionality:</h2>
+ * <p>The {@code reset()} method resets the block to its default state,
+ * including position, block type, and power intensity. This is useful when
+ * reusing blocks during gameplay.</p>
+ *
+ * @author Blakbro2k
+ * @version 1.0
+ * @see AbstractYipeeObject
+ * @see asg.games.yipee.game.YipeeBlockEval
+ */
 public class YipeeBlock extends AbstractYipeeObject implements Disposable {
-    /* Retrieves power "level"
-     * - Even represents defensive powers ( 2, 4, 6 )
-     * - Odd represents attack powers ( 3, 5, 7 )
-     * ( MINOR, REGULAR, MEGA )*/
+    private static final Logger logger = LoggerFactory.getLogger(YipeeBlock.class);
 
     public static final int Y_BLOCK = 0;
     public static final int A_BLOCK = 1;
@@ -87,6 +141,8 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
     public static final int DEFENSIVE_BASH_BLOCK_MINOR = 2085;
     public static final int DEFENSIVE_BASH_BLOCK_REGULAR = 2117;
     public static final int DEFENSIVE_BASH_BLOCK_MEGA = 2149;
+    private static final int POWER_INTENSITY_LOWER_BOUNDS = 3;
+    private static final int POWER_INTENSITY_UPPER_BOUNDS = 7;
 
     public int x;
     public int y;
@@ -122,24 +178,41 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
     }
 
     public void reset() {
-        //Logger.trace("Enter reset()");
+        if (logger.isInfoEnabled()) {
+            logger.info("Resetting block by zeroing out values to default");
+        }
         this.x = 0;
         this.y = 0;
         this.blockType = CLEAR_BLOCK;
         this.powerIntensity = 0;
-        //Logger.trace("Exit reset()");
     }
 
     public void setPowerIntensity(int intensity) {
         this.powerIntensity = intensity;
     }
 
+    /**
+     * Retrieves power "level"
+     * <p>
+     * - Even represents defensive powers ( 2, 4, 6 )
+     * - Odd represents attack powers ( 3, 5, 7 )
+     * ( MINOR, REGULAR, MEGA )
+     * <p>
+     * @return powerIntensity
+     */
     public int getPowerIntensity() {
-        if(powerIntensity == 1) {
-            powerIntensity = 3;
+        // Starts at 3 to start with an attack block first
+        if (powerIntensity <= 1) {
+            if (logger.isInfoEnabled()) {
+                logger.info("Setting power to lower bound: [{}]", POWER_INTENSITY_LOWER_BOUNDS);
+            }
+            powerIntensity = POWER_INTENSITY_LOWER_BOUNDS;
         }
-        if(powerIntensity > 7) {
-            powerIntensity = 7;
+        if (powerIntensity > POWER_INTENSITY_UPPER_BOUNDS) {
+            if (logger.isInfoEnabled()) {
+                logger.info("Setting power to upper bound: [{}]", POWER_INTENSITY_UPPER_BOUNDS);
+            }
+            powerIntensity = POWER_INTENSITY_UPPER_BOUNDS;
         }
         return powerIntensity;
     }
