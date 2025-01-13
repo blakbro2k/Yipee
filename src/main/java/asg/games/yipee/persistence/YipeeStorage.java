@@ -15,13 +15,11 @@
  */
 package asg.games.yipee.persistence;
 
-import asg.games.yipee.game.GameManager;
 import asg.games.yipee.objects.YipeePlayer;
 import asg.games.yipee.objects.YipeeRoom;
 import asg.games.yipee.objects.YipeeSeat;
 import asg.games.yipee.objects.YipeeTable;
 
-import java.util.Collection;
 import java.util.List;
 
 /** Interface for Yokel Object Resource Storage.
@@ -91,23 +89,5 @@ public interface YipeeStorage {
      * Save all Players from store.
      */
     void putAllWatchers(Iterable<YipeePlayer> players) throws Exception;
-
-    /**
-     * Releases all resources of this object.
-     */
-    void putGame(String id, GameManager game) throws Exception;
-
-    /**
-     * Releases all resources of this object.
-     */
-    GameManager getGame(String gameId) throws Exception;
-
-    /**
-     * Get all active GameManager objects from the store.
-     */
-    Collection<GameManager> getAllGames() throws Exception;
-
-    /** Save all given GameManger objects into store. */
-    void putAllGames(Iterable<GameManager> games) throws Exception;
 
 }

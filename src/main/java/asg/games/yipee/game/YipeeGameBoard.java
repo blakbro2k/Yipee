@@ -53,6 +53,7 @@ public class YipeeGameBoard implements Disposable {
     public static final float FALL_RATE = 0.04f;
     public static final float FAST_FALL_RATE = 0.496f;
     private static final int MAX_FALL_VALUE = 1;
+    private static final int CONST_ROW_ADD = 1;
 
     //private final YokelPiece MEDUSA_PIECE = new YokelPiece(0, YokelBlock.MEDUSA, YokelBlock.MEDUSA, YokelBlock.MEDUSA);
     //private final YokelPiece MIDAS_PIECE = new YokelPiece(0, YokelBlock.BOT_MIDAS, YokelBlock.MID_MIDAS, YokelBlock.TOP_MIDAS);
@@ -60,7 +61,6 @@ public class YipeeGameBoard implements Disposable {
     private int[][] cells;
     private boolean[] ids;
     private int idIndex;
-    private static final int[] targetRows = new int[MAX_COLS];
     private final int[] randomColumnIndices = new int[MAX_COLS];
     private final boolean[][] colorBlastGrid
             = {new boolean[MAX_COLS],
@@ -79,6 +79,7 @@ public class YipeeGameBoard implements Disposable {
             new boolean[MAX_COLS],
             new boolean[MAX_COLS],
             new boolean[MAX_COLS]};
+    private static final int[] targetRows = new int[MAX_COLS];
     private final int[] pushRowOrder = {0, 1, 2, 2, 1, 0};
     private final int[] pushColumnOrder = {2, 3, 1, 4, 0, 5};
     private final int[] countOfPieces = new int[MAX_COLS];
@@ -275,13 +276,17 @@ public class YipeeGameBoard implements Disposable {
         gameClock.stop();
         clearBoard();
         resetPiece();
-        Util.clearArrays(powers);
+        Util.clearArrays(powers, specialPieces, brokenCells, cellsToDrop);
+        Arrays.fill(countOfBreaks, 0);
+        Arrays.fill(powersKeep, 0);
         end();
     }
 
     @Override
     public void dispose() {
-        Util.clearArrays(specialPieces, powers);
+        Util.clearArrays(powers, specialPieces, brokenCells, cellsToDrop);
+        Arrays.fill(countOfBreaks, 0);
+        Arrays.fill(powersKeep, 0);
     }
 
     public void begin() {
@@ -756,6 +761,14 @@ public class YipeeGameBoard implements Disposable {
                 cells[y + i * _y][x + i * _x] = copy;
             }
         }
+    }
+
+    public void applyPlayerAction(PlayerAction action) {
+        //TODO: handle yahoo add blocks
+        //TODO: handle speed special
+        //TODO: handle medusa/midas
+        //addSpecialPiece(int piece)
+        handlePower(Util.otoi(action.getActionData()));
     }
 
     public void handlePower(int i) {
@@ -1759,6 +1772,10 @@ public class YipeeGameBoard implements Disposable {
 
     public void update(YipeeGameBoardState state, float delta) {
         updateState(state);
+        update(delta);
+    }
+
+    public void update(float delta) {
         updateGame(delta);
     }
 

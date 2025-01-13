@@ -36,13 +36,13 @@ public class YipeeGameBoardState extends AbstractYipeeObject {
     private YipeeClock gameClock = null;
     private int[][] playerCells = new int[YipeeGameBoard.MAX_ROWS][YipeeGameBoard.MAX_COLS];
     private int[][] partnerCells = new int[YipeeGameBoard.MAX_ROWS][YipeeGameBoard.MAX_COLS];
-    private YipeeGameBoardState partnerBoard;
+    private YipeeGameBoardState partnerBoard = null;
     private Queue<YipeeBrokenBlock> brokenCells = null;
     private Queue<YipeeBlockMove> cellsToDrop = null;
     private Queue<Integer> powers = null;
-    private int yahooDuration;
-    private float pieceFallTimer;
-    private float pieceLockTimer;
+    private int yahooDuration = 0;
+    private float pieceFallTimer = 0;
+    private float pieceLockTimer = 0;
     private boolean isPartnerRight;
     private float blockAnimationTimer;
     private boolean isPieceSet;

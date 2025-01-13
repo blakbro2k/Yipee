@@ -16,6 +16,8 @@
 package asg.games.yipee.objects;
 
 import asg.games.yipee.game.YipeeBlockEval;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,6 +79,8 @@ import java.util.Objects;
  * @see AbstractYipeeObject
  * @see asg.games.yipee.game.YipeeBlockEval
  */
+@Getter
+@Setter
 public class YipeeBlock extends AbstractYipeeObject implements Disposable {
     private static final Logger logger = LoggerFactory.getLogger(YipeeBlock.class);
 
@@ -169,14 +173,6 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
         this(x, y, CLEAR_BLOCK);
     }
 
-    public int getBlockType() {
-        return blockType;
-    }
-
-    public void setBlockType(int blockType) {
-        this.blockType = blockType;
-    }
-
     public void reset() {
         if (logger.isInfoEnabled()) {
             logger.info("Resetting block by zeroing out values to default");
@@ -185,10 +181,6 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
         this.y = 0;
         this.blockType = CLEAR_BLOCK;
         this.powerIntensity = 0;
-    }
-
-    public void setPowerIntensity(int intensity) {
-        this.powerIntensity = intensity;
     }
 
     /**
