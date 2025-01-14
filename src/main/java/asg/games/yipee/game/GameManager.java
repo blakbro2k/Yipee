@@ -116,7 +116,7 @@ public abstract class GameManager {
             boolean gameLoopTerminator = gameLoopExecutor.awaitTermination(5, TimeUnit.SECONDS);
             boolean gameActionExe = playerActionExecutor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            logger.error("Error shutting down executors", e);
+            LogUtil.error("Error shutting down executors", e);
         }
     }
 
@@ -126,7 +126,7 @@ public abstract class GameManager {
 
     public Queue<YipeeGameBoardState> getGameBoardStates(int seatId) {
         if (seatId < 0 || seatId > gameBoardStateMap.size()) {
-            logger.error("GameState seatId is out of bounds: {}", seatId);
+            LogUtil.error("GameState seatId is out of bounds: {}", seatId);
             throw new IllegalArgumentException("GameState seatId is out of bounds: " + seatId);
         }
         return gameBoardStateMap.get(seatId); // Access a specific game board

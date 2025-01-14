@@ -689,7 +689,6 @@ public class YipeeGameBoard implements Disposable {
     //Adds broken cells to queue
     //Clears broken cells
     public void handleBrokenCellDrops() {
-        //logger.debug("Enter handleBrokenCellDrops()");
         for (int col = 0; col < MAX_COLS; col++) {
             int index = 0;
 
@@ -712,7 +711,6 @@ public class YipeeGameBoard implements Disposable {
             }
         }
         updateBoard();
-        //logger.debug("Exit handleBrokenCellDrops()");
     }
 
     public void flagPowerBlockCells() {
@@ -742,7 +740,7 @@ public class YipeeGameBoard implements Disposable {
         }
     }
 
-    void flagCellForMatches(int x, int y, int _x, int _y) {//System.out.println("##flagCellForMatches##");
+    void flagCellForMatches(int x, int y, int _x, int _y) {
         int cell = getPieceValue(x, y);
 
         int count;
@@ -1205,12 +1203,15 @@ public class YipeeGameBoard implements Disposable {
 
     int getYahooDuration() {
         int duration = 0;
+        int horizontal = 0;
+        int vert = 0;
+        int diag = 0;
 
         //Count Horizontals
         for (int row = 0; row < MAX_PLAYABLE_ROWS; row++) {
             if (checkForNonVerticalYahoo(row, 0)) {
-                duration += HORIZONTAL_HOO_TIME;
-                //++horizontal;
+                //duration += HORIZONTAL_HOO_TIME;
+                ++horizontal;
 
                 for (int column = 0; column < MAX_COLS; column++) {
                     cells[row][column] = YipeeBlockEval.addBrokenFlag(cells[row][column]);
@@ -1235,8 +1236,8 @@ public class YipeeGameBoard implements Disposable {
                             && YipeeBlockEval.getCellFlag(cells[row + 4][column]) == 1
                             && YipeeBlockEval.getCellFlag(cells[row + 5][column]) == 0) {
 
-                        duration += VERTICAL_HOO_TIME;
-                        //++vert;
+                        //duration += VERTICAL_HOO_TIME;
+                        ++vert;
 
                         for (int i = 0; i < MAX_COLS; i++) {
                             cells[row + i][column] = YipeeBlockEval.addBrokenFlag(cells[row + i][column]);
@@ -1249,8 +1250,8 @@ public class YipeeGameBoard implements Disposable {
         //Check Diagonals
         for (int row = 0; row < 8; row++) {
             if (checkForNonVerticalYahoo(row, 1)) {
-                duration += DIAGONAL_HOO_TIME;
-                //++diag;
+                //duration += DIAGONAL_HOO_TIME;
+                ++diag;
 
                 for (int col = 0; col < MAX_COLS; col++) {
                     cells[row + col][col] = YipeeBlockEval.addBrokenFlag(cells[row + col][col]);
@@ -1260,8 +1261,8 @@ public class YipeeGameBoard implements Disposable {
 
         for (int row = 5; row < MAX_PLAYABLE_ROWS; row++) {
             if (checkForNonVerticalYahoo(row, -1)) {
-                duration += DIAGONAL_HOO_TIME;
-                //++diag;
+                //duration += DIAGONAL_HOO_TIME;
+                ++diag;
 
                 for (int col = 0; col < MAX_COLS; col++) {
                     cells[row - col][col] = YipeeBlockEval.addBrokenFlag(cells[row - col][col]);
@@ -1270,8 +1271,8 @@ public class YipeeGameBoard implements Disposable {
         }
 
         updateBoard();
-        //return (horizontal + diag + vert - 1) + (horizontal * HORIZONTAL_HOO_TIME) + (diag * DIAGONAL_HOO_TIME) + (vert * VERTICAL_HOO_TIME);
-        return duration;
+        return (horizontal + diag + vert - 1) + (horizontal * HORIZONTAL_HOO_TIME) + (diag * DIAGONAL_HOO_TIME) + (vert * VERTICAL_HOO_TIME);
+        //return duration;
     }
 
     public int getIdIndex() {
@@ -1344,10 +1345,6 @@ public class YipeeGameBoard implements Disposable {
     }
 
     void applyPowerBlockAt(int value, int col, int row) {
-        System.out.println("Special Type=" + value);
-        System.out.println("Special col=" + col);
-        System.out.println("Special row=" + row);
-
         if (!YipeeBlockEval.hasPowerBlockFlag(value)) {
             System.out.println("Assertion failure:  cell isn't weird " + value);
         } else if (YipeeBlockEval.getCellFlag(value) != YipeeBlock.Oy_BLOCK) {
