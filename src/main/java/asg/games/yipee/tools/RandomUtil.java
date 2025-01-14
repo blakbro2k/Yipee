@@ -18,6 +18,7 @@ package asg.games.yipee.tools;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -101,7 +102,7 @@ public class RandomUtil {
         }
     }
 
-    public static class RandomNumberArray {
+    public static class RandomNumberArray implements Serializable {
         int[] randomNumbers;
 
         public RandomNumberArray(int byteLength, long seed, int maxValue) {

@@ -25,6 +25,8 @@ import asg.games.yipee.objects.YipeePiece;
 import asg.games.yipee.tools.RandomUtil;
 import asg.games.yipee.tools.TimeUtils;
 import asg.games.yipee.tools.Util;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -38,6 +40,8 @@ import java.util.Vector;
  *
  * @author Blakbro2k
  */
+@Getter
+@Setter
 public class YipeeGameBoard implements Disposable {
     public static final int MAX_RANDOM_BLOCK_NUMBER = 2048;
     public static final int MAX_COLS = 6;
@@ -49,6 +53,7 @@ public class YipeeGameBoard implements Disposable {
     public static final float FALL_RATE = 0.04f;
     public static final float FAST_FALL_RATE = 0.496f;
     private static final int MAX_FALL_VALUE = 1;
+    private static final int CONST_ROW_ADD = 1;
 
     //private final YokelPiece MEDUSA_PIECE = new YokelPiece(0, YokelBlock.MEDUSA, YokelBlock.MEDUSA, YokelBlock.MEDUSA);
     //private final YokelPiece MIDAS_PIECE = new YokelPiece(0, YokelBlock.BOT_MIDAS, YokelBlock.MID_MIDAS, YokelBlock.TOP_MIDAS);
@@ -56,7 +61,6 @@ public class YipeeGameBoard implements Disposable {
     private int[][] cells;
     private boolean[] ids;
     private int idIndex;
-    private static final int[] targetRows = new int[MAX_COLS];
     private final int[] randomColumnIndices = new int[MAX_COLS];
     private final boolean[][] colorBlastGrid
             = {new boolean[MAX_COLS],
@@ -75,13 +79,14 @@ public class YipeeGameBoard implements Disposable {
             new boolean[MAX_COLS],
             new boolean[MAX_COLS],
             new boolean[MAX_COLS]};
+    private static final int[] targetRows = new int[MAX_COLS];
     private final int[] pushRowOrder = {0, 1, 2, 2, 1, 0};
     private final int[] pushColumnOrder = {2, 3, 1, 4, 0, 5};
     private final int[] countOfPieces = new int[MAX_COLS];
 
     //Added
-    private final int[] countOfBreaks = new int[MAX_COLS];
-    private final int[] powersKeep = new int[MAX_COLS];
+    private int[] countOfBreaks = new int[MAX_COLS];
+    private int[] powersKeep = new int[MAX_COLS];
 
     private final boolean[] cellMatches = new boolean[7];
     private final int[] cellIndices = {0, 1, 2, 3, 4, 5, 6};
@@ -100,8 +105,8 @@ public class YipeeGameBoard implements Disposable {
     private RandomUtil.RandomNumberArray nextBlocks;
     private int currentBlockPointer = -1;
     private boolean fastDown;
-    private Queue<Integer> powers;
-    private Queue<Integer> specialPieces;
+    private Queue<Integer> powers = new LinkedList<>();
+    private Queue<Integer> specialPieces = new LinkedList<>();
     Queue<YipeeBrokenBlock> brokenCells = new LinkedList<>();
     Queue<YipeeBlockMove> cellsToDrop = new LinkedList<>();
 
@@ -131,9 +136,32 @@ public class YipeeGameBoard implements Disposable {
         setGameState();
     }
 
-    private void loadFromState(asg.games.yipee.objects.YipeeGameBoardState state) {
+    private void loadFromState(YipeeGameBoardState state) {
         if (state != null) {
-
+            setBrokenBlockCount(state.getBrokenBlockCount());
+            setFastDown(state.isFastDown());
+            setCurrentBlockPointer(state.getCurrentBlockPointer());
+            setNextBlocks(state.getNextBlocks());
+            setCountOfBreaks(state.getCountOfBreaks());
+            setPowersKeep(state.getPowersKeep());
+            setGameClock(state.getGameClock());
+            setIds(state.getIds());
+            setIdIndex(state.getIdIndex());
+            setDebug(state.isDebug());
+            setName(state.getName());
+            setPiece(state.getPiece());
+            setNextPiece(state.getNextPiece());
+            setCells(state.getPlayerCells());
+            setPieceFallTimer(state.getPieceFallTimer());
+            setPieceLockTimer(state.getPieceLockTimer());
+            setBlockAnimationTimer(state.getBlockAnimationTimer());
+            setYahooDuration(state.getYahooDuration());
+            setPartnerRight(state.isPartnerRight());
+            setPowers(state.getPowers());
+            setBrokenCells(state.getBrokenCells());
+            setSpecialPieces(state.getSpecialPieces());
+            setHasGameStarted(state.isHasGameStarted());
+            setPartnerBoard(state.getPartnerBoard());
         }
     }
 
@@ -157,7 +185,6 @@ public class YipeeGameBoard implements Disposable {
         state.setPieceLockTimer(pieceLockTimer);
         state.setBlockAnimationTimer(blockAnimationTimer);
         state.setYahooDuration(yahooDuration);
-        state.setPlayerCells(cells);
         state.setPartnerRight(isPartnerRight);
         state.setPowers(powers);
         state.setBrokenCells(brokenCells);
@@ -165,6 +192,8 @@ public class YipeeGameBoard implements Disposable {
         state.setHasGameStarted(hasGameStarted);
         if (partnerBoard != null) {
             state.setPartnerBoard(partnerBoard.getGameState());
+        } else {
+            state.setPartnerBoard(null);
         }
     }
 
@@ -197,6 +226,10 @@ public class YipeeGameBoard implements Disposable {
     public void setPartnerBoard(YipeeGameBoard partnerB, boolean b) {
         this.partnerBoard = partnerB;
         this.isPartnerRight = b;
+    }
+
+    public void setPartnerBoard(YipeeGameBoardState partnerB) {
+        this.partnerBoard.updateState(partnerB);
     }
 
     public void setName(String name) {
@@ -243,14 +276,17 @@ public class YipeeGameBoard implements Disposable {
         gameClock.stop();
         clearBoard();
         resetPiece();
-        powers.clear();
+        Util.clearArrays(powers, specialPieces, brokenCells, cellsToDrop);
+        Arrays.fill(countOfBreaks, 0);
+        Arrays.fill(powersKeep, 0);
         end();
     }
 
     @Override
     public void dispose() {
-        specialPieces.clear();
-        powers.clear();
+        Util.clearArrays(powers, specialPieces, brokenCells, cellsToDrop);
+        Arrays.fill(countOfBreaks, 0);
+        Arrays.fill(powersKeep, 0);
     }
 
     public void begin() {
@@ -653,7 +689,6 @@ public class YipeeGameBoard implements Disposable {
     //Adds broken cells to queue
     //Clears broken cells
     public void handleBrokenCellDrops() {
-        //logger.debug("Enter handleBrokenCellDrops()");
         for (int col = 0; col < MAX_COLS; col++) {
             int index = 0;
 
@@ -676,7 +711,6 @@ public class YipeeGameBoard implements Disposable {
             }
         }
         updateBoard();
-        //logger.debug("Exit handleBrokenCellDrops()");
     }
 
     public void flagPowerBlockCells() {
@@ -706,7 +740,7 @@ public class YipeeGameBoard implements Disposable {
         }
     }
 
-    void flagCellForMatches(int x, int y, int _x, int _y) {//System.out.println("##flagCellForMatches##");
+    void flagCellForMatches(int x, int y, int _x, int _y) {
         int cell = getPieceValue(x, y);
 
         int count;
@@ -725,6 +759,14 @@ public class YipeeGameBoard implements Disposable {
                 cells[y + i * _y][x + i * _x] = copy;
             }
         }
+    }
+
+    public void applyPlayerAction(PlayerAction action) {
+        //TODO: handle yahoo add blocks
+        //TODO: handle speed special
+        //TODO: handle medusa/midas
+        //addSpecialPiece(int piece)
+        handlePower(Util.otoi(action.getActionData()));
     }
 
     public void handlePower(int i) {
@@ -1161,12 +1203,15 @@ public class YipeeGameBoard implements Disposable {
 
     int getYahooDuration() {
         int duration = 0;
+        int horizontal = 0;
+        int vert = 0;
+        int diag = 0;
 
         //Count Horizontals
         for (int row = 0; row < MAX_PLAYABLE_ROWS; row++) {
             if (checkForNonVerticalYahoo(row, 0)) {
-                duration += HORIZONTAL_HOO_TIME;
-                //++horizontal;
+                //duration += HORIZONTAL_HOO_TIME;
+                ++horizontal;
 
                 for (int column = 0; column < MAX_COLS; column++) {
                     cells[row][column] = YipeeBlockEval.addBrokenFlag(cells[row][column]);
@@ -1191,8 +1236,8 @@ public class YipeeGameBoard implements Disposable {
                             && YipeeBlockEval.getCellFlag(cells[row + 4][column]) == 1
                             && YipeeBlockEval.getCellFlag(cells[row + 5][column]) == 0) {
 
-                        duration += VERTICAL_HOO_TIME;
-                        //++vert;
+                        //duration += VERTICAL_HOO_TIME;
+                        ++vert;
 
                         for (int i = 0; i < MAX_COLS; i++) {
                             cells[row + i][column] = YipeeBlockEval.addBrokenFlag(cells[row + i][column]);
@@ -1205,8 +1250,8 @@ public class YipeeGameBoard implements Disposable {
         //Check Diagonals
         for (int row = 0; row < 8; row++) {
             if (checkForNonVerticalYahoo(row, 1)) {
-                duration += DIAGONAL_HOO_TIME;
-                //++diag;
+                //duration += DIAGONAL_HOO_TIME;
+                ++diag;
 
                 for (int col = 0; col < MAX_COLS; col++) {
                     cells[row + col][col] = YipeeBlockEval.addBrokenFlag(cells[row + col][col]);
@@ -1216,8 +1261,8 @@ public class YipeeGameBoard implements Disposable {
 
         for (int row = 5; row < MAX_PLAYABLE_ROWS; row++) {
             if (checkForNonVerticalYahoo(row, -1)) {
-                duration += DIAGONAL_HOO_TIME;
-                //++diag;
+                //duration += DIAGONAL_HOO_TIME;
+                ++diag;
 
                 for (int col = 0; col < MAX_COLS; col++) {
                     cells[row - col][col] = YipeeBlockEval.addBrokenFlag(cells[row - col][col]);
@@ -1226,8 +1271,8 @@ public class YipeeGameBoard implements Disposable {
         }
 
         updateBoard();
-        //return (horizontal + diag + vert - 1) + (horizontal * HORIZONTAL_HOO_TIME) + (diag * DIAGONAL_HOO_TIME) + (vert * VERTICAL_HOO_TIME);
-        return duration;
+        return (horizontal + diag + vert - 1) + (horizontal * HORIZONTAL_HOO_TIME) + (diag * DIAGONAL_HOO_TIME) + (vert * VERTICAL_HOO_TIME);
+        //return duration;
     }
 
     public int getIdIndex() {
@@ -1300,10 +1345,6 @@ public class YipeeGameBoard implements Disposable {
     }
 
     void applyPowerBlockAt(int value, int col, int row) {
-        System.out.println("Special Type=" + value);
-        System.out.println("Special col=" + col);
-        System.out.println("Special row=" + row);
-
         if (!YipeeBlockEval.hasPowerBlockFlag(value)) {
             System.out.println("Assertion failure:  cell isn't weird " + value);
         } else if (YipeeBlockEval.getCellFlag(value) != YipeeBlock.Oy_BLOCK) {
@@ -1728,6 +1769,10 @@ public class YipeeGameBoard implements Disposable {
 
     public void update(YipeeGameBoardState state, float delta) {
         updateState(state);
+        update(delta);
+    }
+
+    public void update(float delta) {
         updateGame(delta);
     }
 
