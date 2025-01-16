@@ -193,27 +193,6 @@ public class YokelMemoryStorage extends MemoryStorage implements YipeeStorageAda
 
     }
 
-
-    @Override
-    public void putGame(String id, GameManager game) {
-        throw new RuntimeException("addGame not implemented.");
-    }
-
-    @Override
-    public GameManager getGame(String gameId) {
-        return games.get(gameId);
-    }
-
-    @Override
-    public Collection<GameManager> getAllGames() {
-        return Util.getMapValues(games);
-    }
-
-    @Override
-    public void putAllGames(Iterable<GameManager> games) {
-
-    }
-
     @Override
     public List<YipeeRoom> getAllRooms() {
         return null;
