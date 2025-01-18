@@ -1,3 +1,18 @@
+/**
+ * Copyright 2024 See AUTHORS file.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package asg.games.yippe.objects;
 
 import asg.games.yipee.game.YipeeBlockEval;
@@ -403,103 +418,103 @@ public class TestBlockEval {
         throw new Exception("Test not implemented.");
     }
 */
-    @Test
-    public void testHasPartnerBreakFlags() {
-        System.out.println("Start testHasPartnerBreakFlags()");
-        int block;
-        int actual;
+@Test
+public void testHasPartnerBreakFlags() {
+    System.out.println("Start testHasPartnerBreakFlags()");
+    int block;
+    int actual;
 
-        //Normal Blocks
-        block = YipeeBlock.Y_BLOCK;
-        actual = YipeeBlockEval.removePartnerBreakFlag(block);
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.addPartnerBreakFlag(block);
-        Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.removePartnerBreakFlag(block);
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    //Normal Blocks
+    block = YipeeBlock.Y_BLOCK;
+    actual = YipeeBlockEval.removePartnerBreakFlag(block);
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.addPartnerBreakFlag(block);
+    Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.removePartnerBreakFlag(block);
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
 
-        //block = YipeeBlockEval.addPowerBlockFlag(block, YipeeBlockEval.OFFENSIVE_MINOR);
+    //block = YipeeBlockEval.addPowerBlockFlag(block, YipeeBlockEval.OFFENSIVE_MINOR);
 
-        block = YipeeBlock.A_BLOCK;
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.addPartnerBreakFlag(block);
-        Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.removePartnerBreakFlag(block);
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    block = YipeeBlock.A_BLOCK;
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.addPartnerBreakFlag(block);
+    Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.removePartnerBreakFlag(block);
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
 
-        block = YipeeBlock.H_BLOCK;
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.addPartnerBreakFlag(block);
-        Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.removePartnerBreakFlag(block);
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    block = YipeeBlock.H_BLOCK;
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.addPartnerBreakFlag(block);
+    Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.removePartnerBreakFlag(block);
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
 
-        block = YipeeBlock.Op_BLOCK;
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.addPartnerBreakFlag(block);
-        Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.removePartnerBreakFlag(block);
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    block = YipeeBlock.Op_BLOCK;
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.addPartnerBreakFlag(block);
+    Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.removePartnerBreakFlag(block);
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
 
-        block = YipeeBlock.Oy_BLOCK;
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.addPartnerBreakFlag(block);
-        Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.removePartnerBreakFlag(block);
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    block = YipeeBlock.Oy_BLOCK;
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.addPartnerBreakFlag(block);
+    Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.removePartnerBreakFlag(block);
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
 
-        block = YipeeBlock.EX_BLOCK;
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.addPartnerBreakFlag(block);
-        Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.removePartnerBreakFlag(block);
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    block = YipeeBlock.EX_BLOCK;
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.addPartnerBreakFlag(block);
+    Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.removePartnerBreakFlag(block);
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
 
-        //Offensive Blocks
-        block = YipeeBlockEval.addPowerBlockFlag(YipeeBlock.Y_BLOCK);
-        actual = YipeeBlockEval.removePartnerBreakFlag(block);
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.addPartnerBreakFlag(block);
-        Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.removePartnerBreakFlag(block);
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    //Offensive Blocks
+    block = YipeeBlockEval.addPowerBlockFlag(YipeeBlock.Y_BLOCK);
+    actual = YipeeBlockEval.removePartnerBreakFlag(block);
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.addPartnerBreakFlag(block);
+    Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.removePartnerBreakFlag(block);
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
 
-        block = YipeeBlock.A_BLOCK;
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.addPartnerBreakFlag(block);
-        Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.removePartnerBreakFlag(block);
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    block = YipeeBlock.A_BLOCK;
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.addPartnerBreakFlag(block);
+    Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.removePartnerBreakFlag(block);
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
 
-        block = YipeeBlock.H_BLOCK;
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.addPartnerBreakFlag(block);
-        Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.removePartnerBreakFlag(block);
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    block = YipeeBlock.H_BLOCK;
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.addPartnerBreakFlag(block);
+    Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.removePartnerBreakFlag(block);
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
 
-        block = YipeeBlock.Op_BLOCK;
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.addPartnerBreakFlag(block);
-        Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.removePartnerBreakFlag(block);
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    block = YipeeBlock.Op_BLOCK;
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.addPartnerBreakFlag(block);
+    Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.removePartnerBreakFlag(block);
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
 
-        block = YipeeBlock.Oy_BLOCK;
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.addPartnerBreakFlag(block);
-        Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.removePartnerBreakFlag(block);
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    block = YipeeBlock.Oy_BLOCK;
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.addPartnerBreakFlag(block);
+    Assert.assertEquals(true, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.removePartnerBreakFlag(block);
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
 
-        block = YipeeBlock.EX_BLOCK;
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.addPartnerBreakFlag(block);
-        Assert.assertTrue(YipeeBlockEval.hasPartnerBreakFlag(actual));
-        actual = YipeeBlockEval.removePartnerBreakFlag(block);
-        Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
-        System.out.println("End testHasPartnerBreakFlags()");
-    }
+    block = YipeeBlock.EX_BLOCK;
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.addPartnerBreakFlag(block);
+    Assert.assertTrue(YipeeBlockEval.hasPartnerBreakFlag(actual));
+    actual = YipeeBlockEval.removePartnerBreakFlag(block);
+    Assert.assertEquals(false, YipeeBlockEval.hasPartnerBreakFlag(actual));
+    System.out.println("End testHasPartnerBreakFlags()");
+}
 /*
     @Test
     public void testAddPartnerBreakFlag() throws Exception {
@@ -527,45 +542,45 @@ public class TestBlockEval {
         throw new Exception("Test not implemented.");
     }
 */
-    @Test
-    public void testSetIDFlag() throws Exception {
-        System.out.println("Start testSetIDFlag()");
-        int v0 = YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Y_BLOCK, YipeeBlock.OFFENSIVE_MEGA));
-        System.out.println("powwah-V0-" + v0);
-        int v1= YipeeBlockEval.setIDFlag(v0, 1);
-        System.out.println("-V1-" + v1);
-        int v2 = YipeeBlockEval.getID(v1);
-        System.out.println("-V2-" + v2);
-        int v3 = YipeeBlockEval.setValueFlag(v2, v2);
-        System.out.println("-V3-" + v3);
-        System.out.println("ttm-" + ((v1 & ~0x7f000) | 1 >> 12));
+@Test
+public void testSetIDFlag() throws Exception {
+    System.out.println("Start testSetIDFlag()");
+    int v0 = YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Y_BLOCK, YipeeBlock.OFFENSIVE_MEGA));
+    System.out.println("powwah-V0-" + v0);
+    int v1= YipeeBlockEval.setIDFlag(v0, 1);
+    System.out.println("-V1-" + v1);
+    int v2 = YipeeBlockEval.getID(v1);
+    System.out.println("-V2-" + v2);
+    int v3 = YipeeBlockEval.setValueFlag(v2, v2);
+    System.out.println("-V3-" + v3);
+    System.out.println("ttm-" + ((v1 & ~0x7f000) | 1 >> 12));
 
-        int v10 = YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Y_BLOCK, YipeeBlock.DEFENSIVE_MINOR));
-        System.out.println("powwah-V0-" + v10);
-        int v11= YipeeBlockEval.setIDFlag(v10, 2);
-        System.out.println("-V1-" + v11);
-        int v12 = YipeeBlockEval.getID(v11);
-        System.out.println("-V2-" + v12);
-        int v13 = YipeeBlockEval.setValueFlag(v11, v12);
-        System.out.println("-V3-" + v13);
-        System.out.println("End testSetIDFlag()");
-    }
+    int v10 = YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Y_BLOCK, YipeeBlock.DEFENSIVE_MINOR));
+    System.out.println("powwah-V0-" + v10);
+    int v11= YipeeBlockEval.setIDFlag(v10, 2);
+    System.out.println("-V1-" + v11);
+    int v12 = YipeeBlockEval.getID(v11);
+    System.out.println("-V2-" + v12);
+    int v13 = YipeeBlockEval.setValueFlag(v11, v12);
+    System.out.println("-V3-" + v13);
+    System.out.println("End testSetIDFlag()");
+}
 /*
     @Test
     public void testGetPowerFlag() throws Exception {
         throw new Exception("Test not implemented.");
     }
 */
-    @Test
-    public void testSetPowerFlag() throws Exception {
-        System.out.println("power 8" + YipeeBlockEval.setPowerFlag(YipeeBlock.Y_BLOCK, 8));
-        System.out.println("power 8" + YipeeBlockEval.setPowerFlag(YipeeBlock.Y_BLOCK, 1));
-        int block = YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Y_BLOCK, 4));
-        Assert.assertEquals(YipeeBlock.Y_BLOCK, YipeeBlockEval.getCellFlag(block));
-        System.out.println("power 8" + YipeeBlockEval.isOffensive(block));
-        System.out.println("power level = " + YipeeBlockEval.getPowerLevel(block));
+@Test
+public void testSetPowerFlag() throws Exception {
+    System.out.println("power 8" + YipeeBlockEval.setPowerFlag(YipeeBlock.Y_BLOCK, 8));
+    System.out.println("power 8" + YipeeBlockEval.setPowerFlag(YipeeBlock.Y_BLOCK, 1));
+    int block = YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Y_BLOCK, 4));
+    Assert.assertEquals(YipeeBlock.Y_BLOCK, YipeeBlockEval.getCellFlag(block));
+    System.out.println("power 8" + YipeeBlockEval.isOffensive(block));
+    System.out.println("power level = " + YipeeBlockEval.getPowerLevel(block));
 
-    }
+}
 /*
     @Test
     public void testHasSpecialFlag() throws Exception {
@@ -577,14 +592,14 @@ public class TestBlockEval {
         throw new Exception("Test not implemented.");
     }
 */
-    @Test
-    public void testHasPowerBlockFlag() throws Exception {
-        int block = YipeeBlock.Y_BLOCK;
-        int actual = YipeeBlockEval.addPowerBlockFlag(block);
+@Test
+public void testHasPowerBlockFlag() throws Exception {
+    int block = YipeeBlock.Y_BLOCK;
+    int actual = YipeeBlockEval.addPowerBlockFlag(block);
 
-        Assert.assertTrue(YipeeBlockEval.hasPowerBlockFlag(actual));
-        Assert.assertFalse(YipeeBlockEval.hasPowerBlockFlag(block));
-    }
+    Assert.assertTrue(YipeeBlockEval.hasPowerBlockFlag(actual));
+    Assert.assertFalse(YipeeBlockEval.hasPowerBlockFlag(block));
+}
 
     @Test
     public void testAddPowerBlockFlag() throws Exception {
@@ -619,30 +634,30 @@ public class TestBlockEval {
         throw new Exception("Test not implemented.");
     }
 */
-    @DataProvider(name = "yokel_objects")
-    public Object[][] provideYokelObjects() {
-        YipeeBlock yokelBlockY = new YipeeBlock(0,0,0);
-        YipeeBlock yokelBlockA = new YipeeBlock(0,0,1);
-        YipeeBlock yokelBlockH = new YipeeBlock(0,0,2);
-        YipeeBlock yokelBlockOp = new YipeeBlock(0,0,3);
-        YipeeBlock yokelBlockOy = new YipeeBlock(0,0,4);
-        YipeeBlock yokelBlockBsh = new YipeeBlock(0,0,5);
-        YipeeBlock yokelBlockClear = new YipeeBlock(0,0,6);
-        YipeeBlock yokelBlockStone = new YipeeBlock(0,0,7);
-        YipeeBlock yokelBlockMedusa = new YipeeBlock(0,0,9);
+@DataProvider(name = "yokel_objects")
+public Object[][] provideYokelObjects() {
+    YipeeBlock yokelBlockY = new YipeeBlock(0,0,0);
+    YipeeBlock yokelBlockA = new YipeeBlock(0,0,1);
+    YipeeBlock yokelBlockH = new YipeeBlock(0,0,2);
+    YipeeBlock yokelBlockOp = new YipeeBlock(0,0,3);
+    YipeeBlock yokelBlockOy = new YipeeBlock(0,0,4);
+    YipeeBlock yokelBlockBsh = new YipeeBlock(0,0,5);
+    YipeeBlock yokelBlockClear = new YipeeBlock(0,0,6);
+    YipeeBlock yokelBlockStone = new YipeeBlock(0,0,7);
+    YipeeBlock yokelBlockMedusa = new YipeeBlock(0,0,9);
 
-        return new Object[][]{
-                {yokelBlockY, yokelBlockY.getBlockType()},
-                {yokelBlockA, yokelBlockA.getBlockType()},
-                {yokelBlockH, yokelBlockH.getBlockType()},
-                {yokelBlockOp, yokelBlockOp.getBlockType()},
-                {yokelBlockOy, yokelBlockOy.getBlockType()},
-                {yokelBlockBsh, yokelBlockBsh.getBlockType()},
-                {yokelBlockClear, yokelBlockClear.getBlockType()},
-                {yokelBlockStone, yokelBlockStone.getBlockType()},
-                {yokelBlockMedusa, yokelBlockMedusa.getBlockType()}
-        };
-    }
+    return new Object[][]{
+            {yokelBlockY, yokelBlockY.getBlockType()},
+            {yokelBlockA, yokelBlockA.getBlockType()},
+            {yokelBlockH, yokelBlockH.getBlockType()},
+            {yokelBlockOp, yokelBlockOp.getBlockType()},
+            {yokelBlockOy, yokelBlockOy.getBlockType()},
+            {yokelBlockBsh, yokelBlockBsh.getBlockType()},
+            {yokelBlockClear, yokelBlockClear.getBlockType()},
+            {yokelBlockStone, yokelBlockStone.getBlockType()},
+            {yokelBlockMedusa, yokelBlockMedusa.getBlockType()}
+    };
+}
 /*
     @Test
     public void testGetNormalLabel() throws Exception {
@@ -651,19 +666,19 @@ public class TestBlockEval {
         throw new Exception("Test not implemented.");
     }
 */
-    @DataProvider(name = "yokel_blocks_with_ids")
-    public Object[][] provideYokelObjectsWithIds() {
-        Object[][] objectsWithIds = provideYokelObjects();
-        // let's loop through array to populate id and name
-        for (Object[] objectsWithId : objectsWithIds) {
-            for (Object object : objectsWithId) {
-                if (object instanceof YipeeObject) {
-                    setIdAndName((YipeeObject) object);
-                }
+@DataProvider(name = "yokel_blocks_with_ids")
+public Object[][] provideYokelObjectsWithIds() {
+    Object[][] objectsWithIds = provideYokelObjects();
+    // let's loop through array to populate id and name
+    for (Object[] objectsWithId : objectsWithIds) {
+        for (Object object : objectsWithId) {
+            if (object instanceof YipeeObject) {
+                setIdAndName((YipeeObject) object);
             }
         }
-        return objectsWithIds;
     }
+    return objectsWithIds;
+}
 
     private void setIdAndName(YipeeObject... yipeeObjects) {
         for (YipeeObject yipeeObject : Util.safeIterableArray(yipeeObjects)) {

@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,26 +17,53 @@ package asg.games.yipee.persistence;
 
 import asg.games.yipee.objects.YipeeObject;
 
+/**
+ * The Resolver interface defines methods for resolving and interacting with
+ * YipeeObject instances, such as retrieving objects by name or ID, getting all
+ * objects of a given type, and counting objects. It provides generic support for
+ * different types of YipeeObjects.
+ * <p>
+ * Typical use cases for this interface include persistence management, querying,
+ * and runtime object resolution within the Yipee game.
+ */
 public interface Resolver {
+
     /**
-     * Gets Object given name
+     * Retrieves an object of the specified class by its name.
+     *
+     * @param clazz the class type of the object to retrieve
+     * @param name the name of the object to retrieve
+     * @param <T> the type parameter that extends YipeeObject
+     * @return an object of type T matching the given name, or null if no match is found
      */
     <T extends YipeeObject> T getObjectByName(Class<T> clazz, String name);
 
     /**
-     * Gets Object given id
+     * Retrieves an object of the specified class by its unique ID.
      *
-     * @return
+     * @param clazz the class type of the object to retrieve
+     * @param id    the unique ID of the object to retrieve
+     * @param <T>   the type parameter that extends YipeeObject
+     * @return an object of type T matching the given ID, or null if no match is found
+     * @throws Exception if the retrieval process encounters an error
      */
-    <T extends YipeeObject> Object getObjectById(Class<T> clazz, String id) throws Exception;
+    <T extends YipeeObject> T getObjectById(Class<T> clazz, String id) throws Exception;
 
     /**
-     * Gets All Objects given class
+     * Retrieves all objects of the specified class.
+     *
+     * @param clazz the class type of objects to retrieve
+     * @param <T> the type parameter that extends YipeeObject
+     * @return an Iterable collection of all objects of type T
      */
     <T extends YipeeObject> Iterable<T> getAllObjects(Class<T> clazz);
 
     /**
-     * returns the number of All Objects given class
+     * Returns the total count of all objects of the specified class.
+     *
+     * @param clazz the class type of objects to count
+     * @param <T> the type parameter that extends YipeeObject
+     * @return the number of objects of type T
      */
     <T extends YipeeObject> int countAllObjects(Class<T> clazz);
 }
