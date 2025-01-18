@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,14 +38,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@Aspect("pertypewithin(!@asg.games.yipee.aspects.Untraced..*)")
+@Aspect()
 @Untraced
 public class LoggingAspect {
     private static final String SENSITIVE_VALUE_REPLACEMENT = "*****";
     private static final int MAX_RECURSION = 10;
     private static final String LOG_ARG_EXIT = "Exiting ";
     private static final String LOG_ARG_ENTER = "Entering ";
-    private static final String LOG_ARG_THROWS = "Throwing  ";
+    private static final String LOG_ARG_THROWS = "Throwing ";
     private Logger logger;
 
     @Pointcut("staticinitialization(*)*")
@@ -132,7 +132,7 @@ public class LoggingAspect {
             return false;
         } else {
             Signature sig = joinPoint.getSignature();
-            Class declaringType = sig.getDeclaringType();
+            Class<?> declaringType = sig.getDeclaringType();
             int modifiers = declaringType.getModifiers();
             boolean isStatic = Modifier.isStatic(modifiers);
             return !isStatic && declaringType.getEnclosingClass() != null;
@@ -354,7 +354,7 @@ public class LoggingAspect {
 
     @Pointcut("execution(* asg.games.yipee..*.*(..))")
     public void publicMethods() {}
-*?
+*/
 
     /*
         @Around("publicMethods()")

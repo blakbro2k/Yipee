@@ -1,12 +1,29 @@
+/**
+ * Copyright 2024 See AUTHORS file.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package asg.games.yipee.game;
 
 import asg.games.yipee.objects.YipeeGameBoardState;
+import asg.games.yipee.objects.YipeePlayer;
 import asg.games.yipee.tools.LogUtil;
 import asg.games.yipee.tools.TimeUtils;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,19 +33,71 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The GameManager class serves as the backbone for managing a Yipee game session.
+ * It handles the game loop, player actions, and the state of each game board for up to 8 players.
+ * <p>
+ * Key Responsibilities:
+ * - Initializes game boards and players for each seat.
+ * - Manages a fixed-timestep game loop and player actions.
+ * - Synchronizes game states and broadcasts updates to clients.
+ * - Provides hooks for game-specific logic like state broadcasting and win/loss conditions.
+ * <p>
+ * Thread Safety:
+ * - Uses thread-safe data structures such as ConcurrentHashMap and ConcurrentLinkedQueue.
+ * - Employs executors for managing game loop and player action processing.
+ * <p>
+ * Abstract Methods:
+ * - `broadcastGameState()`: Subclasses must define how to send game state updates to clients.
+ * - `checkGameEndConditions()`: Subclasses must implement win/loss logic.
+ */
 public abstract class GameManager {
     private static final Logger logger = LoggerFactory.getLogger(GameManager.class);
     private static final String CONST_TITLE = "Yipee! Game Manager";
-    private final ScheduledExecutorService gameLoopExecutor;
-    private final ExecutorService playerActionExecutor;
-    private final Map<Integer, Queue<YipeeGameBoardState>> gameBoardStateMap; // Keyed by seat ID (1-8)
-    private final Queue<PlayerAction> playersActionQueue = new ConcurrentLinkedQueue<>();
-    private final Map<Integer, YipeeGameBoard> gameBoardMap = new ConcurrentHashMap<>();
+    private final ScheduledExecutorService gameLoopExecutor; // Manages the game loop
+    private final ExecutorService playerActionExecutor; // Handles player action processing
+    private final Queue<PlayerAction> playersActionQueue = new ConcurrentLinkedQueue<>(); // Stores pending player actions
+    private final Map<Integer, GamePlayerBoard> gameBoardMap = new ConcurrentHashMap<>(); // Maps seat IDs to game boards
 
+    @Getter
+    @Setter
+    static class GamePlayerBoard {
+        private YipeePlayer player = new YipeePlayer();
+        private YipeeGameBoard board = new YipeeGameBoard(-1);
+        private final Queue<YipeeGameBoardState> gameBoardStates = new ConcurrentLinkedQueue<>(); // Tracks states by seat ID
+
+        public boolean addState(YipeeGameBoardState state) {
+            return gameBoardStates.add(state);
+        }
+
+        public boolean removeState(YipeeGameBoardState state) {
+            return gameBoardStates.remove(state);
+        }
+
+        public void reset() {
+            board.reset(-1);
+            gameBoardStates.clear();
+        }
+
+        public void setBoardSeed(long seed) {
+            board.reset(seed);
+        }
+
+        public void startBoard() {
+            board.begin();
+        }
+
+        public YipeeGameBoardState getLatestGameState() {
+            return gameBoardStates.peek();
+        }
+    }
+
+    /**
+     * Constructor initializes game boards, executors, and logging for game session setup.
+     */
     public GameManager() {
         LogUtil.info("{} Build {}", CONST_TITLE, Version.printVersion());
         LogUtil.info("Initializing Gamestates...");
-        gameBoardStateMap = new ConcurrentHashMap<>(); // Thread-safe map for 8 game boards
         LogUtil.info("Initializing Game loop...");
         gameLoopExecutor = Executors.newScheduledThreadPool(1); // Single thread for game loop
         LogUtil.info("Initializing Actions...");
@@ -36,35 +105,140 @@ public abstract class GameManager {
 
         LogUtil.info("Initializing Seats...");
         // Initialize 8 game boards (1 for each seat)
-        for (int seatId = 1; seatId <= 8; seatId++) {
+        for (int seatId = 0; seatId < 8; seatId++) {
             LogUtil.trace("Initializing seat[{}]", seatId);
-            gameBoardMap.put(seatId, new YipeeGameBoard());
-            gameBoardStateMap.put(seatId, new LinkedList<>());
+            gameBoardMap.put(seatId, new GamePlayerBoard());
         }
     }
 
-    public void startGameLoop() {
+    /**
+     * Starts the game loop and initializes the game boards with a common seed.
+     */
+    protected void startGameLoop() {
+        resetGameBoards();
+
         // Set same seeded game for 8 game boards (1 for each seat)
         long seed = TimeUtils.millis();
         LogUtil.info("Starting game with seed={}", seed);
-        for (int seatId = 1; seatId <= 8; seatId++) {
-            YipeeGameBoard board = gameBoardMap.get(seatId);
-            if (board != null) {
-                board.reset(seed);
-                board.begin();
-                addState(seatId, board.getGameState());
+        for (int seatId = 0; seatId < 8; seatId++) {
+            GamePlayerBoard board = gameBoardMap.get(seatId);
+            if (!isPlayerEmpty(seatId)) {
+                board.setBoardSeed(seed);
+                board.startBoard();
+                addState(seatId, board.getLatestGameState());
             }
         }
     }
 
-    private void addState(int seatId, YipeeGameBoardState gameState) {
+    /**
+     * Checks if the board has a player set.  This means a player has sat down.
+     *
+     * @param seatId the seat ID
+     * @return true if {@link YipeePlayer} player is not null
+     */
+    private boolean isPlayerEmpty(int seatId) {
+        validateSeat(seatId);
+        return getGameBoardPlayer(seatId) == null;
+    }
+
+    /**
+     * Resets the board.
+     *
+     * @param seatId the seat ID
+     */
+    protected void resetGameBoard(int seatId) {
+        validateSeat(seatId);
+    }
+
+    /**
+     * Validates that the seat ID is within acceptable bounds (0-7).
+     * Adjust this if using 1-based indexing for seats externally.
+     *
+     * @param seatId the seat ID to validate
+     * @throws IllegalArgumentException if the seat ID is out of bounds
+     */
+    private void validateSeat(int seatId) {
+        if (seatId < 0 || seatId > 7) {
+            LogUtil.error("Seat ID [{}] is out of bounds. Valid range is 0-7.", seatId);
+            throw new IllegalArgumentException("Seat ID must be between 0 and 7.");
+        }
+    }
+
+    /**
+     * Retrieves the {@link YipeeGameBoard} game board associated with a specific seat ID.
+     *
+     * @param seatId the ID of the seat (1-8)
+     * @return the {@link YipeeGameBoard} instance or null if none exists
+     */
+    protected YipeeGameBoard getGameBoard(int seatId) {
+        validateSeat(seatId);
+        GamePlayerBoard gameBoardObj = gameBoardMap.get(seatId);
+        YipeeGameBoard board = null;
+        if (gameBoardObj != null) {
+            board = gameBoardObj.getBoard();
+        }
+        return board;
+    }
+
+    /**
+     * Retrieves a {@link YipeePlayer} player associated with a specific seat ID.
+     *
+     * @param seatId the ID of the seat (1-8)
+     * @return the {@link YipeePlayer} player or null if none exists
+     */
+    protected YipeePlayer getGameBoardPlayer(int seatId) {
+        validateSeat(seatId);
+        GamePlayerBoard gameBoardObj = gameBoardMap.get(seatId);
+        YipeePlayer player = null;
+        if (gameBoardObj != null) {
+            player = gameBoardObj.getPlayer();
+        }
+        return player;
+    }
+
+    /**
+     * Retrieves the {@link YipeeGameBoardState} Game States associated with a specific seat ID.
+     *
+     * @param seatId the ID of the seat (1-8)
+     * @return the YipeeGameBoard instance or null if none exists
+     */
+    protected Queue<YipeeGameBoardState> getGameBoardStates(int seatId) {
+        validateSeat(seatId);
+        GamePlayerBoard gameBoardObj = gameBoardMap.get(seatId);
+        Queue<YipeeGameBoardState> states = null;
+        if (gameBoardObj != null) {
+            states = gameBoardObj.getGameBoardStates();
+        }
+        return states;
+    }
+
+    /**
+     * Sets a {@link YipeePlayer} player in the given seatId to associate with the {@link YipeeGameBoard} GameBoard.
+     *
+     * @param seatId
+     * @param player
+     */
+    protected void setGameBoardObjectPlayer(int seatId, YipeePlayer player) {
+        validateSeat(seatId);
+        GamePlayerBoard gameBoardObj = gameBoardMap.get(seatId);
+        if (gameBoardObj != null) {
+            gameBoardObj.setPlayer(player);
+        }
+    }
+
+    /**
+     *
+     * @param seatId
+     * @param gameState
+     */
+    protected void addState(int seatId, YipeeGameBoardState gameState) {
         if (seatId < 0) {
             LogUtil.warn("Invalid value for seat[{}], skipping adding to stack.");
             return;
         }
         if (gameState != null) {
-            Queue<YipeeGameBoardState> states = gameBoardStateMap.get(seatId);
-            if (!states.add(gameState)) {
+            GamePlayerBoard gamePlayerBoard = gameBoardMap.get(seatId);
+            if (!gamePlayerBoard.addState(gameState)) {
                 LogUtil.warn("There was an exception adding state for seat[{}]", seatId);
             }
         } else {
@@ -72,7 +246,21 @@ public abstract class GameManager {
         }
     }
 
-    public void gameLoopTick(float delta) {
+    /**
+     * Resets all game boards and clears associated states.
+     */
+    protected void resetGameBoards() {
+        for (int seatId = 0; seatId < 8; seatId++) {
+            gameBoardMap.get(seatId).reset();
+        }
+    }
+
+    /**
+     * Processes player actions in the queue and updates game boards.
+     *
+     * @param delta the time step for the game loop
+     */
+    protected void gameLoopTick(float delta) {
         // Process Player Actions
         PlayerAction action;
         while ((action = playersActionQueue.poll()) != null) {
@@ -87,9 +275,16 @@ public abstract class GameManager {
         broadcastGameState();
     }
 
-    public void processPlayerAction(PlayerAction action, float delta) {
+    /**
+     * Processes a single player action and updates the target game board.
+     *
+     * @param action the player action to process
+     * @param delta  the time step for the game loop
+     */
+    protected void processPlayerAction(PlayerAction action, float delta) {
         int targetSeatId = action.getTargetBoardId();
-        YipeeGameBoard board = gameBoardMap.get(targetSeatId);
+        YipeeGameBoard board = getGameBoard(targetSeatId);
+        LogUtil.info("Initial boardSeat: {} is taking action: {} on target boardSeat: {}.", action.getInitiatingBoardId(), action.getActionType(), action.getTargetBoardId());
 
         if (board == null) {
             LogUtil.warn("No game board found for seat [{}]. Skipping action [{}].", targetSeatId, action.getActionType());
@@ -107,7 +302,10 @@ public abstract class GameManager {
         });
     }
 
-    public void stop() {
+    /**
+     * Stops the game server by shutting down executors and cleaning up resources.
+     */
+    protected void stop() {
         LogUtil.info("Attempting to shutdown GameServer...");
 
         gameLoopExecutor.shutdown();
@@ -120,38 +318,33 @@ public abstract class GameManager {
         }
     }
 
+    /**
+     *
+     * @param action
+     */
     protected void addPlayerAction(PlayerAction action) {
         playersActionQueue.offer(action);
     }
 
-    public Queue<YipeeGameBoardState> getGameBoardStates(int seatId) {
-        if (seatId < 0 || seatId > gameBoardStateMap.size()) {
-            LogUtil.error("GameState seatId is out of bounds: {}", seatId);
-            throw new IllegalArgumentException("GameState seatId is out of bounds: " + seatId);
-        }
-        return gameBoardStateMap.get(seatId); // Access a specific game board
-    }
-
-    public YipeeGameBoardState getLatestGameBoardState(int seatId) {
+    /**
+     *
+     * @param seatId
+     * @return YipeeGameBoardState
+     */
+    protected YipeeGameBoardState getLatestGameBoardState(int seatId) {
         Queue<YipeeGameBoardState> states = getGameBoardStates(seatId);
         return states.peek(); // Access a specific game board
     }
 
+    /**
+     * Abstract method to broadcast the current game state to clients.
+     * Must be implemented by subclasses.
+     */
     protected abstract void broadcastGameState();
 
-    //{
-    //for (YipeeGameBoard gameBoard : gameBoards) {
-    // Serialize the state and send it to the respective client
-    //String serializedState = gameBoard.serializeState();
-    //sendToClient(gameBoard.getPlayerId(), serializedState);
-    // }
-    // }
+    /**
+     * Abstract method to evaluate win/loss conditions.
+     * Must be implemented by subclasses.
+     */
     protected abstract void checkGameEndConditions();
-    //{
-    /* if (/* win condition *///) {
-    //    endGame("Winner is X");
-    //} else if (/* loss condition */) {
-          /*  endGame("Draw or Loss");
-        }*/
-    //}
 }

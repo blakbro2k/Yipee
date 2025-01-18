@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -148,20 +148,26 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
     private static final int POWER_INTENSITY_LOWER_BOUNDS = 3;
     private static final int POWER_INTENSITY_UPPER_BOUNDS = 7;
 
-    public int x;
-    public int y;
-    private int blockType;
-    private int powerIntensity = 0;
 
-    //Empty Constructor required for Json.Serializable
+    public int x; // X-coordinate of the block
+    public int y; // Y-coordinate of the block
+    private int blockType; // The type of block (e.g., normal, power, or clear)
+    private int powerIntensity = 0; // Represents the block's power level (if any)
+
+    /**
+     * Default constructor required for JSON serialization.
+     * Initializes the block in its default state.
+     */
     public YipeeBlock() {
     }
 
-    @Override
-    public void dispose() {
-        reset();
-    }
-
+    /**
+     * Constructor to initialize a block with position and type.
+     *
+     * @param x         the X-coordinate of the block
+     * @param y         the Y-coordinate of the block
+     * @param blockType the type of the block
+     */
     public YipeeBlock(int x, int y, int blockType) {
         reset();
         this.x = x;
@@ -169,10 +175,21 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
         this.blockType = blockType;
     }
 
+    /**
+     * Constructor to initialize a block with position only.
+     * Defaults the block type to CLEAR_BLOCK.
+     *
+     * @param x the X-coordinate of the block
+     * @param y the Y-coordinate of the block
+     */
     public YipeeBlock(int x, int y) {
         this(x, y, CLEAR_BLOCK);
     }
 
+    /**
+     * Resets the block to its default state.
+     * Sets position to (0, 0), type to CLEAR_BLOCK, and power intensity to 0.
+     */
     public void reset() {
         if (logger.isInfoEnabled()) {
             logger.info("Resetting block by zeroing out values to default");
@@ -184,16 +201,16 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
     }
 
     /**
-     * Retrieves power "level"
-     * <p>
-     * - Even represents defensive powers ( 2, 4, 6 )
-     * - Odd represents attack powers ( 3, 5, 7 )
-     * ( MINOR, REGULAR, MEGA )
-     * <p>
-     * @return powerIntensity
+     * Retrieves the block's power intensity.
+     * Ensures the value stays within defined bounds.
+     * - Even values represent defensive powers. ( 2, 4, 6 )
+     * - Odd values represent offensive powers. ( 3, 5, 7 )
+     * <br>
+     * There are three values of intensity ( MINOR, REGULAR, MEGA )
+     *
+     * @return the power intensity of the block
      */
     public int getPowerIntensity() {
-        // Starts at 3 to start with an attack block first
         if (powerIntensity <= 1) {
             if (logger.isInfoEnabled()) {
                 logger.info("Setting power to lower bound: [{}]", POWER_INTENSITY_LOWER_BOUNDS);
@@ -209,7 +226,12 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
         return powerIntensity;
     }
 
-    public boolean hasPower(){
+    /**
+     * Checks whether the block has any power intensity.
+     *
+     * @return true if the block has power, false otherwise
+     */
+    public boolean hasPower() {
         return powerIntensity > 0;
     }
 
@@ -219,7 +241,9 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         YipeeBlock that = (YipeeBlock) o;
-        return x == that.x && y == that.y && getBlockType() == that.getBlockType() && getPowerIntensity() == that.getPowerIntensity();
+        return x == that.x && y == that.y &&
+                getBlockType() == that.getBlockType() &&
+                getPowerIntensity() == that.getPowerIntensity();
     }
 
     @Override
@@ -227,20 +251,33 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
         return Objects.hash(super.hashCode(), x, y, getBlockType(), getPowerIntensity());
     }
 
+    /**
+     * Provides a user-friendly representation of the block for debugging.
+     * Converts the block type to a descriptive string based on its attributes.
+     *
+     * @param block the block type to convert
+     * @return a string representation of the block
+     */
     public static String printReaderFriendlyBlock(int block) {
         if (block == YipeeBlock.CLEAR_BLOCK) {
-            return "' '";
+            return "' '"; // Represents a clear block
         } else {
             if (YipeeBlockEval.hasPowerBlockFlag(block)) {
-                return "" + YipeeBlockEval.getPowerLabel(block);
+                return "" + YipeeBlockEval.getPowerLabel(block); // Power block representation
             } else {
-                return "" + YipeeBlockEval.getNormalLabel(block);
+                return "" + YipeeBlockEval.getNormalLabel(block); // Normal block representation
             }
         }
     }
 
     @Override
     public String toString() {
-        return super.toString() + "{block: [" + blockType + "]" + YipeeBlock.printReaderFriendlyBlock(blockType) + "}";
+        return super.toString() + "{block: [" + blockType + "]" +
+                YipeeBlock.printReaderFriendlyBlock(blockType) + "}";
+    }
+
+    @Override
+    public void dispose() {
+        reset();
     }
 }

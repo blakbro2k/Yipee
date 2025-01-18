@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.objects;
 
+import asg.games.yipee.tools.LogUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
@@ -71,11 +72,12 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     }
 
     public void setSeatName() {
-        super.setName(getSeatName() + seatNumber);
+        setName(getSeatName() + seatNumber);
     }
 
     private String getSeatName() {
-        return getTableId() + ATTR_SEAT_NUM_SEPARATOR;
+        LogUtil.debug("seatname={}", getParentTableId() + ATTR_SEAT_NUM_SEPARATOR);
+        return getParentTableId() + ATTR_SEAT_NUM_SEPARATOR;
     }
 
     public boolean sitDown(YipeePlayer player) {
@@ -83,9 +85,7 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
             throw new IllegalArgumentException("Player cannot be null.");
         }
         if (isOccupied()) {
-            if (logger.isInfoEnabled()) {
-                logger.info("Seat is already occupied.");
-            }
+            LogUtil.debug("Seat is already occupied.");
             return false;
         }
         setSeatedPlayer(player);
@@ -99,17 +99,12 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
         return player;
     }
 
-    public void setSeatedPlayer(YipeePlayer player) {
-        seatedPlayer = player;
-    }
-
     public void setParentTable(YipeeTable parentTable) {
         if (parentTable != null) {
             parentTableId = parentTable.getId();
             setName(getSeatName() + getSeatNumber());
         }
     }
-
 
     public boolean isOccupied() {
         return seatedPlayer != null;
@@ -124,10 +119,6 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
         if(isOccupied()){
             standUp();
         }
-    }
-
-    public String getTableId() {
-        return parentTableId;
     }
 
     @Override
