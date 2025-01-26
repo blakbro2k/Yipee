@@ -38,7 +38,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@Aspect()
+@Aspect("pertypewithin(!@asg.games.aspects.Untraced asg..*)")
 @Untraced
 public class LoggingAspect {
     private static final String SENSITIVE_VALUE_REPLACEMENT = "*****";
@@ -48,7 +48,7 @@ public class LoggingAspect {
     private static final String LOG_ARG_THROWS = "Throwing ";
     private Logger logger;
 
-    @Pointcut("staticinitialization(*)*")
+    @Pointcut("staticInitialization()")
     public void staticInit() {
     }
 

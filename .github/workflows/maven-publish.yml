@@ -37,7 +37,7 @@ jobs:
     - name: Replace Version in pom.xml
       uses: jacobtomlinson/gha-find-replace@v3
       with:
-          find: "%%version%%"
+        find: "${build.version}"
           replace: "${{steps.tag.outputs.tag}}"
           include: "pom.xml"
             

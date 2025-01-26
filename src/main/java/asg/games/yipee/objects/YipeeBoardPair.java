@@ -28,7 +28,10 @@ public class YipeeBoardPair extends AbstractYipeeObject {
     YipeeGameBoardState leftBoard;
     YipeeGameBoardState rightBoard;
 
-    //Empty Contractor required for Json.Serializable
+    /**
+     * Default constructor required for JSON serialization.
+     * Initializes the block in its default state.
+     */
     public YipeeBoardPair() {
     }
 

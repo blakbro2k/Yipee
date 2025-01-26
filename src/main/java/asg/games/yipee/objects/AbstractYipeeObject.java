@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.objects;
 
+import asg.games.yipee.tools.LogUtil;
 import asg.games.yipee.tools.TimeUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -165,7 +166,7 @@ public abstract class AbstractYipeeObject implements YipeeObject {
      */
     protected void copyParent(YipeeObject o) {
         if (o != null) {
-            logger.debug("Copying parent attributes to: " + o);
+            LogUtil.debug("Copying parent attributes to: " + o);
             o.setId(null);
             o.setName(this.getName());
             o.setCreated(TimeUtils.millis());

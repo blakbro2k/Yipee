@@ -46,12 +46,8 @@ import java.util.concurrent.TimeUnit;
  * Thread Safety:
  * - Uses thread-safe data structures such as ConcurrentHashMap and ConcurrentLinkedQueue.
  * - Employs executors for managing game loop and player action processing.
- * <p>
- * Abstract Methods:
- * - `broadcastGameState()`: Subclasses must define how to send game state updates to clients.
- * - `checkGameEndConditions()`: Subclasses must implement win/loss logic.
  */
-public abstract class GameManager {
+public class GameManager {
     private static final Logger logger = LoggerFactory.getLogger(GameManager.class);
     private static final String CONST_TITLE = "Yipee! Game Manager";
     private final ScheduledExecutorService gameLoopExecutor; // Manages the game loop
@@ -114,7 +110,7 @@ public abstract class GameManager {
     /**
      * Starts the game loop and initializes the game boards with a common seed.
      */
-    protected void startGameLoop() {
+    public void startGameLoop() {
         resetGameBoards();
 
         // Set same seeded game for 8 game boards (1 for each seat)
@@ -146,7 +142,7 @@ public abstract class GameManager {
      *
      * @param seatId the seat ID
      */
-    protected void resetGameBoard(int seatId) {
+    public void resetGameBoard(int seatId) {
         validateSeat(seatId);
     }
 
@@ -170,7 +166,7 @@ public abstract class GameManager {
      * @param seatId the ID of the seat (1-8)
      * @return the {@link YipeeGameBoard} instance or null if none exists
      */
-    protected YipeeGameBoard getGameBoard(int seatId) {
+    public YipeeGameBoard getGameBoard(int seatId) {
         validateSeat(seatId);
         GamePlayerBoard gameBoardObj = gameBoardMap.get(seatId);
         YipeeGameBoard board = null;
@@ -186,7 +182,7 @@ public abstract class GameManager {
      * @param seatId the ID of the seat (1-8)
      * @return the {@link YipeePlayer} player or null if none exists
      */
-    protected YipeePlayer getGameBoardPlayer(int seatId) {
+    public YipeePlayer getGameBoardPlayer(int seatId) {
         validateSeat(seatId);
         GamePlayerBoard gameBoardObj = gameBoardMap.get(seatId);
         YipeePlayer player = null;
@@ -202,7 +198,7 @@ public abstract class GameManager {
      * @param seatId the ID of the seat (1-8)
      * @return the YipeeGameBoard instance or null if none exists
      */
-    protected Queue<YipeeGameBoardState> getGameBoardStates(int seatId) {
+    public Queue<YipeeGameBoardState> getGameBoardStates(int seatId) {
         validateSeat(seatId);
         GamePlayerBoard gameBoardObj = gameBoardMap.get(seatId);
         Queue<YipeeGameBoardState> states = null;
@@ -218,7 +214,7 @@ public abstract class GameManager {
      * @param seatId
      * @param player
      */
-    protected void setGameBoardObjectPlayer(int seatId, YipeePlayer player) {
+    public void setGameBoardObjectPlayer(int seatId, YipeePlayer player) {
         validateSeat(seatId);
         GamePlayerBoard gameBoardObj = gameBoardMap.get(seatId);
         if (gameBoardObj != null) {
@@ -227,11 +223,10 @@ public abstract class GameManager {
     }
 
     /**
-     *
      * @param seatId
      * @param gameState
      */
-    protected void addState(int seatId, YipeeGameBoardState gameState) {
+    public void addState(int seatId, YipeeGameBoardState gameState) {
         if (seatId < 0) {
             LogUtil.warn("Invalid value for seat[{}], skipping adding to stack.");
             return;
@@ -249,7 +244,7 @@ public abstract class GameManager {
     /**
      * Resets all game boards and clears associated states.
      */
-    protected void resetGameBoards() {
+    public void resetGameBoards() {
         for (int seatId = 0; seatId < 8; seatId++) {
             gameBoardMap.get(seatId).reset();
         }
@@ -260,7 +255,7 @@ public abstract class GameManager {
      *
      * @param delta the time step for the game loop
      */
-    protected void gameLoopTick(float delta) {
+    public void gameLoopTick(float delta) {
         // Process Player Actions
         PlayerAction action;
         while ((action = playersActionQueue.poll()) != null) {
@@ -268,11 +263,11 @@ public abstract class GameManager {
         }
         // 3. Check Win/Loss Conditions
         LogUtil.debug("Checking Game End conditions");
-        checkGameEndConditions();
+        //checkGameEndConditions();
 
         // 4. Prepare Outgoing State Updates
         LogUtil.debug("Broadcasting GameState");
-        broadcastGameState();
+        //broadcastGameState();
     }
 
     /**
@@ -281,7 +276,7 @@ public abstract class GameManager {
      * @param action the player action to process
      * @param delta  the time step for the game loop
      */
-    protected void processPlayerAction(PlayerAction action, float delta) {
+    public void processPlayerAction(PlayerAction action, float delta) {
         int targetSeatId = action.getTargetBoardId();
         YipeeGameBoard board = getGameBoard(targetSeatId);
         LogUtil.info("Initial boardSeat: {} is taking action: {} on target boardSeat: {}.", action.getInitiatingBoardId(), action.getActionType(), action.getTargetBoardId());
@@ -290,7 +285,6 @@ public abstract class GameManager {
             LogUtil.warn("No game board found for seat [{}]. Skipping action [{}].", targetSeatId, action.getActionType());
             return;
         }
-
         LogUtil.debug("Processing action [{}] for seat [{}]", action.getActionType(), targetSeatId);
 
         playerActionExecutor.submit(() -> {
@@ -305,7 +299,7 @@ public abstract class GameManager {
     /**
      * Stops the game server by shutting down executors and cleaning up resources.
      */
-    protected void stop() {
+    public void stop() {
         LogUtil.info("Attempting to shutdown GameServer...");
 
         gameLoopExecutor.shutdown();
@@ -322,7 +316,7 @@ public abstract class GameManager {
      *
      * @param action
      */
-    protected void addPlayerAction(PlayerAction action) {
+    public void addPlayerAction(PlayerAction action) {
         playersActionQueue.offer(action);
     }
 
@@ -331,20 +325,8 @@ public abstract class GameManager {
      * @param seatId
      * @return YipeeGameBoardState
      */
-    protected YipeeGameBoardState getLatestGameBoardState(int seatId) {
+    public YipeeGameBoardState getLatestGameBoardState(int seatId) {
         Queue<YipeeGameBoardState> states = getGameBoardStates(seatId);
         return states.peek(); // Access a specific game board
     }
-
-    /**
-     * Abstract method to broadcast the current game state to clients.
-     * Must be implemented by subclasses.
-     */
-    protected abstract void broadcastGameState();
-
-    /**
-     * Abstract method to evaluate win/loss conditions.
-     * Must be implemented by subclasses.
-     */
-    protected abstract void checkGameEndConditions();
 }

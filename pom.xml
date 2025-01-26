@@ -6,7 +6,7 @@
 
     <groupId>asg.games</groupId>
     <artifactId>yipee</artifactId>
-    <version>%%version%%</version>
+    <version>${build.version}</version>
 
     <distributionManagement>
         <repository>
@@ -26,18 +26,19 @@
     </repositories>
 
     <properties>
-        <java.version>17</java.version>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <build.version>1.11.5</build.version>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <maven.license.version>1.9.0</maven.license.version>
         <hbm.version>6.2.11.Final</hbm.version>
         <json.version>2.17.2</json.version>
         <junit.version>4.13.2</junit.version>
-        <lombok.version>1.18.36</lombok.version>
+        <lombok.version>1.18.28</lombok.version>
         <testng.version>7.5</testng.version>
         <jakarta.version>3.1.0</jakarta.version>
         <jetbrains.version>26.0.1</jetbrains.version>
-        <aspectj.version>1.9.20.1</aspectj.version>
+        <aspectj.version>1.9.7</aspectj.version>
         <!--Put your own properties -->
         <repository-owner>blakbro2k</repository-owner>
         <repository-name>Put-repository-name</repository-name>
@@ -95,6 +96,22 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- SLF4J Test (for testing log outputs) -->
+        <dependency>
+            <groupId>uk.org.lidalia</groupId>
+            <artifactId>slf4j-test</artifactId>
+            <version>1.2.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- JUnit 5 (for writing test cases) -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.0</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
@@ -120,80 +137,116 @@
             <artifactId>aspectjweaver</artifactId>
             <version>${aspectj.version}</version>
         </dependency>
+
+        <!-- SLF4J API -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.9</version>
+        </dependency>
+
+        <!-- Logback (SLF4J implementation) -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.4.11</version>
+        </dependency>
     </dependencies>
 
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>com.mycila.maven-license-plugin</groupId>
-                    <artifactId>maven-license-plugin</artifactId>
-                    <version>${maven.license.version}</version>
-                    <executions>
-                        <execution>
-                            <id>add-license</id>
-                            <goals>
-                                <goal>format</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <header>src/main/resources/license-header.txt</header>
-                        <includes>
-                            <include>**/*.java</include>
-                        </includes>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.10.3</version>
-                    <executions>
-                        <execution>
-                            <id>attach-javadocs</id>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>aspectj-maven-plugin</artifactId>
-                    <version>1.14.0</version>
-                    <configuration>
-                        <complianceLevel>1.8</complianceLevel>
-                        <source>1.8</source>
-                        <target>1.8</target>
-                        <showWeaveInfo>true</showWeaveInfo>
-                        <verbose>true</verbose>
-                        <Xlint>ignore</Xlint>
-                        <encoding>UTF-8</encoding>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <!-- IMPORTANT -->
-                            <phase>process-sources</phase>
-                            <goals>
-                                <!-- use this goal to weave all your main classes -->
-                                <goal>compile</goal>
-                                <!-- use this goal to weave all your test classes -->
-                                <goal>test-compile</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.5</version>
-                    <configuration>
-                        <skipTests>false</skipTests>
-                        <testFailureIgnore>true</testFailureIgnore>
-                        <forkMode>once</forkMode>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
+        <plugins>
+            <!-- Set license file -->
+            <plugin>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <version>${maven.license.version}</version>
+                <executions>
+                    <execution>
+                        <id>add-license</id>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <header>src/main/resources/license-header.txt</header>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+            <!-- Build javadocs -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.11.2</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Compile with lombok -->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <compilerId>javac</compilerId> <!-- Explicitly specify javac -->
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version> <!-- Use the latest version -->
+                        </path>
+                    </annotationProcessorPaths>
+                    <source>1.8</source> <!-- Adjust to your desired Java version -->
+                    <target>1.8</target>
+                    <compilerArguments>
+                        <d>${project.build.directory}/unwoven-classes</d>
+                    </compilerArguments>
+                </configuration>
+                <executions>
+                    <execution>
+                        <!-- Modifying output directory of default compile because non-weaved classes must be stored
+                             in separate folder to not confuse ajc by reweaving already woven classes (which leads to
+                             to ajc error message like "bad weaverState.Kind: -115") -->
+                        <id>default-compile</id>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>aspectj-maven-plugin</artifactId>
+                <version>1.14.0</version>
+                <configuration>
+                    <verbose>true</verbose>
+                    <complianceLevel>1.8</complianceLevel> <!-- Match Java version -->
+                    <source>1.8</source> <!-- Adjust to your desired Java version -->
+                    <target>1.8</target>
+                    <aspectLibraries>
+                        <aspectLibrary>
+                            <groupId>org.aspectj</groupId>
+                            <artifactId>aspectjrt</artifactId>
+                        </aspectLibrary>
+                    </aspectLibraries>
+                    <weaveDirectories>
+                        <weaveDirectory>${project.build.directory}/unwoven-classes</weaveDirectory>
+                    </weaveDirectories>
+                </configuration>
+                <executions>
+                    <execution>
+                        <!-- Compile and weave aspects after all classes compiled by javac -->
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>compile</goal>       <!-- use this goal to weave all your main classes -->
+                            <goal>test-compile</goal>  <!-- use this goal to weave all your test classes -->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 </project>

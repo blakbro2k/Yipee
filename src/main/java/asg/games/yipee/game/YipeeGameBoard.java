@@ -29,6 +29,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
@@ -763,10 +764,17 @@ public class YipeeGameBoard implements Disposable {
 
     public void applyPlayerAction(PlayerAction action) {
         //TODO: handle yahoo add blocks
-        //TODO: handle speed special
-        //TODO: handle medusa/midas
-        //addSpecialPiece(int piece)
-        handlePower(Util.otoi(action.getActionData()));
+        if (action != null) {
+            if (PlayerAction.ActionType.S_SPEED.equals(action.getActionType())) {
+                //TODO: handle speed special
+            } else if (PlayerAction.ActionType.O_MEDUSA.equals(action.getActionType())) {//TODO: handle medusa/midas
+                addSpecialPiece(2);
+            } else if (PlayerAction.ActionType.O_MIDAS.equals(action.getActionType())) {
+                addSpecialPiece(1);
+            } else {
+                handlePower(Util.otoi(action.getActionData()));
+            }
+        }
     }
 
     public void handlePower(int i) {
@@ -817,7 +825,6 @@ public class YipeeGameBoard implements Disposable {
                         defuse(Math.min(level, 3));
                     } else {
                         colorBlast();
-                        break;
                     }
 
                     break;
@@ -825,12 +832,31 @@ public class YipeeGameBoard implements Disposable {
                     System.out.println("Assertion failure: invalid CELL5 board attack " + i);
                     break;
                 case YipeeBlock.EX_BLOCK:
-                    removeColorFromBoard();
+                    if (isOffensive) {
+                        removePowersFromQueue();
+                    } else {
+                        removeColorFromBoard();
+                    }
+
                     break;
                 default:
                     System.out.println("Assertion failure: invalid attack" + i);
             }
         }
+    }
+
+    void removePowersFromQueue() {
+        Stack<Integer> powers = new Stack<>();
+        Queue<Integer> queue = getPowers();
+        int count = queue.size() / 2;
+
+        Iterator<Integer> iterator = queue.iterator();
+        while (iterator.hasNext() && count-- > 0) {
+            powers.push(iterator.next());
+            iterator.remove();
+        }
+
+        addRemovedPowersToBoard(powers);
     }
 
     public void addRemovedPowersToBoard(Stack<Integer> powers) {
@@ -840,7 +866,6 @@ public class YipeeGameBoard implements Disposable {
 
         while (powers.size() > 0) {
             int value = powers.pop();
-
             //powers.removeAt(0);
 
             int i;
@@ -2140,32 +2165,5 @@ public class YipeeGameBoard implements Disposable {
             System.out.println("Adding to current Yahoo Count");
             yahooDuration += (tempDuration - 1);
         }
-    }
-
-    public void testHorizontalYahoo() {
-        setValueAt(YipeeBlock.Y_BLOCK, 0, 0);
-        setValueAt(YipeeBlock.A_BLOCK, 1, 0);
-        setValueAt(YipeeBlock.H_BLOCK, 2, 0);
-        setValueAt(YipeeBlock.Op_BLOCK, 3, 0);
-        setValueAt(YipeeBlock.Oy_BLOCK, 4, 0);
-        setValueAt(YipeeBlock.EX_BLOCK, 5, 0);
-
-        //setValueAt(YokelBlock.Y_BLOCK, 0, 1);
-        //setValueAt(YokelBlock.A_BLOCK, 1, 1);
-        //setValueAt(YokelBlock.H_BLOCK, 2, 1);
-        //setValueAt(YokelBlock.Op_BLOCK, 3, 1);
-        //setValueAt(YokelBlock.Oy_BLOCK, 4, 1);
-        //setValueAt(YokelBlock.EX_BLOCK, 5, 1);
-        //updateBoard();
-    }
-
-    public void testVerticalYahoo() {
-        setValueAt(YipeeBlock.Y_BLOCK, 5, 6);
-        setValueAt(YipeeBlock.A_BLOCK, 5, 5);
-        setValueAt(YipeeBlock.H_BLOCK, 5, 4);
-        setValueAt(YipeeBlock.Op_BLOCK, 5, 3);
-        setValueAt(YipeeBlock.Oy_BLOCK, 5, 2);
-        setValueAt(YipeeBlock.EX_BLOCK, 5, 1);
-        //updateBoard();
     }
 }
