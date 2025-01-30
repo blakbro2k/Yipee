@@ -38,14 +38,12 @@
         <testng.version>7.5</testng.version>
         <jakarta.version>3.1.0</jakarta.version>
         <jetbrains.version>26.0.1</jetbrains.version>
-        <aspectj.version>1.9.7</aspectj.version>
+        <aspectj.version>1.9.9</aspectj.version>
+        <aspectj-maven.version>1.15.0</aspectj-maven.version>
+        <maven-compiler.version>3.10.1</maven-compiler.version>
         <!--Put your own properties -->
         <repository-owner>blakbro2k</repository-owner>
-        <repository-name>Put-repository-name</repository-name>
-        <branch-name>Put-branch-name</branch-name>
         <github.global.server>github</github.global.server>
-        <artifactId>yipee</artifactId>
-        <groupId>asg.games</groupId>
         <maven-source-plugin.version>3.1.0</maven-source-plugin.version>
         <site-maven-plugin.version>0.12</site-maven-plugin.version>
     </properties>
@@ -78,38 +76,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>${testng.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
             <version>${jakarta.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- SLF4J Test (for testing log outputs) -->
-        <dependency>
-            <groupId>uk.org.lidalia</groupId>
-            <artifactId>slf4j-test</artifactId>
-            <version>1.2.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- JUnit 5 (for writing test cases) -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>5.10.0</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -123,7 +92,7 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -138,6 +107,20 @@
             <version>${aspectj.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+        </dependency>
+
+        <!-- JUnit (for writing test cases) -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- SLF4J API -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -150,6 +133,20 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.4.11</version>
+        </dependency>
+
+        <!-- SLF4J Test (for testing log outputs) -->
+        <dependency>
+            <groupId>uk.org.lidalia</groupId>
+            <artifactId>slf4j-test</artifactId>
+            <version>1.2.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jdt</groupId>
+            <artifactId>ecj</artifactId>
+            <version>3.27.0</version>
         </dependency>
     </dependencies>
 
@@ -175,7 +172,8 @@
                     </includes>
                 </configuration>
             </plugin>
-            <!-- Build javadocs -->
+
+            <!-- Build javadocs
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -188,65 +186,127 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <!-- Compile with lombok -->
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
-                <configuration>
-                    <compilerId>javac</compilerId> <!-- Explicitly specify javac -->
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version> <!-- Use the latest version -->
-                        </path>
-                    </annotationProcessorPaths>
-                    <source>1.8</source> <!-- Adjust to your desired Java version -->
-                    <target>1.8</target>
-                    <compilerArguments>
-                        <d>${project.build.directory}/unwoven-classes</d>
-                    </compilerArguments>
-                </configuration>
-                <executions>
-                    <execution>
-                        <!-- Modifying output directory of default compile because non-weaved classes must be stored
-                             in separate folder to not confuse ajc by reweaving already woven classes (which leads to
-                             to ajc error message like "bad weaverState.Kind: -115") -->
-                        <id>default-compile</id>
-                    </execution>
-                </executions>
-            </plugin>
+            </plugin>-->
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>aspectj-maven-plugin</artifactId>
-                <version>1.14.0</version>
+                <version>${aspectj-maven.version}</version>
+
                 <configuration>
+                    <complianceLevel>${java.version}</complianceLevel>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <showWeaveInfo>true</showWeaveInfo>
                     <verbose>true</verbose>
-                    <complianceLevel>1.8</complianceLevel> <!-- Match Java version -->
-                    <source>1.8</source> <!-- Adjust to your desired Java version -->
-                    <target>1.8</target>
+                    <Xlint>ignore</Xlint>
+                    <encoding>UTF-8</encoding>
+
+                    <!-- IMPORTANT-->
+                    <excludes>
+                        <exclude>**/*.java</exclude>
+                    </excludes>
+                    <forceAjcCompile>true</forceAjcCompile>
+                    <sources/>
+                    <!-- IMPORTANT-->
+
                     <aspectLibraries>
                         <aspectLibrary>
                             <groupId>org.aspectj</groupId>
                             <artifactId>aspectjrt</artifactId>
                         </aspectLibrary>
                     </aspectLibraries>
+
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <!-- use this goal to weave all your main classes -->
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <weaveDirectories>
+                                <weaveDirectory>${project.build.directory}/classes</weaveDirectory>
+                            </weaveDirectories>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <!-- use this goal to weave all your test classes -->
+                            <goal>test-compile</goal>
+                        </goals>
+                        <configuration>
+                            <weaveDirectories>
+                                <weaveDirectory>${project.build.directory}/test-classes</weaveDirectory>
+                            </weaveDirectories>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Compile with lombok
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler.version}</version>
+                <configuration>
+                    <compilerId>javac</compilerId> <!- - Explicitly specify javac - ->
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version> <!- - Use the latest version - ->
+                        </path>
+                    </annotationProcessorPaths>
+                    <source>${java.version}</source> <!- - Adjust to your desired Java version - ->
+                    <target>${java.version}</target>
+
+                </configuration>
+            </plugin> -->
+
+            <!-- AspectJ
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>aspectj-maven-plugin</artifactId>
+                <version>${aspectj-maven.version}</version>
+                <configuration>
+                    <complianceLevel>${java.version}</complianceLevel>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <verbose>true</verbose>
+                    <sources>
+                        <source>
+                            <basedir>${build.sourceDirectory}</basedir>
+                            <include>
+                                <include>**/*.java</include>
+                            </include>
+                        </source>
+                    </sources>
+                    <aspectLibraries>
+                        <aspectLibrary>
+                            <groupId>org.aspectj</groupId>
+                            <artifactId>aspectjrt</artifactId>
+                        </aspectLibrary>
+                    </aspectLibraries>
+                    <showWeaveInfo>true</showWeaveInfo>
                     <weaveDirectories>
-                        <weaveDirectory>${project.build.directory}/unwoven-classes</weaveDirectory>
+                        <weaveDirectory>${project.build.directory}/classes</weaveDirectory>
                     </weaveDirectories>
                 </configuration>
                 <executions>
                     <execution>
-                        <!-- Compile and weave aspects after all classes compiled by javac -->
+                        <id>aspectj-weaving</id>
                         <phase>process-classes</phase>
                         <goals>
-                            <goal>compile</goal>       <!-- use this goal to weave all your main classes -->
-                            <goal>test-compile</goal>  <!-- use this goal to weave all your test classes -->
+                            <goal>compile</goal>
+                            <goal>test-compile</goal>
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin> -->
         </plugins>
     </build>
 </project>

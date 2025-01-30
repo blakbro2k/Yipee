@@ -22,7 +22,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="Yipee" options="-d U:\Yipee\target/unwoven-classes" />
+      <module name="Yipee" options="" />
     </option>
   </component>
 </project>
