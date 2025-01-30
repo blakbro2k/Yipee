@@ -38,7 +38,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@Aspect()
+@Aspect("pertypewithin(!@asg.games.yipee.aspects.Untraced asg..*)")
 @Untraced
 public class LoggingAspect {
     private static final String SENSITIVE_VALUE_REPLACEMENT = "*****";
@@ -48,7 +48,7 @@ public class LoggingAspect {
     private static final String LOG_ARG_THROWS = "Throwing ";
     private Logger logger;
 
-    @Pointcut("staticinitialization(*)*")
+    @Pointcut("staticinitialization(*)")
     public void staticInit() {
     }
 
@@ -57,7 +57,7 @@ public class LoggingAspect {
         logger = LoggerFactory.getLogger(jps.getSignature().getDeclaringType());
     }
 
-    @Pointcut("!within(asg.games.yipee.UntracedObject)")
+    @Pointcut("!within(asg.games.yipee.aspects.UntracedObject)")
     void tracedClasses() {
     }
 
@@ -340,81 +340,4 @@ public class LoggingAspect {
         buf.append(joinPoint.getSignature().getName()).append(" - ").append(t.toString());
         return buf.toString();
     }
-
-/*
-    private void trace(Logger logger, StringBuilder sb) {
-        if (logger != null) {
-            if (logger.isTraceEnabled()) {
-                logger.trace(sb.toString());
-            } else {
-                logger.debug(sb.toString());
-            }
-        }
-    }
-
-    @Pointcut("execution(* asg.games.yipee..*.*(..))")
-    public void publicMethods() {}
-*/
-
-    /*
-        @Around("publicMethods()")
-        public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
-            long startTime = System.currentTimeMillis();
-
-            Object result = joinPoint.proceed();
-
-            long elapsedTime = System.currentTimeMillis() - startTime;
-            logger2.debug("Method [{}] executed in {} ms", joinPoint.getSignature(), elapsedTime);
-            return result;
-        }
-
-
-    @Around("publicMethods()")
-    public Object logMethodEntryAndExit(ProceedingJoinPoint joinPoint) throws Throwable {
-        Signature signature = joinPoint.getSignature();
-        Logger logger = LoggerFactory.getLogger(signature.getDeclaringType());
-
-        try {
-            Object[] args = joinPoint.getArgs();
-            logEnter(logger, joinPoint, args);
-
-            // Execute the target method and capture the return value
-            Object result = joinPoint.proceed();
-
-            // Log method exit and return value
-            logExit(logger, joinPoint, result);
-
-            // Return the result
-            return result;
-        } catch (Exception e) {
-            // Log and throw exception
-            //logger.error("Throwing exception in {}", signature.getName(), e);
-            throw new RuntimeException(e);
-        }
-    }*/
-
-    /*
-        if (logger != null && joinPoint != null) {
-            Signature signature = joinPoint.getSignature();
-            String methodName = signature.getName();
-
-            StringBuilder sb = new StringBuilder();
-            sb.append(LOG_ARG_ENTER);
-            sb.append(methodName);
-            sb.append("(");
-
-            String prefix = "";
-            for (Object arg : args) {
-                if (arg != null) {
-                    sb.append(prefix);
-                    prefix = ", ";
-                    sb.append(arg.getClass().getSimpleName());
-                    sb.append("=");
-                    sb.append(arg);
-                }
-            }
-            sb.append(")");
-            trace(logger, sb);
-        }
-    }*/
 }

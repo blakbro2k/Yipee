@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.objects;
 
+import asg.games.yipee.tools.LogUtil;
 import asg.games.yipee.tools.TimeUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -36,18 +37,18 @@ import java.util.Objects;
 /**
  * Abstract base class for all Yipee game objects. This class implements the {@link YipeeObject} interface
  * and provides common properties and methods shared by all game objects in the Yipee system.
- * </p>
+ * </br>
  * It includes an {@code id}, {@code name}, and timestamps for creation and modification. Subclasses will inherit
  * these properties and may extend them with specific game logic.
- * </p>
- * </p>
+ * </br>
+ * </br>
  * This class is mapped to a database table as a superclass for other entities in the Yipee game system, such as
  * {@link YipeeBlock}, {@link YipeePlayer}, and others.
- * </p>
+ * </br>
  *
  * @author Blakbro2k
  * @version 1.0
- * </p>
+ * </br>
  * @see YipeeObject
  * @see YipeeBlock
  * @see YipeeBlockMove
@@ -165,7 +166,7 @@ public abstract class AbstractYipeeObject implements YipeeObject {
      */
     protected void copyParent(YipeeObject o) {
         if (o != null) {
-            logger.debug("Copying parent attributes to: " + o);
+            LogUtil.debug("Copying parent attributes to: " + o);
             o.setId(null);
             o.setName(this.getName());
             o.setCreated(TimeUtils.millis());

@@ -25,7 +25,10 @@ import java.util.Objects;
 public class YipeeBrokenBlock extends AbstractYipeeObject {
     private int block, row, col;
 
-    //Empty Constructor required for Json.Serializable
+    /**
+     * Default constructor required for JSON serialization.
+     * Initializes the block in its default state.
+     */
     public YipeeBrokenBlock() {
     }
 

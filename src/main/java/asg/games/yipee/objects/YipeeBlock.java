@@ -16,6 +16,7 @@
 package asg.games.yipee.objects;
 
 import asg.games.yipee.game.YipeeBlockEval;
+import asg.games.yipee.tools.LogUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -23,9 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
-/**
- * Created by Blakbro2k on 12/29/2017.
- */
 /**
  * Represents an individual block in the Yipee game, which may have unique
  * properties and power intensities. Each {@code YipeeBlock} has a specific
@@ -74,7 +72,7 @@ import java.util.Objects;
  * including position, block type, and power intensity. This is useful when
  * reusing blocks during gameplay.</p>
  *
- * @author Blakbro2k
+ * @author Blakbro2k on 12/29/2017.
  * @version 1.0
  * @see AbstractYipeeObject
  * @see asg.games.yipee.game.YipeeBlockEval
@@ -191,9 +189,7 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
      * Sets position to (0, 0), type to CLEAR_BLOCK, and power intensity to 0.
      */
     public void reset() {
-        if (logger.isInfoEnabled()) {
-            logger.info("Resetting block by zeroing out values to default");
-        }
+        LogUtil.debug("Resetting block by zeroing out values to default");
         this.x = 0;
         this.y = 0;
         this.blockType = CLEAR_BLOCK;
@@ -212,15 +208,11 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
      */
     public int getPowerIntensity() {
         if (powerIntensity <= 1) {
-            if (logger.isInfoEnabled()) {
-                logger.info("Setting power to lower bound: [{}]", POWER_INTENSITY_LOWER_BOUNDS);
-            }
+            LogUtil.debug("Setting power to lower bound: [{}]", POWER_INTENSITY_LOWER_BOUNDS);
             powerIntensity = POWER_INTENSITY_LOWER_BOUNDS;
         }
         if (powerIntensity > POWER_INTENSITY_UPPER_BOUNDS) {
-            if (logger.isInfoEnabled()) {
-                logger.info("Setting power to upper bound: [{}]", POWER_INTENSITY_UPPER_BOUNDS);
-            }
+            LogUtil.debug("Setting power to upper bound: [{}]", POWER_INTENSITY_UPPER_BOUNDS);
             powerIntensity = POWER_INTENSITY_UPPER_BOUNDS;
         }
         return powerIntensity;

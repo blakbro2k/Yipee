@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.objects;
 
+import asg.games.yipee.tools.LogUtil;
 import asg.games.yipee.tools.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -107,7 +108,6 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
         setName(name);
         setRating(rating);
         setIcon(icon);
-        System.out.println("keyConfig: " + getSerializedKeyConfig());
     }
 
     /**
@@ -120,11 +120,9 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
                 if (keyConfig == null) {
                     try {
                         keyConfig = Util.readValue(serializedKeyConfig, YipeeKeyMap.class);
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Serialized keyCofig: " + keyConfig);
-                        }
+                        LogUtil.debug("Serialized keyCofig: " + keyConfig);
                     } catch (JsonProcessingException e) {
-                        logger.error("Failed to deserialize keyConfig", e);
+                        LogUtil.error("Failed to deserialize keyConfig", e);
                         throw new RuntimeException("Failed to deserialize keyConfig", e);
                     }
                 }
@@ -141,11 +139,9 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
         this.keyConfig = keyConfig;
         try {
             this.serializedKeyConfig = Util.writeValueAsString(keyConfig);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Serialized serializedKeyConfig: " + serializedKeyConfig);
-            }
+            LogUtil.debug("Serialized serializedKeyConfig: " + serializedKeyConfig);
         } catch (JsonProcessingException e) {
-            logger.error("Failed to serialize keyConfig  in getKeysConfig()", e);
+            LogUtil.error("Failed to serialize keyConfig  in getKeysConfig()", e);
             throw new RuntimeException("Failed to serialize keyConfig in getKeysConfig()", e);
         }
     }
@@ -157,13 +153,9 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
      */
     public void increaseRating(int inc) {
         if (inc < 0) throw new IllegalArgumentException("Increment must be non-negative.");
-        if (logger.isDebugEnabled()) {
-            logger.debug("Increasing current rating:[{}] by {}", rating, inc);
-        }
+        LogUtil.debug("Increasing current rating:[{}] by {}", rating, inc);
         rating += inc;
-        if (logger.isDebugEnabled()) {
-            logger.debug("rating={}", rating);
-        }
+        LogUtil.debug("rating={}", rating);
     }
 
     /**
@@ -173,13 +165,9 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
      */
     public void decreaseRating(int dec) {
         if (dec < 0) throw new IllegalArgumentException("Decrement must be non-negative.");
-        if (logger.isDebugEnabled()) {
-            logger.debug("Decreasing current rating:[{}] by {}", rating, dec);
-        }
+        LogUtil.debug("Decreasing current rating:[{}] by {}", rating, dec);
         rating = Math.max(0, rating - dec);
-        if (logger.isDebugEnabled()) {
-            logger.debug("rating={}", rating);
-        }
+        LogUtil.debug("rating={}", rating);
     }
 
     @Override

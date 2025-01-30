@@ -24,6 +24,9 @@ import java.util.Objects;
 
 @Getter
 @Setter
+/**
+ *
+ */
 public class YipeeBlockMove extends AbstractYipeeObject {
     private static final Logger logger = LoggerFactory.getLogger(YipeeBlockMove.class);
 
@@ -33,7 +36,10 @@ public class YipeeBlockMove extends AbstractYipeeObject {
     private int row;
     private int targetRow;
 
-    //Empty Constructor required for Json.Serializable
+    /**
+     * Default constructor required for JSON serialization.
+     * Initializes the block in its default state.
+     */
     public YipeeBlockMove() {
     }
 
