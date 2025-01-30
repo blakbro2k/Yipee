@@ -38,9 +38,10 @@ jobs:
     - name: Replace Version in pom.xml
       uses: jacobtomlinson/gha-find-replace@v3
       with:
-        find: "${build.version}"
-        replace: "${{steps.tag.outputs.tag}}"
+        find: "<build\.version>[1-9\.]*<\/build\.version>"
+        replace: "<build.version>${{steps.tag.outputs.tag}}</build.version>"
         include: "pom.xml"
+        regex: true
 
           # Step 3: Cache Maven dependencies
     - name: Cache Maven dependencies
