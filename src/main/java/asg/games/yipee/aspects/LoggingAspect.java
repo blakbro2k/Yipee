@@ -92,7 +92,7 @@ public class LoggingAspect {
     }
 
     @AfterThrowing(pointcut = "tracedConstructors()", throwing = "t")
-    public void traceConstructorExit(JoinPoint thisJP, Throwable t) {
+    public void traceConstructorThrowing(JoinPoint thisJP, Throwable t) {
         if (null != logger && logger.isTraceEnabled()) {
             logger.trace(logThrowing(thisJP, t));
         }
@@ -120,7 +120,7 @@ public class LoggingAspect {
     }
 
     @AfterThrowing(pointcut = "tracedMethods()", throwing = "t")
-    public void traceMethodExit(JoinPoint thisJP, Throwable t) {
+    public void traceMethodThrowing(JoinPoint thisJP, Throwable t) {
         if (null != logger && logger.isTraceEnabled()) {
             logger.trace(logThrowing(thisJP, t));
         }
@@ -128,7 +128,7 @@ public class LoggingAspect {
 
     private static boolean isContuctorOfInnerClass(JoinPoint joinPoint) {
         String kind = joinPoint.getKind();
-        if (!JoinPoint.CONSTRUCTOR_CALL.equals(kind) && JoinPoint.CONSTRUCTOR_EXECUTION.equals(kind)) {
+        if (JoinPoint.CONSTRUCTOR_EXECUTION.equals(kind)) {
             return false;
         } else {
             Signature sig = joinPoint.getSignature();
@@ -181,7 +181,7 @@ public class LoggingAspect {
     private static void processKeyValueParams(StringBuffer buf, JoinPoint joinPoint) {
         MethodSignature sig = (MethodSignature) joinPoint.getSignature();
         Method method = sig.getMethod();
-        TracedKeyValueParams annot = (TracedKeyValueParams) method.getDeclaredAnnotation(TracedKeyValueParams.class);
+        TracedKeyValueParams annot = method.getDeclaredAnnotation(TracedKeyValueParams.class);
         if (annot == null) {
             processStandardParams(buf, joinPoint);
         } else {
@@ -314,7 +314,7 @@ public class LoggingAspect {
                     return false;
                 }
 
-                String searchValue = (String) iter.next();
+                String searchValue = iter.next();
                 lowerSearchValue = searchValue.toLowerCase();
             } while (!lowerValue.contains(lowerSearchValue));
 
@@ -325,7 +325,7 @@ public class LoggingAspect {
     }
 
     private static String logExit(JoinPoint joinPoint, Object returnValue) {
-        StringBuffer buf = new StringBuffer(LOG_ARG_EXIT);
+        StringBuilder buf = new StringBuilder(LOG_ARG_EXIT);
         boolean sensitive = false;
         if (joinPoint.getSignature() instanceof MethodSignature) {
             sensitive = ((MethodSignature) joinPoint.getSignature()).getMethod().getAnnotation(SensitiveTraceReturn.class) != null;
@@ -336,7 +336,7 @@ public class LoggingAspect {
     }
 
     private static String logThrowing(JoinPoint joinPoint, Throwable t) {
-        StringBuffer buf = new StringBuffer(LOG_ARG_THROWS);
+        StringBuilder buf = new StringBuilder(LOG_ARG_THROWS);
         buf.append(joinPoint.getSignature().getName()).append(" - ").append(t.toString());
         return buf.toString();
     }

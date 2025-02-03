@@ -18,11 +18,15 @@ package asg.games.yipee.persistence;
 import asg.games.yipee.objects.AbstractYipeeObject;
 import asg.games.yipee.objects.YipeeObject;
 import asg.games.yipee.tools.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public abstract class AbstractStorage implements Storage {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractStorage.class);
+
     private final static String STORAGE_NAME_METHOD = "getName";
     private final static String STORAGE_ID_METHOD = "getId";
 

@@ -15,6 +15,9 @@
  */
 package asg.games.yipee.tools;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.Instant;
 
 /**
@@ -23,6 +26,7 @@ import java.time.Instant;
  * @author mzechner
  */
 public final class TimeUtils {
+    private static final Logger logger = LoggerFactory.getLogger(TimeUtils.class);
     /**
      * @return The current value of the system timer, in nanoseconds.
      */

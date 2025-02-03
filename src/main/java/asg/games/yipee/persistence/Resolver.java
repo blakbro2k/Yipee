@@ -27,7 +27,6 @@ import asg.games.yipee.objects.YipeeObject;
  * and runtime object resolution within the Yipee game.
  */
 public interface Resolver {
-
     /**
      * Retrieves an object of the specified class by its name.
      *

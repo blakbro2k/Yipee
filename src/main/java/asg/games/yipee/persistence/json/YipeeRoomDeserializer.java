@@ -18,7 +18,6 @@ package asg.games.yipee.persistence.json;
 import asg.games.yipee.objects.YipeePlayer;
 import asg.games.yipee.objects.YipeeRoom;
 import asg.games.yipee.objects.YipeeTable;
-import asg.games.yipee.tools.LogUtil;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -56,7 +55,7 @@ public class YipeeRoomDeserializer extends StdDeserializer<YipeeRoom> {
     public YipeeRoom deserialize(JsonParser jp, DeserializationContext ctx) throws IOException, JsonProcessingException {
         JsonNode node = jp.getCodec().readTree(jp);
 
-        LogUtil.debug("deserialize() node: {}", node.toPrettyString());
+        logger.debug("deserialize() node: {}", node.toPrettyString());
         YipeeRoom room = new YipeeRoom();
 
         String idString = node.get("id").asText();
@@ -64,12 +63,12 @@ public class YipeeRoomDeserializer extends StdDeserializer<YipeeRoom> {
         long createdString = node.get("created").asLong();
         long modifiedString = node.get("modified").asLong();
         String loungeString = node.get("lounge").asText();
-        LogUtil.debug("Deserializing the following attributes:");
-        LogUtil.debug("id={}", idString);
-        LogUtil.debug("name={}", nameString);
-        LogUtil.debug("created={}", createdString);
-        LogUtil.debug("modified={}", modifiedString);
-        LogUtil.debug("lounge={}", loungeString);
+        logger.debug("Deserializing the following attributes:");
+        logger.debug("id={}", idString);
+        logger.debug("name={}", nameString);
+        logger.debug("created={}", createdString);
+        logger.debug("modified={}", modifiedString);
+        logger.debug("lounge={}", loungeString);
 
         room.setId(idString);
         room.setName(nameString);
@@ -85,10 +84,10 @@ public class YipeeRoomDeserializer extends StdDeserializer<YipeeRoom> {
                     YipeePlayer player = jp.getCodec().treeToValue(playerNode, YipeePlayer.class);
                     allPlayers.add(player);
                 } catch (Exception e) {
-                    LogUtil.error("Failed to deserialize player: {}, error:", playerNode, e);
+                    logger.error("Failed to deserialize player: {}, error:", playerNode, e);
                 }
             }
-            LogUtil.debug("allPlayers={}", allPlayers);
+            logger.debug("allPlayers={}", allPlayers);
             room.setPlayers(allPlayers);
         }
 
@@ -97,17 +96,17 @@ public class YipeeRoomDeserializer extends StdDeserializer<YipeeRoom> {
             JsonNode mapNode = node.get("tableIndexMap");
 
             Iterator<Map.Entry<String, JsonNode>> fields = mapNode.fields();
-            LogUtil.debug("fields={}", mapNode);
+            logger.debug("fields={}", mapNode);
 
             while (fields.hasNext()) {
                 Map.Entry<String, JsonNode> entry = fields.next();
-                LogUtil.trace("entry={}", entry);
+                logger.trace("entry={}", entry);
                 Integer tableNumber = Integer.valueOf(entry.getKey());
                 YipeeTable table = jp.getCodec().treeToValue(entry.getValue(), YipeeTable.class);
 
                 map.put(tableNumber, table);
             }
-            LogUtil.debug("map={}", map);
+            logger.debug("map={}", map);
             room.setTableIndexMap(map);
         }
         return room;

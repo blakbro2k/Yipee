@@ -15,6 +15,9 @@
  */
 package asg.games.yipee.tools;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Random;
 
 /** Utility and fast math functions.
@@ -22,6 +25,7 @@ import java.util.Random;
  * Thanks to Riven on JavaGaming.org for the basis of sin/cos/floor/ceil.
  * @author Nathan Sweet */
 public final class MathUtils {
+    private static final Logger logger = LoggerFactory.getLogger(MathUtils.class);
 
     private MathUtils () {
     }

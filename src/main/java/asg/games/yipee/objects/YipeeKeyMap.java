@@ -16,10 +16,14 @@
 package asg.games.yipee.objects;
 
 import asg.games.yipee.tools.Input;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
 public class YipeeKeyMap implements Copyable<YipeeKeyMap>, Disposable {
+    private static final Logger logger = LoggerFactory.getLogger(YipeeKeyMap.class);
+
     private final int[] keyMap = {
             Input.Keys.RIGHT,
             Input.Keys.LEFT,

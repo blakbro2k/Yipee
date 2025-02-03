@@ -15,9 +15,9 @@
  */
 package asg.games.yipee.objects;
 
-import asg.games.yipee.tools.LogUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
@@ -52,7 +52,7 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
 
     private boolean isSeatReady = false;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "seated_player_id", unique = true)
     private YipeePlayer seatedPlayer;
 
@@ -76,7 +76,7 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
     }
 
     private String getSeatName() {
-        LogUtil.debug("seatname={}", getParentTableId() + ATTR_SEAT_NUM_SEPARATOR);
+        logger.debug("seatname={}", getParentTableId() + ATTR_SEAT_NUM_SEPARATOR);
         return getParentTableId() + ATTR_SEAT_NUM_SEPARATOR;
     }
 
@@ -85,7 +85,7 @@ public class YipeeSeat extends AbstractYipeeObject implements Disposable {
             throw new IllegalArgumentException("Player cannot be null.");
         }
         if (isOccupied()) {
-            LogUtil.debug("Seat is already occupied.");
+            logger.debug("Seat is already occupied.");
             return false;
         }
         setSeatedPlayer(player);

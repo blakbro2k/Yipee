@@ -15,6 +15,9 @@
  */
 package asg.games.yipee.tools;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Random;
 
 /** This class implements the xorshift128+ algorithm that is a very fast, top-quality 64-bit pseudo-random number generator. The
@@ -27,6 +30,7 @@ import java.util.Random;
  * @author Inferno
  * @author davebaol */
 public class RandomXS128 extends Random {
+    private static final Logger logger = LoggerFactory.getLogger(RandomXS128.class);
 
     /** Normalization constant for double. */
     private static final double NORM_DOUBLE = 1.0 / (1L << 53);

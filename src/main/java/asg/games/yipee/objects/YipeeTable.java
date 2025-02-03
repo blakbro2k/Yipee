@@ -15,7 +15,9 @@
  */
 package asg.games.yipee.objects;
 
+import asg.games.yipee.persistence.TerminatorJPAVisitor;
 import asg.games.yipee.persistence.YipeeObjectJPAVisitor;
+import asg.games.yipee.persistence.YipeeObjectTerminatorAdapter;
 import asg.games.yipee.persistence.YipeeStorageAdapter;
 import asg.games.yipee.tools.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -32,6 +34,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -44,7 +48,8 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_TABLES")
 @JsonIgnoreProperties({"tableNumber", "tableStartReady", "upArguments", "tableName", "roomId"})
-public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVisitor, Copyable<YipeeTable>, Disposable {
+public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVisitor, TerminatorJPAVisitor, Copyable<YipeeTable>, Disposable {
+    private static final Logger logger = LoggerFactory.getLogger(YipeeTable.class);
 
     @JsonIgnore
     public static final String ARG_TYPE = "type";
@@ -276,16 +281,39 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         return copy;
     }
 
+    /**
+     * Visiting method that handles saving child objects to the database.
+     *
+     * @param adapter
+     */
     @Override
     public void visitSave(YipeeStorageAdapter adapter) {
-        try{
-            if(adapter != null) {
-                adapter.visitYipeeTable(this);
+        try {
+            if (adapter != null) {
+                adapter.visitSaveYipeeTable(this);
             }
         } catch (Exception e) {
             throw new RuntimeException("Issue visiting save for " + this.getClass().getSimpleName() + ": ", e);
         }
     }
+
+
+    /**
+     * Visiting method that handles deleting child objects from the database.
+     *
+     * @param terminatorAdapter
+     */
+    @Override
+    public void visitDelete(YipeeObjectTerminatorAdapter terminatorAdapter) {
+        try {
+            if (terminatorAdapter != null) {
+                terminatorAdapter.visitTerminateYipeeTable(this);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Issue visiting termination for " + this.getClass().getSimpleName() + ": ", e);
+        }
+    }
+
 
     @Override
     public boolean equals(Object o) {

@@ -15,7 +15,6 @@
  */
 package asg.games.yipee.objects;
 
-import asg.games.yipee.tools.LogUtil;
 import asg.games.yipee.tools.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -120,9 +119,9 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
                 if (keyConfig == null) {
                     try {
                         keyConfig = Util.readValue(serializedKeyConfig, YipeeKeyMap.class);
-                        LogUtil.debug("Serialized keyCofig: " + keyConfig);
+                        logger.debug("Serialized keyCofig: " + keyConfig);
                     } catch (JsonProcessingException e) {
-                        LogUtil.error("Failed to deserialize keyConfig", e);
+                        logger.error("Failed to deserialize keyConfig", e);
                         throw new RuntimeException("Failed to deserialize keyConfig", e);
                     }
                 }
@@ -139,9 +138,9 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
         this.keyConfig = keyConfig;
         try {
             this.serializedKeyConfig = Util.writeValueAsString(keyConfig);
-            LogUtil.debug("Serialized serializedKeyConfig: " + serializedKeyConfig);
+            logger.debug("Serialized serializedKeyConfig: " + serializedKeyConfig);
         } catch (JsonProcessingException e) {
-            LogUtil.error("Failed to serialize keyConfig  in getKeysConfig()", e);
+            logger.error("Failed to serialize keyConfig  in getKeysConfig()", e);
             throw new RuntimeException("Failed to serialize keyConfig in getKeysConfig()", e);
         }
     }
@@ -153,9 +152,9 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
      */
     public void increaseRating(int inc) {
         if (inc < 0) throw new IllegalArgumentException("Increment must be non-negative.");
-        LogUtil.debug("Increasing current rating:[{}] by {}", rating, inc);
+        logger.debug("Increasing current rating:[{}] by {}", rating, inc);
         rating += inc;
-        LogUtil.debug("rating={}", rating);
+        logger.debug("rating={}", rating);
     }
 
     /**
@@ -165,9 +164,9 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
      */
     public void decreaseRating(int dec) {
         if (dec < 0) throw new IllegalArgumentException("Decrement must be non-negative.");
-        LogUtil.debug("Decreasing current rating:[{}] by {}", rating, dec);
+        logger.debug("Decreasing current rating:[{}] by {}", rating, dec);
         rating = Math.max(0, rating - dec);
-        LogUtil.debug("rating={}", rating);
+        logger.debug("rating={}", rating);
     }
 
     @Override

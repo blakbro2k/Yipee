@@ -38,9 +38,9 @@ jobs:
       uses: jacobtomlinson/gha-find-replace@v3
       with:
         find: "${build.version}"
-          replace: "${{steps.tag.outputs.tag}}"
-          include: "pom.xml"
-            
+        replace: "${{steps.tag.outputs.tag}}"
+        include: "pom.xml"
+
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 

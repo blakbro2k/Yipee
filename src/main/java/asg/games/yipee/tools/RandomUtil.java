@@ -15,6 +15,9 @@
  */
 package asg.games.yipee.tools;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -29,6 +32,7 @@ import java.util.Random;
  * @author Blakbro2k on 12/29/2017
  */
 public class RandomUtil {
+    private static final Logger logger = LoggerFactory.getLogger(RandomUtil.class);
 
     public static final int ATTACK_SECTION = 6;
     public static final int SECTION_GROUP_NUM = 6;
