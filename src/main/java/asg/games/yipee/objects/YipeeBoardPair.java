@@ -18,6 +18,8 @@ package asg.games.yipee.objects;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
@@ -25,6 +27,8 @@ import java.util.Objects;
 @Setter
 @JsonIgnoreProperties({"brokenCells", "tableStartReady", "upArguments", "tableName"})
 public class YipeeBoardPair extends AbstractYipeeObject {
+    private static final Logger logger = LoggerFactory.getLogger(YipeeBoardPair.class);
+
     YipeeGameBoardState leftBoard;
     YipeeGameBoardState rightBoard;
 

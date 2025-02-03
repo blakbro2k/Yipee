@@ -20,6 +20,7 @@ import asg.games.yipee.objects.YipeeRoom;
 import asg.games.yipee.objects.YipeeSeat;
 import asg.games.yipee.objects.YipeeTable;
 import asg.games.yipee.persistence.json.YipeeRoomDeserializer;
+import com.esotericsoftware.kryo.Kryo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.StreamReadFeature;
@@ -30,11 +31,14 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.*;
 
 public class Util {
+    private static final Logger logger = LoggerFactory.getLogger(Util.class);
     /**
      * An empty immutable {@code String} array.
      */
@@ -290,7 +294,7 @@ public class Util {
     }
 
     public static boolean isEmpty(String text) {
-        return text == null || text.isEmpty() || text.isBlank();
+        return text == null || text.isEmpty();
     }
 
     public static boolean isEmpty(Iterable<?> collection) {
@@ -330,7 +334,7 @@ public class Util {
         if (isEmpty(collection)) {
             return Collections.emptyList();
         }
-        return collection.stream().toList();
+        return new ArrayList<>(collection);
     }
 
     public static String getJsonString(AbstractYipeeObject o) throws JsonProcessingException {
@@ -958,27 +962,17 @@ public class Util {
         return cs.toString().indexOf(searchChar.toString(), start);
     }
 
-    /*public static Array<Vector2> getPolygonVertices(int n, float radius, int h, int k) {
-        Array<Vector2> verts = GdxArrays.newArray();
-        double angle_between_vertices = 2 * Math.PI / n;
-
-        for (int i = n; i >= 0; i--) {
-            double theta = i * angle_between_vertices;
-            double x = h + radius * Math.cos(theta);
-            double y = k + radius * Math.sin(theta);
-
-            verts.add(new Vector2((float) x, (float) y));
+    /**
+     * Registers packet classes with Kryo for serialization.
+     *
+     * @param kryo          The Kryo instance used by the server.
+     * @param packetClasses The classes to register.
+     */
+    public static void registerPackets(Kryo kryo, Class<?>... packetClasses) {
+        if (kryo != null) {
+            for (Class<?> packetClass : packetClasses) {
+                kryo.register(packetClass);
+            }
         }
-        return verts;
     }
-
-    public static Vector2 rotatePoint(double x, double y, double Cx, double Cy, double theta) {
-        double cosTheta = Math.cos(theta);
-        double sinTheta = Math.sin(theta);
-
-        double newX = Cx + (x - Cx) * cosTheta - (y - Cy) * sinTheta;
-        double newY = Cy + (x - Cx) * sinTheta + (y - Cy) * cosTheta;
-
-        return new Vector2((float) newX, (float) newY);
-    }*/
 }

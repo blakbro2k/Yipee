@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,7 +17,6 @@ package asg.games.yipee.game;
 
 import asg.games.yipee.objects.YipeeGameBoardState;
 import asg.games.yipee.objects.YipeePlayer;
-import asg.games.yipee.tools.LogUtil;
 import asg.games.yipee.tools.TimeUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -92,17 +91,17 @@ public class GameManager {
      * Constructor initializes game boards, executors, and logging for game session setup.
      */
     public GameManager() {
-        LogUtil.info("{} Build {}", CONST_TITLE, Version.printVersion());
-        LogUtil.info("Initializing Gamestates...");
-        LogUtil.info("Initializing Game loop...");
+        logger.info("{} Build {}", CONST_TITLE, Version.printVersion());
+        logger.info("Initializing Gamestates...");
+        logger.info("Initializing Game loop...");
         gameLoopExecutor = Executors.newScheduledThreadPool(1); // Single thread for game loop
-        LogUtil.info("Initializing Actions...");
+        logger.info("Initializing Actions...");
         playerActionExecutor = Executors.newFixedThreadPool(10); // Thread pool for player actions
 
-        LogUtil.info("Initializing Seats...");
+        logger.info("Initializing Seats...");
         // Initialize 8 game boards (1 for each seat)
         for (int seatId = 0; seatId < 8; seatId++) {
-            LogUtil.trace("Initializing seat[{}]", seatId);
+            logger.trace("Initializing seat[{}]", seatId);
             gameBoardMap.put(seatId, new GamePlayerBoard());
         }
     }
@@ -115,7 +114,7 @@ public class GameManager {
 
         // Set same seeded game for 8 game boards (1 for each seat)
         long seed = TimeUtils.millis();
-        LogUtil.info("Starting game with seed={}", seed);
+        logger.info("Starting game with seed={}", seed);
         for (int seatId = 0; seatId < 8; seatId++) {
             GamePlayerBoard board = gameBoardMap.get(seatId);
             if (!isPlayerEmpty(seatId)) {
@@ -155,7 +154,7 @@ public class GameManager {
      */
     private void validateSeat(int seatId) {
         if (seatId < 0 || seatId > 7) {
-            LogUtil.error("Seat ID [{}] is out of bounds. Valid range is 0-7.", seatId);
+            logger.error("Seat ID [{}] is out of bounds. Valid range is 0-7.", seatId);
             throw new IllegalArgumentException("Seat ID must be between 0 and 7.");
         }
     }
@@ -228,16 +227,16 @@ public class GameManager {
      */
     public void addState(int seatId, YipeeGameBoardState gameState) {
         if (seatId < 0) {
-            LogUtil.warn("Invalid value for seat[{}], skipping adding to stack.");
+            logger.warn("Invalid value for seat[{}], skipping adding to stack.");
             return;
         }
         if (gameState != null) {
             GamePlayerBoard gamePlayerBoard = gameBoardMap.get(seatId);
             if (!gamePlayerBoard.addState(gameState)) {
-                LogUtil.warn("There was an exception adding state for seat[{}]", seatId);
+                logger.warn("There was an exception adding state for seat[{}]", seatId);
             }
         } else {
-            LogUtil.warn("GameState for seat[{}], skipping adding to stack.");
+            logger.warn("GameState for seat[{}], skipping adding to stack.");
         }
     }
 
@@ -262,11 +261,11 @@ public class GameManager {
             processPlayerAction(action, delta);
         }
         // 3. Check Win/Loss Conditions
-        LogUtil.debug("Checking Game End conditions");
+        logger.debug("Checking Game End conditions");
         //checkGameEndConditions();
 
         // 4. Prepare Outgoing State Updates
-        LogUtil.debug("Broadcasting GameState");
+        logger.debug("Broadcasting GameState");
         //broadcastGameState();
     }
 
@@ -279,13 +278,13 @@ public class GameManager {
     public void processPlayerAction(PlayerAction action, float delta) {
         int targetSeatId = action.getTargetBoardId();
         YipeeGameBoard board = getGameBoard(targetSeatId);
-        LogUtil.info("Initial boardSeat: {} is taking action: {} on target boardSeat: {}.", action.getInitiatingBoardId(), action.getActionType(), action.getTargetBoardId());
+        logger.info("Initial boardSeat: {} is taking action: {} on target boardSeat: {}.", action.getInitiatingBoardId(), action.getActionType(), action.getTargetBoardId());
 
         if (board == null) {
-            LogUtil.warn("No game board found for seat [{}]. Skipping action [{}].", targetSeatId, action.getActionType());
+            logger.warn("No game board found for seat [{}]. Skipping action [{}].", targetSeatId, action.getActionType());
             return;
         }
-        LogUtil.debug("Processing action [{}] for seat [{}]", action.getActionType(), targetSeatId);
+        logger.debug("Processing action [{}] for seat [{}]", action.getActionType(), targetSeatId);
 
         playerActionExecutor.submit(() -> {
             synchronized (board) {
@@ -300,7 +299,7 @@ public class GameManager {
      * Stops the game server by shutting down executors and cleaning up resources.
      */
     public void stop() {
-        LogUtil.info("Attempting to shutdown GameServer...");
+        logger.info("Attempting to shutdown GameServer...");
 
         gameLoopExecutor.shutdown();
         playerActionExecutor.shutdown();
@@ -308,7 +307,7 @@ public class GameManager {
             boolean gameLoopTerminator = gameLoopExecutor.awaitTermination(5, TimeUnit.SECONDS);
             boolean gameActionExe = playerActionExecutor.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            LogUtil.error("Error shutting down executors", e);
+            logger.error("Error shutting down executors", e);
         }
     }
 

@@ -38,5 +38,5 @@ import asg.games.yipee.objects.Disposable;
  * - Cleaning up resources during server shutdown or game session termination.
  * - Resolving objects dynamically during runtime.
  */
-interface Storage extends Saveable, Disposable, Resolver {
+public interface Storage extends Saveable, Disposable, Resolver {
 }

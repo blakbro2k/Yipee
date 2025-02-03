@@ -15,7 +15,9 @@
  */
 package asg.games.yipee.objects;
 
+import asg.games.yipee.persistence.TerminatorJPAVisitor;
 import asg.games.yipee.persistence.YipeeObjectJPAVisitor;
+import asg.games.yipee.persistence.YipeeObjectTerminatorAdapter;
 import asg.games.yipee.persistence.YipeeStorageAdapter;
 import asg.games.yipee.tools.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -63,9 +65,9 @@ import java.util.stream.Collectors;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_ROOMS")
-public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisitor, Copyable<YipeeRoom>, Disposable {
+public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisitor, TerminatorJPAVisitor, Copyable<YipeeRoom>, Disposable {
     @Transient
-    private static final Logger logger = LoggerFactory.getLogger(AbstractYipeeObject.class);
+    private static final Logger logger = LoggerFactory.getLogger(YipeeRoom.class);
 
     @JsonIgnore
     public static final String SOCIAL_LOUNGE = "Social";
@@ -238,14 +240,35 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
         return Objects.hash(super.hashCode(), loungeName, players, tableIndexMap);
     }
 
+    /**
+     * Visiting method that handles saving child objects to the database.
+     *
+     * @param adapter
+     */
     @Override
     public void visitSave(YipeeStorageAdapter adapter) {
         try {
             if (adapter != null) {
-                adapter.visitYipeeRoom(this);
+                adapter.visitSaveYipeeRoom(this);
             }
         } catch (Exception e) {
             throw new RuntimeException("Issue visiting save for " + this.getClass().getSimpleName(), e);
+        }
+    }
+
+    /**
+     * Visiting method that handles deleting child objects from the database.
+     *
+     * @param terminatorAdapter
+     */
+    @Override
+    public void visitDelete(YipeeObjectTerminatorAdapter terminatorAdapter) {
+        try {
+            if (terminatorAdapter != null) {
+                terminatorAdapter.visitTerminateYipeeRoom(this);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Issue visiting termination for " + this.getClass().getSimpleName(), e);
         }
     }
 }

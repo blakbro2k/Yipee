@@ -19,10 +19,13 @@ import asg.games.yipee.objects.YipeeObject;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.UUIDGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 
 public class IdGenerator extends UUIDGenerator {
+	private static final Logger logger = LoggerFactory.getLogger(IdGenerator.class);
 
 	public Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
 		Serializable id = null;

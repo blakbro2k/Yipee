@@ -38,6 +38,7 @@ jobs:
     - name: Replace Version in pom.xml
       uses: jacobtomlinson/gha-find-replace@v3
       with:
+
         find: "<build\\.version>[1-9\\.]*<\\/build\\.version>"
         replace: "<build.version>${{steps.tag.outputs.tag}}</build.version>"
         include: "pom.xml"

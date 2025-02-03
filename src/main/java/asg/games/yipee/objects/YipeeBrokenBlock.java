@@ -17,12 +17,16 @@ package asg.games.yipee.objects;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
 @Getter
 @Setter
 public class YipeeBrokenBlock extends AbstractYipeeObject {
+    private static final Logger logger = LoggerFactory.getLogger(YipeeBrokenBlock.class);
+
     private int block, row, col;
 
     /**

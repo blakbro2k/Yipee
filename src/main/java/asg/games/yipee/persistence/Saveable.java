@@ -33,9 +33,17 @@ public interface Saveable {
      * Saves a persistent object to the database.
      *
      * @param object the YipeeObject instance to be saved
-     * @param <T> the type of the object, extending YipeeObject
+     * @param <T>    the type of the object, extending YipeeObject
      */
     <T extends YipeeObject> void saveObject(T object);
+
+    /**
+     * Deletes a persistent object to the database.
+     *
+     * @param object the YipeeObject instance to be deleted
+     * @param <T>    the type of the object, extending YipeeObject
+     */
+    <T extends YipeeObject> boolean deleteObject(T object);
 
     /**
      * Commits all pending transactions to make changes permanent.

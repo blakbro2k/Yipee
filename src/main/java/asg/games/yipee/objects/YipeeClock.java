@@ -19,6 +19,8 @@ import asg.games.yipee.tools.TimeUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
@@ -44,6 +46,8 @@ import java.util.Objects;
 @Setter
 @JsonIgnoreProperties({"seconds", "minutes", "elapsedSeconds"})
 public class YipeeClock extends AbstractYipeeObject {
+    private static final Logger logger = LoggerFactory.getLogger(YipeeClock.class);
+
     private long start;      // Start time in milliseconds
     private boolean running; // Indicates whether the timer is active
 

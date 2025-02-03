@@ -41,6 +41,7 @@
         <aspectj.version>1.9.9</aspectj.version>
         <aspectj-maven.version>1.15.0</aspectj-maven.version>
         <maven-compiler.version>3.10.1</maven-compiler.version>
+        <kyronet.version>2.22.0-RC1</kyronet.version>
         <!--Put your own properties -->
         <repository-owner>blakbro2k</repository-owner>
         <github.global.server>github</github.global.server>
@@ -111,6 +112,13 @@
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>${testng.version}</version>
+        </dependency>
+
+        <!-- Networking -->
+        <dependency>
+            <groupId>com.esotericsoftware</groupId>
+            <artifactId>kryonet</artifactId>
+            <version>${kyronet.version}</version>
         </dependency>
 
         <!-- JUnit (for writing test cases) -->
@@ -247,66 +255,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- Compile with lombok
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler.version}</version>
-                <configuration>
-                    <compilerId>javac</compilerId> <!- - Explicitly specify javac - ->
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version> <!- - Use the latest version - ->
-                        </path>
-                    </annotationProcessorPaths>
-                    <source>${java.version}</source> <!- - Adjust to your desired Java version - ->
-                    <target>${java.version}</target>
-
-                </configuration>
-            </plugin> -->
-
-            <!-- AspectJ
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>aspectj-maven-plugin</artifactId>
-                <version>${aspectj-maven.version}</version>
-                <configuration>
-                    <complianceLevel>${java.version}</complianceLevel>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <verbose>true</verbose>
-                    <sources>
-                        <source>
-                            <basedir>${build.sourceDirectory}</basedir>
-                            <include>
-                                <include>**/*.java</include>
-                            </include>
-                        </source>
-                    </sources>
-                    <aspectLibraries>
-                        <aspectLibrary>
-                            <groupId>org.aspectj</groupId>
-                            <artifactId>aspectjrt</artifactId>
-                        </aspectLibrary>
-                    </aspectLibraries>
-                    <showWeaveInfo>true</showWeaveInfo>
-                    <weaveDirectories>
-                        <weaveDirectory>${project.build.directory}/classes</weaveDirectory>
-                    </weaveDirectories>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>aspectj-weaving</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>test-compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin> -->
         </plugins>
     </build>
 </project>
