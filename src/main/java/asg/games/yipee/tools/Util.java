@@ -20,7 +20,6 @@ import asg.games.yipee.objects.YipeeRoom;
 import asg.games.yipee.objects.YipeeSeat;
 import asg.games.yipee.objects.YipeeTable;
 import asg.games.yipee.persistence.json.YipeeRoomDeserializer;
-import com.esotericsoftware.kryo.Kryo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.StreamReadFeature;
@@ -35,6 +34,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Util {
@@ -125,29 +127,29 @@ public class Util {
         return new LinkedList<>(Arrays.asList(o));
     }
 
-    public static <T> Iterable<T> safeIterable(Iterable<T> collection){
+    public static <T> Iterable<T> safeIterable(Iterable<T> collection) {
         return safeIterable(collection, false);
     }
 
-    public static <T> Iterable<T> safeIterableArray(T[] collection){
+    public static <T> Iterable<T> safeIterableArray(T[] collection) {
         return safeIterable(arrayToList(collection), false);
     }
 
-    public static <T> Iterable<T> safeIterable(final Iterable<T> collection, boolean newArray){
-        if(collection != null){
-            //TODO: fix hard code
-            return newArray? new ArrayList<>() : collection;
+    public static <T> Iterable<T> safeIterable(final Iterable<T> collection, boolean newArray) {
+        if (collection != null) {
+            if (newArray && collection instanceof Collection) {
+                return new ArrayList<>((Collection<T>) collection);
+            }
+            return collection;
         } else {
             return Collections.emptyList();
         }
     }
 
     public static <T> @NotNull List<T> iterableToList(final Iterable<T> iterable) {
-        List<T> returnList = new ArrayList<T>();
-        if(iterable != null) {
-            for(T o : iterable) {
-                returnList.add(o);
-            }
+        List<T> returnList = new ArrayList<>();
+        if (iterable != null) {
+            iterable.forEach(returnList::add);
         }
         return returnList;
     }
@@ -962,17 +964,130 @@ public class Util {
         return cs.toString().indexOf(searchChar.toString(), start);
     }
 
-    /**
-     * Registers packet classes with Kryo for serialization.
-     *
-     * @param kryo          The Kryo instance used by the server.
-     * @param packetClasses The classes to register.
-     */
-    public static void registerPackets(Kryo kryo, Class<?>... packetClasses) {
-        if (kryo != null) {
-            for (Class<?> packetClass : packetClasses) {
-                kryo.register(packetClass);
+
+    public static void writeFile(String name, byte[] contents) {
+        try {
+            String path = findOutputFile(name);
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
+
+            try {
+                fileOutputStream.write(contents, 0, contents.length);
+            } finally {
+                try {
+                    fileOutputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void writeFile(String name, String contents) {
+        if (name != null && contents != null) {
+            byte[] bytes = contents.getBytes(StandardCharsets.UTF_8);
+            writeFile(name, bytes);
+        }
+    }
+
+    public static String findOutputFile(String name) {
+        String path = null;
+        if (name.charAt(0) != File.separatorChar && !name.contains(":")) {
+            String root = System.getProperty("user.dir");
+            if (root != null) {
+                path = assemblePath(root, name);
+            } else {
+                path = name;
+            }
+        } else {
+            path = name;
+        }
+        return path;
+    }
+
+    public static String assemblePath(String root, String leaf) {
+        StringBuilder b = new StringBuilder();
+        b.append(root);
+        if (leaf != null) {
+            b.append(File.separatorChar);
+            b.append(leaf);
+        }
+
+        String path = b.toString();
+        if (path.contains("\\")) {
+            path = path.replace("\\", File.pathSeparator);
+        }
+        return path;
+    }
+
+    /*
+    public static String readFile(File file) {
+        byte[] bytes = readBinaryFile(file);
+        String returnStr = "";
+        returnStr = bytesToString(bytes);
+        return returnStr;
+    }
+
+    public static String readFile(String name) {
+        byte[] bytes = readBinaryFile(file);
+        String returnStr = "";
+        returnStr = bytesToString(bytes);
+        return returnStr;
+    }
+
+    public static byte[] readBinaryFile(String name) throws FileNotFoundException {
+        byte[] bytes;
+        try {
+            String path = findFile(name);
+            if(path == null) {
+                String msg = "Unable to locate file '" + name + "'.";
+                throw new FileNotFoundException(msg);
+
+                FileInputStream fileInputStream = new FileInputStream(path)
             }
         }
     }
+
+
+    public static String findFile(String name) {
+        String filPath = findFile("user.dir", name);
+        return filPath;
+    }
+
+    public static String findFile(String property, String name) {
+        String filPath = findFile(property, name, false);
+        return filPath;
+    }
+
+    public static String findFile(String property, String name, boolean searchClasspath) {
+        String path = null;
+        if(name.charAt(0) != File.separatorChar && name.indexOf(":") == 1) {
+            File file = new File(name);
+            if(file.isFile()) {
+                path = name;
+            }
+
+            String home;
+            String testPath;
+            if(path == null && property != null) {
+                home = System.getProperty(property);
+                if(home != null) {
+                    testPath = assemblePath(home, name);
+                    file = new File(testPath);
+                    if (file.isFile()) {
+                        path = testPath;
+                    }
+                }
+            }
+
+            if (path == null) {
+                home = null;
+
+                home = getApplicationHome();
+
+                if(home !=)
+            }
+        }
+    }*/
 }
