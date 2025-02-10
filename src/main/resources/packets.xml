@@ -1,0 +1,14 @@
+<packet-config>
+    <packages>
+        <package>asg.games.yipee.objects</package>
+        <package>asg.games.yipee.net</package>
+    </packages>
+    <excludes>
+        <class>PacketRegistrar.class</class>
+    </excludes>
+    <mappings>
+        <mapping class="asg.games.yipee.objects.YipeePlayer" id="1"/>
+        <mapping class="asg.games.yipee.net.ConnectionRequest" id="2"/>
+        <mapping class="asg.games.yipee.net.ConnectionResponse" id="3"/>
+    </mappings>
+</packet-config>

@@ -15,59 +15,58 @@
  */
 package asg.games.yipee.net;
 
+import asg.games.yipee.tools.Util;
 import com.esotericsoftware.kryo.Kryo;
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * A utility class responsible for registering all packet classes for Kryo serialization.
- * <p>
- * This class ensures that both the client and server register packet classes in a consistent order,
- * preventing deserialization issues due to mismatched registration.
- * </p>
- * <p>
- * To use this, call {@link #registerPackets(Kryo)} and pass the Kryo instance from either the client or server.
- * </p>
- *
- * <h2>Usage Example:</h2>
- * <pre>
- *     PacketRegistrar.registerPackets(client.getKryo());  // On the client
- *     PacketRegistrar.registerPackets(server.getKryo());  // On the server
- * </pre>
- *
- * @author Blakbro2k
- * @version 1.0
+ * Dynamically scans and registers all packet classes in the `asg.games.yipee.objects` package.
  */
 public class PacketRegistrar {
+    private static final Logger logger = LoggerFactory.getLogger(PacketRegistrar.class);
 
     /**
-     * An ordered list of packet classes to be registered with Kryo.
-     * <p>
-     * The order must be identical on both the client and server to prevent serialization errors.
-     * </p>
-     */
-    private static final Class<?>[] PACKET_CLASSES = {
-            asg.games.yipee.objects.YipeeKeyMap.class,
-            java.util.ArrayList.class,
-            java.util.HashMap.class,
-            ConnectionRequest.class,
-            ConnectionResponse.class,
-            asg.games.yipee.objects.YipeePlayer.class,
-            int[].class,
-            DisconnectRequest.class
-    };
-
-    /**
-     * Registers all packet classes in a consistent order with the provided Kryo instance.
-     * <p>
-     * This method should be called on both the client and server to ensure matching serialization rules.
-     * </p>
+     * Scans the package and registers all classes for Kryo serialization.
      *
-     * @param kryo The Kryo instance to register classes with. Must not be null.
+     * @param kryo Kryo instance to register classes with.
      */
     public static void registerPackets(Kryo kryo) {
-        if (kryo != null) {
-            for (Class<?> packetClass : PACKET_CLASSES) {
-                kryo.register(packetClass);
+        if (kryo == null) {
+            logger.error("Kryo instance is null!");
+            return;
+        }
+        Set<String> packages = new HashSet<>();
+        packages.add("asg.games.yipee.objects");
+        packages.add("asg.games.yipee.net");
+        packages.add("asg.games.yipee.tools");
+
+        // Scan the package for all classes
+        Set<Class<?>> classesToRegister = new HashSet<>();
+
+        for (String packageName : Util.safeIterable(packages)) {
+            // Register each class
+            for (Class<?> clazz : Util.safeIterable(getClassesToRegister(getReflectionsFromPackage(packageName)))) {
+                kryo.register(clazz);
+                logger.info("Registered class: " + clazz.getName());
             }
         }
+    }
+
+    private static Set<Class<?>> getClassesToRegister(Reflections reflections) {
+        Set<Class<?>> classes = null;
+        if (reflections != null) {
+            classes = reflections.getSubTypesOf(Object.class);
+        }
+        return classes;
+    }
+
+    private static Reflections getReflectionsFromPackage(String packageName) {
+        return new Reflections(packageName, Scanners.SubTypes.filterResultsBy(c -> true));
     }
 }
