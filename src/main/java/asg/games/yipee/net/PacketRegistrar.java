@@ -43,6 +43,8 @@ public class PacketRegistrar {
         }
         Set<String> packages = new HashSet<>();
         packages.add("asg.games.yipee.objects");
+        packages.add("asg.games.yipee.net");
+        packages.add("asg.games.yipee.tools");
 
         // Scan the package for all classes
         Set<Class<?>> classesToRegister = new HashSet<>();
