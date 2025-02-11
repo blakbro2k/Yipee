@@ -22,6 +22,7 @@ import org.reflections.scanners.Scanners;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,32 +42,73 @@ public class PacketRegistrar {
             logger.error("Kryo instance is null!");
             return;
         }
+
         Set<String> packages = new HashSet<>();
         packages.add("asg.games.yipee.objects");
         packages.add("asg.games.yipee.net");
         packages.add("asg.games.yipee.tools");
 
         // Scan the package for all classes
-        Set<Class<?>> classesToRegister = new HashSet<>();
+        Set<Class<?>> registeredClasses = new HashSet<>();
 
         for (String packageName : Util.safeIterable(packages)) {
             // Register each class
             for (Class<?> clazz : Util.safeIterable(getClassesToRegister(getReflectionsFromPackage(packageName)))) {
-                kryo.register(clazz);
-                logger.info("Registered class: " + clazz.getName());
+                registerClass(kryo, clazz, registeredClasses);
+            }
+        }
+
+        // Register primitive arrays
+        registerPrimitiveArrays(kryo);
+    }
+
+    private static void registerClass(Kryo kryo, Class<?> clazz, Set<Class<?>> registeredClasses) {
+        if (clazz == null || registeredClasses.contains(clazz) || clazz.isPrimitive()) {
+            logger.info("Skipping already registered or primitive class: {}", (clazz == null ? null : clazz.getName()));
+            return; // Skip if already registered or primitive
+        }
+
+        // Recursively register field types
+        for (Field field : clazz.getDeclaredFields()) {
+            Class<?> fieldType = field.getType();
+
+            if (fieldType.isArray()) {
+                // Register array class and its component type if it's not null
+                registerClass(kryo, fieldType, registeredClasses);
+                if (fieldType.getComponentType() != null) {
+                    registerClass(kryo, fieldType.getComponentType(), registeredClasses);
+                }
+            } else if (!registeredClasses.contains(fieldType)) {
+                registerClass(kryo, fieldType, registeredClasses);
+            }
+        }
+
+        // Also register inner and nested classes (including static nested classes)
+        for (Class<?> innerClass : clazz.getDeclaredClasses()) {
+            if (!registeredClasses.contains(innerClass)) {
+                registerClass(kryo, innerClass, registeredClasses);
             }
         }
     }
 
     private static Set<Class<?>> getClassesToRegister(Reflections reflections) {
-        Set<Class<?>> classes = null;
-        if (reflections != null) {
-            classes = reflections.getSubTypesOf(Object.class);
-        }
-        return classes;
+        return reflections != null ? reflections.getSubTypesOf(Object.class) : new HashSet<>();
     }
 
     private static Reflections getReflectionsFromPackage(String packageName) {
-        return new Reflections(packageName, Scanners.SubTypes.filterResultsBy(c -> true));
+        return new Reflections(packageName, Scanners.SubTypes, Scanners.TypesAnnotated);
+    }
+
+    private static void registerPrimitiveArrays(Kryo kryo) {
+        kryo.register(int[].class);
+        kryo.register(float[].class);
+        kryo.register(double[].class);
+        kryo.register(boolean[].class);
+        kryo.register(byte[].class);
+        kryo.register(short[].class);
+        kryo.register(long[].class);
+        kryo.register(char[].class);
+        kryo.register(String[].class);
+        logger.info("Registered primitive array types.");
     }
 }
