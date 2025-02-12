@@ -21,16 +21,58 @@ import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Dynamically scans and registers all packet classes in the `asg.games.yipee.objects` package.
+ * PacketRegistrar dynamically scans and registers all packet classes in the specified packages.
+ * It supports reading from an XML configuration file (packets.xml) to extend or override
+ * default package and exclusion lists.
  */
 public class PacketRegistrar {
     private static final Logger logger = LoggerFactory.getLogger(PacketRegistrar.class);
+    private static final String CONFIG_FILE = "packets.xml";
+    private static File packetFile = getPacketFile();
+    private static Set<String> packages = getPackages();
+    private static Set<String> excludedClasses = getExcludedClasses();
+    private static Document packetsXMLDocument = null;
+
+    static {
+        try {
+            if (packetFile.exists()) {
+                packetsXMLDocument = getXMLDocument();
+                packages = getPackages();
+                excludedClasses = getExcludedClasses();
+            } else {
+                logger.warn("'packets.xml' not found. No packets will be loaded.");
+            }
+        } catch (ParserConfigurationException | IOException | SAXException e) {
+            logger.error("Error loading 'packets.xml'", e);
+        }
+    }
+
+    public static void reloadConfiguration(String path) throws ParserConfigurationException, IOException, SAXException {
+        String localFilePath = path;
+        if (localFilePath == null) {
+            localFilePath = CONFIG_FILE;
+        }
+
+        packetFile = getPacketFile(localFilePath);
+        packetsXMLDocument = getXMLDocument();
+        packages = getPackages();
+        excludedClasses = getExcludedClasses();
+    }
 
     /**
      * Scans the package and registers all classes for Kryo serialization.
@@ -43,18 +85,15 @@ public class PacketRegistrar {
             return;
         }
 
-        Set<String> packages = new HashSet<>();
-        packages.add("asg.games.yipee.objects");
-        packages.add("asg.games.yipee.net");
-        packages.add("asg.games.yipee.tools");
-
         // Scan the package for all classes
         Set<Class<?>> registeredClasses = new HashSet<>();
 
         for (String packageName : Util.safeIterable(packages)) {
             // Register each class
             for (Class<?> clazz : Util.safeIterable(getClassesToRegister(getReflectionsFromPackage(packageName)))) {
-                registerClass(kryo, clazz, registeredClasses);
+                if (!excludedClasses.contains(clazz.getName())) {
+                    registerClass(kryo, clazz, registeredClasses);
+                }
             }
         }
 
@@ -62,11 +101,142 @@ public class PacketRegistrar {
         registerPrimitiveArrays(kryo);
     }
 
+    /**
+     * Loads the package names from the XML configuration file.
+     *
+     * @return A set of package names to scan for packets.
+     */
+    private static Set<String> loadPackages() {
+        return parseXmlEntries("packages", "package");
+    }
+
+    /**
+     * Loads the excluded class names from the XML configuration file.
+     *
+     * @return A set of class names to exclude from registration.
+     */
+    private static Set<String> loadExcludedClasses() {
+        return parseXmlEntries("excludedClasses", "class");
+    }
+
+    /**
+     * Retrieves the file reference for the XML configuration file using the default path.
+     *
+     * @return The packets.xml file.
+     */
+    private static File getPacketFile() {
+        return getPacketFile(CONFIG_FILE);
+    }
+
+    /**
+     * Retrieves the file reference for the XML configuration file.
+     *
+     * @return The packets.xml file.
+     */
+    private static File getPacketFile(String path) {
+        return new File(path);
+    }
+
+    /**
+     * Parses the XML configuration file and returns a normalized document.
+     * Ensures thread-safe access.
+     *
+     * @return A parsed XML document representing the packet configuration.
+     * @throws ParserConfigurationException If a DocumentBuilder cannot be created.
+     * @throws IOException                  If an I/O error occurs.
+     * @throws SAXException                 If a parsing error occurs.
+     */
+    private static synchronized Document getXMLDocument() throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(packetFile);
+        document.getDocumentElement().normalize();
+        return document;
+    }
+
+    /**
+     * Parses XML entries for the given parent and child tag names.
+     *
+     * @param parentTag The parent XML tag (e.g., "packages").
+     * @param childTag  The child XML tag within the parent (e.g., "package").
+     * @return A set of extracted values from the XML.
+     */
+    private static Set<String> parseXmlEntries(String parentTag, String childTag) {
+        Set<String> entries = new HashSet<>();
+        try {
+            if (packetsXMLDocument == null) {
+                logger.warn("packetsXMLDocument was not loaded. Using defaults.");
+                return entries; // Return empty set instead of throwing an error
+            }
+
+            NodeList nodeList = packetsXMLDocument.getElementsByTagName(parentTag);
+            if (nodeList.getLength() > 0) {
+                Node parentNode = nodeList.item(0);
+                NodeList childNodes = parentNode.getChildNodes();
+                for (int i = 0; i < childNodes.getLength(); i++) {
+                    Node node = childNodes.item(i);
+                    if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals(childTag)) {
+                        entries.add(node.getTextContent().trim());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error reading XML file '{}': {}", CONFIG_FILE, e.getMessage(), e);
+        }
+        return entries;
+    }
+
+    /**
+     * Retrieves the default package names to scan, supplemented by XML configurations.
+     *
+     * @return A set of package names for scanning.
+     */
+    private static Set<String> getPackages() {
+        Set<String> packages = new HashSet<>();
+        packages.add("asg.games.yipee.objects");
+        packages.add("asg.games.yipee.net");
+        packages.add("asg.games.yipee.tools");
+
+        Set<String> loadedPackages = loadPackages();
+        if (!Util.isEmpty(loadedPackages)) {
+            packages.addAll(loadedPackages);
+        }
+        return packages;
+    }
+
+    /**
+     * Retrieves the excluded class names, combining defaults with XML configurations.
+     *
+     * @return A set of class names to exclude.
+     */
+    private static Set<String> getExcludedClasses() {
+        Set<String> excluded = new HashSet<>();
+        excluded.add("asg.games.yipee.net.PacketRegistrar");
+
+        Set<String> loadExcluded = loadExcludedClasses();
+        if (!Util.isEmpty(loadExcluded)) {
+            excluded.addAll(loadExcluded);
+        }
+        return excluded;
+    }
+
+    /**
+     * Registers a class and its related fields with Kryo.
+     *
+     * @param kryo              Kryo instance.
+     * @param clazz             The class to register.
+     * @param registeredClasses A set of already registered classes.
+     */
     private static void registerClass(Kryo kryo, Class<?> clazz, Set<Class<?>> registeredClasses) {
         if (clazz == null || registeredClasses.contains(clazz) || clazz.isPrimitive()) {
             logger.info("Skipping already registered or primitive class: {}", (clazz == null ? null : clazz.getName()));
             return; // Skip if already registered or primitive
         }
+
+        // Register the class
+        kryo.register(clazz);
+        registeredClasses.add(clazz);
+        logger.info("Registered class: {}", clazz.getName());
 
         // Recursively register field types
         for (Field field : clazz.getDeclaredFields()) {
@@ -91,14 +261,31 @@ public class PacketRegistrar {
         }
     }
 
+    /**
+     * Retrieves all classes to register within a given package.
+     *
+     * @param reflections Reflections instance for scanning.
+     * @return A set of classes found in the package.
+     */
     private static Set<Class<?>> getClassesToRegister(Reflections reflections) {
         return reflections != null ? reflections.getSubTypesOf(Object.class) : new HashSet<>();
     }
 
+    /**
+     * Creates a Reflections instance for scanning a package.
+     *
+     * @param packageName The package to scan.
+     * @return A Reflections instance.
+     */
     private static Reflections getReflectionsFromPackage(String packageName) {
-        return new Reflections(packageName, Scanners.SubTypes, Scanners.TypesAnnotated);
+        return new Reflections(packageName, Scanners.SubTypes);
     }
 
+    /**
+     * Registers primitive array types in Kryo.
+     *
+     * @param kryo Kryo instance.
+     */
     private static void registerPrimitiveArrays(Kryo kryo) {
         kryo.register(int[].class);
         kryo.register(float[].class);

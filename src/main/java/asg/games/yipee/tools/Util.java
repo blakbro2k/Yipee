@@ -136,14 +136,9 @@ public class Util {
     }
 
     public static <T> Iterable<T> safeIterable(final Iterable<T> collection, boolean newArray) {
-        if (collection != null) {
-            if (newArray && collection instanceof Collection) {
-                return new ArrayList<>((Collection<T>) collection);
-            }
-            return collection;
-        } else {
-            return Collections.emptyList();
-        }
+        return (collection == null) ? Collections.emptyList()
+                : (newArray && collection instanceof Collection) ? new ArrayList<>((Collection<T>) collection)
+                : collection;
     }
 
     public static <T> @NotNull List<T> iterableToList(final Iterable<T> iterable) {
@@ -166,10 +161,14 @@ public class Util {
 
 
     public static <T> void flushIterator(Iterator<T> iterator) {
-        while(iterator != null && iterator.hasNext()){
-            iterator.remove();
+        if (iterator == null) return;
+
+        while (iterator.hasNext()) {
+            iterator.next(); // Advance to the next element
+            iterator.remove(); // Remove the current element
         }
     }
+
 
     public static <T> void flushIterator(Class<T> clazz, Iterator<T> iterator) {
         while(iterator != null && iterator.hasNext()){
@@ -255,7 +254,7 @@ public class Util {
         public static @NotNull List<String> getGroupOfIDs(int num) throws IllegalArgumentException {
             if(num > 0) {
                 List<String> ids = new ArrayList<>();
-                for(int i = 0; i < num; i++){
+                for (int i = 0; i < num; i++) {
                     ids.add(getID());
                 }
                 return ids;
@@ -264,25 +263,15 @@ public class Util {
         }
     }
 
-    public static boolean containsAny(Collection<Object> c1, Collection<Object> c2, boolean newArray) {
-        boolean containsAny = false;
-        if(null != c1 && null != c2){
-            for(Object o : safeIterable(c2, newArray)){
-                if (!c1.contains(o)) {
-                    continue;
-                }
-                containsAny = true;
-                break;
-            }
-        }
-        return containsAny;
+    public static boolean containsAny(Collection<?> c1, Collection<?> c2) {
+        return c1 != null && c2 != null && !Collections.disjoint(c1, c2);
     }
 
     /**
      * @param title
      * @return
      */
-    public static String cleanTitle(String title) throws Exception{
+    public static String cleanTitle(String title) throws Exception {
         String ret = "";
         if (title != null) {
             ret = title.replace("#8211", "-")
