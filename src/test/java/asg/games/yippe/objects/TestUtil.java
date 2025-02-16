@@ -68,7 +68,7 @@ public class TestUtil {
     public void testClientServer() throws ParserConfigurationException, IOException, SAXException {
         server = new Server();
         server.start(); // Start the server
-        PacketRegistrar.reloadConfiguration("U:\\YipeeWebServer\\src\\main\\resources\\packets.xml");
+        //PacketRegistrar.reloadConfiguration("U:\\YipeeWebServer\\src\\main\\resources\\packets.xml");
         // Register all necessary packet classes for serialization
         PacketRegistrar.registerPackets(server.getKryo());
 
