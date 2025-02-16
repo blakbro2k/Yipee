@@ -21,7 +21,7 @@ package asg.games.yipee.objects;
  *
  * @author Blakbro2k
  */
-public interface YipeeObject {
+public interface YipeeObject extends YipeeSerializable {
     /**
      * Sets the Object ID
      *

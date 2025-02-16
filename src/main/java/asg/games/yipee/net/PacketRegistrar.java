@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.net;
 
+import asg.games.yipee.objects.YipeeSerializable;
 import asg.games.yipee.tools.Util;
 import com.esotericsoftware.kryo.Kryo;
 import org.reflections.Reflections;
@@ -69,9 +70,13 @@ public class PacketRegistrar {
         }
 
         packetFile = getPacketFile(localFilePath);
+        logger.debug("packetFile={}", packetFile);
         packetsXMLDocument = getXMLDocument();
+        logger.debug("packetsXMLDocument={}", packetsXMLDocument);
         packages = getPackages();
+        logger.debug("packages={}", packages);
         excludedClasses = getExcludedClasses();
+        logger.debug("excludedClasses={}", excludedClasses);
     }
 
     /**
@@ -87,16 +92,20 @@ public class PacketRegistrar {
 
         // Scan the package for all classes
         Set<Class<?>> registeredClasses = new HashSet<>();
-
         for (String packageName : Util.safeIterable(packages)) {
+            logger.info("Registering classes from the following package: {}", packageName);
             // Register each class
             for (Class<?> clazz : Util.safeIterable(getClassesToRegister(getReflectionsFromPackage(packageName)))) {
-                if (!excludedClasses.contains(clazz.getName())) {
-                    registerClass(kryo, clazz, registeredClasses);
-                }
+                registerClass(kryo, clazz, registeredClasses);
             }
         }
 
+        logger.info("Registering individual classes from included list.");
+        // Register each class
+        for (Class<?> clazz : Util.safeIterable(getIncludedClasses())) {
+            registerClass(kryo, clazz, registeredClasses);
+        }
+        
         // Register primitive arrays
         registerPrimitiveArrays(kryo);
     }
@@ -117,6 +126,15 @@ public class PacketRegistrar {
      */
     private static Set<String> loadExcludedClasses() {
         return parseXmlEntries("excludedClasses", "class");
+    }
+
+    /**
+     * Loads the excluded class names from the XML configuration file.
+     *
+     * @return A set of class names to exclude from registration.
+     */
+    private static Set<String> loadIncludedClasses() {
+        return parseXmlEntries("includedClasses", "class");
     }
 
     /**
@@ -149,6 +167,7 @@ public class PacketRegistrar {
     private static synchronized Document getXMLDocument() throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
+        logger.info("packetFile={}", packetFile);
         Document document = builder.parse(packetFile);
         document.getDocumentElement().normalize();
         return document;
@@ -195,12 +214,7 @@ public class PacketRegistrar {
         Set<String> packages = new HashSet<>();
         packages.add("asg.games.yipee.objects");
         packages.add("asg.games.yipee.net");
-        packages.add("asg.games.yipee.tools");
-
-        Set<String> loadedPackages = loadPackages();
-        if (!Util.isEmpty(loadedPackages)) {
-            packages.addAll(loadedPackages);
-        }
+        packages.addAll(loadPackages());
         return packages;
     }
 
@@ -212,12 +226,41 @@ public class PacketRegistrar {
     private static Set<String> getExcludedClasses() {
         Set<String> excluded = new HashSet<>();
         excluded.add("asg.games.yipee.net.PacketRegistrar");
-
-        Set<String> loadExcluded = loadExcludedClasses();
-        if (!Util.isEmpty(loadExcluded)) {
-            excluded.addAll(loadExcluded);
-        }
+        excluded.add("java.lang.Enum");
+        excluded.add("java.io.ObjectStreamField");
+        excluded.add("java.lang.reflect.Constructor");
+        excluded.add("java.lang.WeakPairMap");
+        excluded.add("java.lang.Module$ArchivedData");
+        excluded.add("java.security.ProtectionDomain");
+        excluded.add("java.lang.ref.SoftReference");
+        excluded.add("sun.reflect.generics.repository.ClassRepository");
+        excluded.add("jdk.internal.reflect.ReflectionFactory");
+        excluded.add("java.lang.Class$AnnotationData");
+        excluded.add("sun.reflect.annotation.AnnotationType");
+        excluded.add("java.lang.ClassValue$Entry");
+        excluded.add("java.lang.Class$ReflectionData");
+        excluded.add("java.lang.Class$EnclosingMethodInfo");
+        excluded.addAll(loadExcludedClasses());
         return excluded;
+    }
+
+    /**
+     * Retrieves the included class names, combining defaults with XML configurations.
+     *
+     * @return A set of class names to include.
+     */
+    private static Set<Class<?>> getIncludedClasses() {
+        Set<Class<?>> included = new HashSet<>();
+        included.add(asg.games.yipee.game.PlayerAction.class);
+        Set<String> classes = loadIncludedClasses();
+        for (String classString : classes) {
+            try {
+                included.add(Class.forName(classString));
+            } catch (Exception e) {
+                logger.error("Error converting included classes.", e);
+            }
+        }
+        return included;
     }
 
     /**
@@ -229,14 +272,19 @@ public class PacketRegistrar {
      */
     private static void registerClass(Kryo kryo, Class<?> clazz, Set<Class<?>> registeredClasses) {
         if (clazz == null || registeredClasses.contains(clazz) || clazz.isPrimitive()) {
-            logger.info("Skipping already registered or primitive class: {}", (clazz == null ? null : clazz.getName()));
+            logger.debug("Skipping already registered or primitive class: {}", (clazz == null ? null : clazz.getName()));
             return; // Skip if already registered or primitive
         }
 
+        if (excludedClasses.contains(clazz.getName())) {
+            logger.warn("Excluding class: {}", clazz.getName());
+            return; // Skip if excluded
+        }
+
         // Register the class
+        logger.info("Registering class: {}", clazz);
         kryo.register(clazz);
         registeredClasses.add(clazz);
-        logger.info("Registered class: {}", clazz.getName());
 
         // Recursively register field types
         for (Field field : clazz.getDeclaredFields()) {
@@ -267,8 +315,8 @@ public class PacketRegistrar {
      * @param reflections Reflections instance for scanning.
      * @return A set of classes found in the package.
      */
-    private static Set<Class<?>> getClassesToRegister(Reflections reflections) {
-        return reflections != null ? reflections.getSubTypesOf(Object.class) : new HashSet<>();
+    private static Set<Class<? extends YipeeSerializable>> getClassesToRegister(Reflections reflections) {
+        return reflections != null ? reflections.getSubTypesOf(YipeeSerializable.class) : new HashSet<>();
     }
 
     /**
@@ -278,7 +326,7 @@ public class PacketRegistrar {
      * @return A Reflections instance.
      */
     private static Reflections getReflectionsFromPackage(String packageName) {
-        return new Reflections(packageName, Scanners.SubTypes);
+        return new Reflections(packageName, Scanners.SubTypes, Scanners.TypesAnnotated);
     }
 
     /**

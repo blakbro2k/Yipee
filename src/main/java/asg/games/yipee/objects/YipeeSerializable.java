@@ -13,18 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.net;
+package asg.games.yipee.objects;
 
-import asg.games.yipee.objects.YipeePlayer;
-import asg.games.yipee.objects.YipeeSerializable;
-import lombok.Getter;
-import lombok.Setter;
 
-@Setter
-@Getter
-public class DisconnectRequest implements YipeeSerializable {
-    private String clientId;
-    private long timeStamp;
-    private String sessionId;
-    private YipeePlayer player;
+/**
+ * A net serializable game object
+ *
+ * @author Blakbro2k
+ */
+public interface YipeeSerializable {
 }
