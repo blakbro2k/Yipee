@@ -16,14 +16,36 @@
 package asg.games.yippe.objects;
 
 import asg.games.yipee.game.YipeeGameBoard;
+import asg.games.yipee.net.ConnectionRequest;
+import asg.games.yipee.net.PacketRegistrar;
+import asg.games.yipee.objects.YipeePlayer;
 import asg.games.yipee.tools.RandomUtil;
+import asg.games.yipee.tools.TimeUtils;
+import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Server;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.Test;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TestUtil {
     AtomicInteger atomicId = new AtomicInteger(0);
+    Server server = null;
+    Client client = null;
+
+    @AfterTest
+    public void shutDown() {
+        if (server != null) {
+            server.stop();
+        }
+        if (client != null) {
+            client.stop();
+        }
+    }
 
     @Test()
     public void testRandomArray() {
@@ -40,5 +62,30 @@ public class TestUtil {
             testReturn[i] = blocksArray.getRandomNumberAt(i);
         }
         return testReturn;
+    }
+
+    @Test()
+    public void testClientServer() throws ParserConfigurationException, IOException, SAXException {
+        server = new Server();
+        server.start(); // Start the server
+        PacketRegistrar.reloadConfiguration("U:\\YipeeWebServer\\src\\main\\resources\\packets.xml");
+        // Register all necessary packet classes for serialization
+        PacketRegistrar.registerPackets(server.getKryo());
+
+        server.bind(8081, 55005); // Bind the server to the given ports
+
+        client = new Client();
+        client.start();
+        PacketRegistrar.registerPackets(client.getKryo());
+
+        client.connect(5000, "localhost", 8081, 55005);
+        client.updateReturnTripTime(); // Sync UDP latency
+
+        ConnectionRequest request = new ConnectionRequest();
+        request.setClientId("1");
+        request.setSessionId("noew");
+        request.setPlayer(new YipeePlayer("blakbro"));
+        request.setTimeStamp(TimeUtils.millis());
+        client.sendTCP(request);
     }
 }

@@ -6,6 +6,7 @@
     <excludes>
         <class>asg.games.yipee.net.PacketRegistrar</class>
     </excludes>
+    <incleded/>
     <mappings>
         <mapping class="asg.games.yipee.objects.YipeePlayer" id="1"/>
         <mapping class="asg.games.yipee.net.ConnectionRequest" id="2"/>

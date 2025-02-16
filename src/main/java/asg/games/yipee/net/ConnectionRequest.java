@@ -16,12 +16,13 @@
 package asg.games.yipee.net;
 
 import asg.games.yipee.objects.YipeePlayer;
+import asg.games.yipee.objects.YipeeSerializable;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ConnectionRequest {
+public class ConnectionRequest implements YipeeSerializable {
     private String clientId;
     private long timeStamp;
     private String sessionId;

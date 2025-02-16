@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
-public class YipeeKeyMap implements Copyable<YipeeKeyMap>, Disposable {
+public class YipeeKeyMap implements Copyable<YipeeKeyMap>, Disposable, YipeeSerializable {
     private static final Logger logger = LoggerFactory.getLogger(YipeeKeyMap.class);
 
     private final int[] keyMap = {

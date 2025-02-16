@@ -15,11 +15,12 @@
  */
 package asg.games.yipee.net;
 
+import asg.games.yipee.objects.YipeeSerializable;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class StartGameRequest {
+public class StartGameRequest implements YipeeSerializable {
     long clientId;
 }
