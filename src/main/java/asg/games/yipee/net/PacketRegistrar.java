@@ -23,6 +23,7 @@ import org.reflections.scanners.Scanners;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -33,8 +34,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.Set;
+import java.net.URL;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * PacketRegistrar dynamically scans and registers all packet classes in the specified packages.
@@ -44,17 +46,22 @@ import java.util.Set;
 public class PacketRegistrar {
     private static final Logger logger = LoggerFactory.getLogger(PacketRegistrar.class);
     private static final String CONFIG_FILE = "packets.xml";
-    private static File packetFile = getPacketFile();
+    private static File packetFile;
+    private static final AtomicInteger atomicIdCounter = new AtomicInteger(1001); // Start from 1001 for dynamic classes
+    private static final Map<String, Integer> explicitClassIds = new HashMap<>(); // Store explicit class IDs from XML
     private static Set<String> packages = getPackages();
     private static Set<String> excludedClasses = getExcludedClasses();
     private static Document packetsXMLDocument = null;
 
     static {
         try {
+            packetFile = getPacketFile();
+            logger.info("PacketFile={} loaded.", packetFile);
             if (packetFile.exists()) {
                 packetsXMLDocument = getXMLDocument();
                 packages = getPackages();
                 excludedClasses = getExcludedClasses();
+                loadExplicitClassIds(packetsXMLDocument); // Load explicit IDs from XML
             } else {
                 logger.warn("'packets.xml' not found. No packets will be loaded.");
             }
@@ -63,6 +70,114 @@ public class PacketRegistrar {
         }
     }
 
+    /**
+     * Loads classes with given Ids or an atomic Ids
+     *
+     * @param xmlDocument XML document with Packet registrations
+     */
+    private static void loadExplicitClassIds(Document xmlDocument) {
+        NodeList mappingNodes = xmlDocument.getElementsByTagName("mapping");
+
+        for (int i = 0; i < mappingNodes.getLength(); i++) {
+            Node node = mappingNodes.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element element = (Element) node;
+
+                String className = element.getAttribute("class").trim();
+                String idString = element.getAttribute("id").trim();
+
+                if (!className.isEmpty() && !idString.isEmpty()) {
+                    try {
+                        int id = Integer.parseInt(idString);
+                        if (explicitClassIds.containsValue(id)) {
+                            logger.warn("Duplicate ID {} detected for class '{}'. Skipping.", id, className);
+                        } else {
+                            explicitClassIds.put(className, id);
+                            logger.info("Loaded explicit mapping: {} -> {}", className, id);
+                        }
+                    } catch (NumberFormatException e) {
+                        logger.warn("Invalid ID format for class '{}'. Skipping.", className);
+                    }
+                } else {
+                    logger.warn("Skipping entry with missing attributes: class='{}', id='{}'", className, idString);
+                }
+            }
+        }
+    }
+
+    /**
+     * Register a class with an explicit or generated ID
+     *
+     * @param kryo              Kryo instance to register classes with.
+     * @param clazz             Class to register
+     * @param registeredClasses Unique Set of already registered Classes
+     */
+    private static void registerClassWithId(Kryo kryo, Class<?> clazz, Set<Class<?>> registeredClasses) {
+        if (clazz == null || registeredClasses.contains(clazz) || clazz.isPrimitive()) {
+            logger.debug("Skipping already registered or primitive class: {}", clazz != null ? clazz.getName() : null);
+            return;
+        }
+
+        // Skip excluded classes
+        if (excludedClasses.contains(clazz.getName())) {
+            logger.warn("Excluding class: {}", clazz.getName());
+            return;
+        }
+
+        // Determine the class ID
+        int classId = getClassId(clazz);
+
+        // Register the class with the determined ID
+        logger.info("Registering class: {} with ID: {}", clazz.getName(), classId);
+        kryo.register(clazz, classId);
+        registeredClasses.add(clazz);
+
+        // Recursively register field types and nested classes
+        for (Field field : clazz.getDeclaredFields()) {
+            Class<?> fieldType = field.getType();
+            if (fieldType.isArray()) {
+                registerClassWithId(kryo, fieldType, registeredClasses);
+                if (fieldType.getComponentType() != null) {
+                    registerClassWithId(kryo, fieldType.getComponentType(), registeredClasses);
+                }
+            } else if (!registeredClasses.contains(fieldType)) {
+                registerClassWithId(kryo, fieldType, registeredClasses);
+            }
+        }
+
+        // Register nested classes
+        for (Class<?> innerClass : clazz.getDeclaredClasses()) {
+            if (!registeredClasses.contains(innerClass)) {
+                registerClassWithId(kryo, innerClass, registeredClasses);
+            }
+        }
+    }
+
+    /**
+     * Method to get the ID for a class (either from XML, hardcoded, or atomic counter)
+     *
+     * @param clazz Class to get an ID
+     * @return an incremental unique Integer ID
+     */
+    private static int getClassId(Class<?> clazz) {
+        // First check if the class has an explicitly defined ID from XML
+        Integer explicitId = explicitClassIds.get(clazz.getName());
+        if (explicitId != null) {
+            return explicitId;
+        }
+
+        // If no explicit ID, generate an atomic incremental ID
+        return atomicIdCounter.getAndIncrement();
+    }
+
+    /**
+     * Reloads the configurations
+     *
+     * @param path Path of configuration
+     * @throws ParserConfigurationException Parsing Exception
+     * @throws IOException                  I/O error
+     * @throws SAXException
+     */
     public static void reloadConfiguration(String path) throws ParserConfigurationException, IOException, SAXException {
         String localFilePath = path;
         if (localFilePath == null) {
@@ -92,18 +207,14 @@ public class PacketRegistrar {
 
         // Scan the package for all classes
         Set<Class<?>> registeredClasses = new HashSet<>();
+
+        // Register each class
         for (String packageName : Util.safeIterable(packages)) {
             logger.info("Registering classes from the following package: {}", packageName);
             // Register each class
             for (Class<?> clazz : Util.safeIterable(getClassesToRegister(getReflectionsFromPackage(packageName)))) {
-                registerClass(kryo, clazz, registeredClasses);
+                registerClassWithId(kryo, clazz, registeredClasses);
             }
-        }
-
-        logger.info("Registering individual classes from included list.");
-        // Register each class
-        for (Class<?> clazz : Util.safeIterable(getIncludedClasses())) {
-            registerClass(kryo, clazz, registeredClasses);
         }
         
         // Register primitive arrays
@@ -142,8 +253,29 @@ public class PacketRegistrar {
      *
      * @return The packets.xml file.
      */
-    private static File getPacketFile() {
-        return getPacketFile(CONFIG_FILE);
+    private static File getPacketFile() throws IOException {
+        String resourcePath = getResourcePath();
+        logger.debug("resourcePath={}", resourcePath);
+        return getPacketFile(resourcePath + File.separator + CONFIG_FILE);
+    }
+
+    private static String getResourcePath() throws IOException {
+        ClassLoader classLoader = PacketRegistrar.class.getClassLoader();
+        Enumeration<URL> resources = classLoader.getResources("");
+        String path = "";
+        String classesPathString = "/classes/";
+        logger.debug("classesPathString: {}", classesPathString);
+        while (resources.hasMoreElements()) {
+            URL resourceElement = resources.nextElement();
+            String resourceElementPath = resourceElement.getPath();
+            logger.debug("resourceElement: {}", resourceElement);
+            logger.debug("resourceElementPath: {}", resourceElementPath);
+            if (resourceElementPath != null && resourceElementPath.contains(classesPathString)) {
+                path = resourceElementPath;
+                break;
+            }
+        }
+        return path;
     }
 
     /**
@@ -160,6 +292,7 @@ public class PacketRegistrar {
      * Ensures thread-safe access.
      *
      * @return A parsed XML document representing the packet configuration.
+     *
      * @throws ParserConfigurationException If a DocumentBuilder cannot be created.
      * @throws IOException                  If an I/O error occurs.
      * @throws SAXException                 If a parsing error occurs.
@@ -240,6 +373,10 @@ public class PacketRegistrar {
         excluded.add("java.lang.ClassValue$Entry");
         excluded.add("java.lang.Class$ReflectionData");
         excluded.add("java.lang.Class$EnclosingMethodInfo");
+        excluded.add("java.lang.module.Configuration");
+        excluded.add("jdk.internal.module.ServicesCatalog");
+        excluded.add("jdk.internal.perf.PerfCounter");
+        excluded.add("java.lang.module.ModuleDescriptor");
         excluded.addAll(loadExcludedClasses());
         return excluded;
     }
@@ -261,52 +398,6 @@ public class PacketRegistrar {
             }
         }
         return included;
-    }
-
-    /**
-     * Registers a class and its related fields with Kryo.
-     *
-     * @param kryo              Kryo instance.
-     * @param clazz             The class to register.
-     * @param registeredClasses A set of already registered classes.
-     */
-    private static void registerClass(Kryo kryo, Class<?> clazz, Set<Class<?>> registeredClasses) {
-        if (clazz == null || registeredClasses.contains(clazz) || clazz.isPrimitive()) {
-            logger.debug("Skipping already registered or primitive class: {}", (clazz == null ? null : clazz.getName()));
-            return; // Skip if already registered or primitive
-        }
-
-        if (excludedClasses.contains(clazz.getName())) {
-            logger.warn("Excluding class: {}", clazz.getName());
-            return; // Skip if excluded
-        }
-
-        // Register the class
-        logger.info("Registering class: {}", clazz);
-        kryo.register(clazz);
-        registeredClasses.add(clazz);
-
-        // Recursively register field types
-        for (Field field : clazz.getDeclaredFields()) {
-            Class<?> fieldType = field.getType();
-
-            if (fieldType.isArray()) {
-                // Register array class and its component type if it's not null
-                registerClass(kryo, fieldType, registeredClasses);
-                if (fieldType.getComponentType() != null) {
-                    registerClass(kryo, fieldType.getComponentType(), registeredClasses);
-                }
-            } else if (!registeredClasses.contains(fieldType)) {
-                registerClass(kryo, fieldType, registeredClasses);
-            }
-        }
-
-        // Also register inner and nested classes (including static nested classes)
-        for (Class<?> innerClass : clazz.getDeclaredClasses()) {
-            if (!registeredClasses.contains(innerClass)) {
-                registerClass(kryo, innerClass, registeredClasses);
-            }
-        }
     }
 
     /**
@@ -339,6 +430,8 @@ public class PacketRegistrar {
         kryo.register(float[].class);
         kryo.register(double[].class);
         kryo.register(boolean[].class);
+        kryo.register(char[].class);
+        kryo.register(Object[].class);
         kryo.register(byte[].class);
         kryo.register(short[].class);
         kryo.register(long[].class);
