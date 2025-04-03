@@ -48,7 +48,7 @@ public class PacketRegistrar {
     private static final String CONFIG_FILE = "packets.xml";
     private static File packetFile;
     private static final AtomicInteger atomicIdCounter = new AtomicInteger(1001); // Start from 1001 for dynamic classes
-    private static final Map<String, Integer> explicitClassIds = new HashMap<>(); // Store explicit class IDs from XML
+    private static final Map<String, Integer> explicitClassIds = new LinkedHashMap<>(); // Store explicit class IDs from XML
     private static Set<String> packages = getPackages();
     private static Set<String> excludedClasses = getExcludedClasses();
     private static Document packetsXMLDocument = null;
@@ -206,7 +206,7 @@ public class PacketRegistrar {
         }
 
         // Scan the package for all classes
-        Set<Class<?>> registeredClasses = new HashSet<>();
+        Set<Class<?>> registeredClasses = new LinkedHashSet<>();
 
         // Register each class
         for (String packageName : Util.safeIterable(packages)) {
@@ -314,7 +314,7 @@ public class PacketRegistrar {
      * @return A set of extracted values from the XML.
      */
     private static Set<String> parseXmlEntries(String parentTag, String childTag) {
-        Set<String> entries = new HashSet<>();
+        Set<String> entries = new LinkedHashSet<>();
         try {
             if (packetsXMLDocument == null) {
                 logger.warn("packetsXMLDocument was not loaded. Using defaults.");
@@ -344,7 +344,7 @@ public class PacketRegistrar {
      * @return A set of package names for scanning.
      */
     private static Set<String> getPackages() {
-        Set<String> packages = new HashSet<>();
+        Set<String> packages = new LinkedHashSet<>();
         packages.add("asg.games.yipee.objects");
         packages.add("asg.games.yipee.net");
         packages.addAll(loadPackages());
@@ -357,7 +357,7 @@ public class PacketRegistrar {
      * @return A set of class names to exclude.
      */
     private static Set<String> getExcludedClasses() {
-        Set<String> excluded = new HashSet<>();
+        Set<String> excluded = new LinkedHashSet<>();
         excluded.add("asg.games.yipee.net.PacketRegistrar");
         excluded.add("java.lang.Enum");
         excluded.add("java.io.ObjectStreamField");
@@ -387,7 +387,7 @@ public class PacketRegistrar {
      * @return A set of class names to include.
      */
     private static Set<Class<?>> getIncludedClasses() {
-        Set<Class<?>> included = new HashSet<>();
+        Set<Class<?>> included = new LinkedHashSet<>();
         included.add(asg.games.yipee.game.PlayerAction.class);
         Set<String> classes = loadIncludedClasses();
         for (String classString : classes) {
@@ -407,7 +407,7 @@ public class PacketRegistrar {
      * @return A set of classes found in the package.
      */
     private static Set<Class<? extends YipeeSerializable>> getClassesToRegister(Reflections reflections) {
-        return reflections != null ? reflections.getSubTypesOf(YipeeSerializable.class) : new HashSet<>();
+        return reflections != null ? reflections.getSubTypesOf(YipeeSerializable.class) : new LinkedHashSet<>();
     }
 
     /**
