@@ -5,11 +5,44 @@
     </packages>
     <excludes>
         <class>asg.games.yipee.net.PacketRegistrar</class>
+        <class>java.io.ObjectStreamField</class>
+        <class>java.lang.reflect.Constructor</class>
+        <class>java.lang.WeakPairMap</class>
+        <class>java.lang.Module$ArchivedData</class>
+        <class>java.security.ProtectionDomain</class>
+        <class>java.lang.ref.SoftReference</class>
+        <class>sun.reflect.generics.repository.ClassRepository</class>
+        <class>jdk.internal.reflect.ReflectionFactory</class>
+        <class>java.lang.Class$AnnotationData</class>
+        <class>sun.reflect.annotation.AnnotationType</class>
+        <class>java.lang.ClassValue$Entry</class>
+        <class>java.lang.Class$ReflectionData</class>
+        <class>java.lang.Class$EnclosingMethodInfo</class>
     </excludes>
-    <incleded/>
     <mappings>
-        <mapping class="asg.games.yipee.objects.YipeePlayer" id="1"/>
-        <mapping class="asg.games.yipee.net.ConnectionRequest" id="2"/>
-        <mapping class="asg.games.yipee.net.ConnectionResponse" id="3"/>
+        <mapping class="asg.games.yipee.objects.YipeePlayer" id="900"/>
+        <mapping class="asg.games.yipee.net.ConnectionRequest" id="901"/>
+        <mapping class="asg.games.yipee.net.ConnectionResponse" id="902"/>
+        <mapping class="asg.games.yipee.objects.YipeeKeyMap" id="903"/>
+        <mapping class="asg.games.yipee.objects.YipeeKeyMap" id="1001"/>
+        <mapping class="java.lang.String" id="1003"/>
+        <mapping class="java.util.ArrayList" id="1006"/> <!-- For collections -->
+        <mapping class="java.lang.Integer" id="1032"/> <!-- For fields -->
+        <mapping class="asg.games.yipee.objects.YipeeObject" id="1011"/>
+        <mapping class="asg.games.yipee.objects.AbstractYipeeObject" id="1012"/>
+        <mapping class="asg.games.yipee.objects.YipeePiece" id="1013"/>
+        <mapping class="asg.games.yipee.objects.YipeeRoom" id="1014"/>
+        <mapping class="java.util.Set" id="1015"/> <!-- For fields -->
+        <mapping class="java.util.Map" id="1016"/> <!-- For fields -->
+        <mapping class="asg.games.yipee.objects.YipeeBlockMove" id="1018"/>
+        <mapping class="asg.games.yipee.objects.YipeeBlock" id="1019"/>
+        <mapping class="asg.games.yipee.objects.YipeeGameBoardState" id="1020"/>
+        <mapping class="asg.games.yipee.objects.YipeeClock" id="1021"/>
+        <mapping class="asg.games.yipee.objects.YipeeBrokenBlock" id="1026"/>
+        <mapping class="asg.games.yipee.objects.YipeeSeat" id="1027"/>
+        <mapping class="asg.games.yipee.objects.YipeeBoardPair" id="1028"/>
+        <mapping class="asg.games.yipee.objects.YipeeTable" id="1029"/>
+        <mapping class="asg.games.yipee.net.StartGameRequest" id="1046"/>
+        <mapping class="asg.games.yipee.net.DisconnectRequest" id="1047"/>
     </mappings>
 </packet-config>

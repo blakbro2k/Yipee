@@ -345,8 +345,6 @@ public class PacketRegistrar {
      */
     private static Set<String> getPackages() {
         Set<String> packages = new LinkedHashSet<>();
-        packages.add("asg.games.yipee.objects");
-        packages.add("asg.games.yipee.net");
         packages.addAll(loadPackages());
         return packages;
     }
@@ -358,25 +356,6 @@ public class PacketRegistrar {
      */
     private static Set<String> getExcludedClasses() {
         Set<String> excluded = new LinkedHashSet<>();
-        excluded.add("asg.games.yipee.net.PacketRegistrar");
-        excluded.add("java.lang.Enum");
-        excluded.add("java.io.ObjectStreamField");
-        excluded.add("java.lang.reflect.Constructor");
-        excluded.add("java.lang.WeakPairMap");
-        excluded.add("java.lang.Module$ArchivedData");
-        excluded.add("java.security.ProtectionDomain");
-        excluded.add("java.lang.ref.SoftReference");
-        excluded.add("sun.reflect.generics.repository.ClassRepository");
-        excluded.add("jdk.internal.reflect.ReflectionFactory");
-        excluded.add("java.lang.Class$AnnotationData");
-        excluded.add("sun.reflect.annotation.AnnotationType");
-        excluded.add("java.lang.ClassValue$Entry");
-        excluded.add("java.lang.Class$ReflectionData");
-        excluded.add("java.lang.Class$EnclosingMethodInfo");
-        excluded.add("java.lang.module.Configuration");
-        excluded.add("jdk.internal.module.ServicesCatalog");
-        excluded.add("jdk.internal.perf.PerfCounter");
-        excluded.add("java.lang.module.ModuleDescriptor");
         excluded.addAll(loadExcludedClasses());
         return excluded;
     }
@@ -426,17 +405,17 @@ public class PacketRegistrar {
      * @param kryo Kryo instance.
      */
     private static void registerPrimitiveArrays(Kryo kryo) {
-        kryo.register(int[].class);
-        kryo.register(float[].class);
-        kryo.register(double[].class);
-        kryo.register(boolean[].class);
-        kryo.register(char[].class);
-        kryo.register(Object[].class);
-        kryo.register(byte[].class);
-        kryo.register(short[].class);
-        kryo.register(long[].class);
-        kryo.register(char[].class);
-        kryo.register(String[].class);
-        logger.info("Registered primitive array types.");
+        logger.info("Registering primitive array types....");
+        kryo.register(int[].class, 1);
+        kryo.register(float[].class, 2);
+        kryo.register(double[].class, 3);
+        kryo.register(boolean[].class, 4);
+        kryo.register(char[].class, 5);
+        kryo.register(Object[].class, 6);
+        kryo.register(byte[].class, 7);
+        kryo.register(short[].class, 8);
+        kryo.register(long[].class, 9);
+        kryo.register(char[].class, 10);
+        kryo.register(String[].class, 11);
     }
 }
