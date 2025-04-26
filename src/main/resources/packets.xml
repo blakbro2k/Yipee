@@ -3,7 +3,7 @@
         <package>asg.games.yipee.objects</package>
         <package>asg.games.yipee.net</package>
     </packages>
-    <excludes>
+    <excludedClasses>
         <class>asg.games.yipee.net.PacketRegistrar</class>
         <class>java.io.ObjectStreamField</class>
         <class>java.lang.reflect.Constructor</class>
@@ -14,12 +14,13 @@
         <class>sun.reflect.generics.repository.ClassRepository</class>
         <class>jdk.internal.reflect.ReflectionFactory</class>
         <class>java.lang.Class$AnnotationData</class>
+        <class>java.io.ObjectStreamField</class>
         <class>sun.reflect.annotation.AnnotationType</class>
         <class>java.lang.ClassValue$Entry</class>
         <class>java.lang.Class$ReflectionData</class>
         <class>java.lang.Class$EnclosingMethodInfo</class>
-    </excludes>
-    <mappings>
+    </excludedClasses>
+    <includedClasses>
         <mapping class="asg.games.yipee.objects.YipeePlayer" id="900"/>
         <mapping class="asg.games.yipee.net.ConnectionRequest" id="901"/>
         <mapping class="asg.games.yipee.net.ConnectionResponse" id="902"/>
@@ -44,5 +45,5 @@
         <mapping class="asg.games.yipee.objects.YipeeTable" id="1029"/>
         <mapping class="asg.games.yipee.net.StartGameRequest" id="1046"/>
         <mapping class="asg.games.yipee.net.DisconnectRequest" id="1047"/>
-    </mappings>
+    </includedClasses>
 </packet-config>

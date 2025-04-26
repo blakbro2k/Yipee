@@ -16,7 +16,6 @@
 package asg.games.yipee.net;
 
 import asg.games.yipee.objects.YipeeSerializable;
-import asg.games.yipee.tools.Util;
 import com.esotericsoftware.kryo.Kryo;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
@@ -199,7 +198,7 @@ public class PacketRegistrar {
      *
      * @param kryo Kryo instance to register classes with.
      */
-    public static void registerPackets(Kryo kryo) {
+    /*public static void registerPackets(Kryo kryo) {
         if (kryo == null) {
             logger.error("Kryo instance is null!");
             return;
@@ -219,8 +218,42 @@ public class PacketRegistrar {
         
         // Register primitive arrays
         registerPrimitiveArrays(kryo);
-    }
+    }*/
+    public static void registerPackets(Kryo kryo) {
+        if (kryo == null) {
+            logger.error("Kryo instance is null!");
+            return;
+        }
+        Set<Class<?>> registeredClasses = new LinkedHashSet<>();
 
+        // Register explicit classes from packets.xml
+        for (Map.Entry<String, Integer> entry : explicitClassIds.entrySet()) {
+            String className = entry.getKey();
+            int classId = entry.getValue();
+            try {
+                Class<?> clazz = Class.forName(className);
+                if (!registeredClasses.contains(clazz) && !excludedClasses.contains(className)) {
+                    logger.info("Registering explicit class: {} (ID: {})", className, classId);
+                    kryo.register(clazz, classId);
+                    registeredClasses.add(clazz);
+                    // Register field types
+                    for (Field field : clazz.getDeclaredFields()) {
+                        Class<?> fieldType = field.getType();
+                        if (!registeredClasses.contains(fieldType) && !fieldType.isPrimitive() && !explicitClassIds.containsKey(fieldType.getName())) {
+                            logger.debug("Registering field type: {} from {}", fieldType.getName(), className);
+                            kryo.register(fieldType); // Default ID for fields
+                            registeredClasses.add(fieldType);
+                        }
+                    }
+                }
+            } catch (ClassNotFoundException e) {
+                logger.error("Failed to load class {}: {}", className, e.getMessage());
+            }
+        }
+
+        // Register primitive arrays
+        registerPrimitiveArrays(kryo);
+    }
     /**
      * Loads the package names from the XML configuration file.
      *
