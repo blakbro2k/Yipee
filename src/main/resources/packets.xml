@@ -19,13 +19,23 @@
         <class>java.lang.ClassValue$Entry</class>
         <class>java.lang.Class$ReflectionData</class>
         <class>java.lang.Class$EnclosingMethodInfo</class>
+        <class>org.slf4j.Logger</class>
+        <class>org.aspectj.lang.JoinPoint$StaticPart</class>
+        <class>asg.games.yipee.aspects.LoggingAspect</class>
+        <class>java.lang.Class</class>
+        <class>[Ljava.lang.Object</class>
+        <class>[I</class>
+        <class>[B</class>
+        <class>[C</class>
+        <class>[[I</class>
+        <class>[Z</class>
+        <class>[Ljava.io.ObjectStreamField</class>
     </excludedClasses>
     <includedClasses>
         <mapping class="asg.games.yipee.objects.YipeePlayer" id="900"/>
         <mapping class="asg.games.yipee.net.ConnectionRequest" id="901"/>
         <mapping class="asg.games.yipee.net.ConnectionResponse" id="902"/>
         <mapping class="asg.games.yipee.objects.YipeeKeyMap" id="903"/>
-        <mapping class="asg.games.yipee.objects.YipeeKeyMap" id="1001"/>
         <mapping class="java.lang.String" id="1003"/>
         <mapping class="java.util.ArrayList" id="1006"/> <!-- For collections -->
         <mapping class="java.lang.Integer" id="1032"/> <!-- For fields -->

@@ -32,6 +32,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.*;
@@ -60,6 +61,8 @@ public class PacketRegistrar {
                 packetsXMLDocument = getXMLDocument();
                 packages = getPackages();
                 excludedClasses = getExcludedClasses();
+                //Add primitive mappings
+                explicitClassIds.putAll(getPrimitiveMapping());
                 loadExplicitClassIds(packetsXMLDocument); // Load explicit IDs from XML
             } else {
                 logger.warn("'packets.xml' not found. No packets will be loaded.");
@@ -193,11 +196,6 @@ public class PacketRegistrar {
         logger.debug("excludedClasses={}", excludedClasses);
     }
 
-    /**
-     * Scans the package and registers all classes for Kryo serialization.
-     *
-     * @param kryo Kryo instance to register classes with.
-     */
     /*public static void registerPackets(Kryo kryo) {
         if (kryo == null) {
             logger.error("Kryo instance is null!");
@@ -215,10 +213,16 @@ public class PacketRegistrar {
                 registerClassWithId(kryo, clazz, registeredClasses);
             }
         }
-        
+
         // Register primitive arrays
         registerPrimitiveArrays(kryo);
     }*/
+
+    /**
+     * Scans the package and registers all classes for Kryo serialization.
+     *
+     * @param kryo Kryo instance to register classes with.
+     */
     public static void registerPackets(Kryo kryo) {
         if (kryo == null) {
             logger.error("Kryo instance is null!");
@@ -232,7 +236,8 @@ public class PacketRegistrar {
             int classId = entry.getValue();
             try {
                 Class<?> clazz = Class.forName(className);
-                if (!registeredClasses.contains(clazz) && !excludedClasses.contains(className)) {
+                if (!registeredClasses.contains(clazz) && !excludedClasses.contains(className) &&
+                        Serializable.class.isAssignableFrom(clazz)) {
                     logger.info("Registering explicit class: {} (ID: {})", className, classId);
                     kryo.register(clazz, classId);
                     registeredClasses.add(clazz);
@@ -250,9 +255,6 @@ public class PacketRegistrar {
                 logger.error("Failed to load class {}: {}", className, e.getMessage());
             }
         }
-
-        // Register primitive arrays
-        registerPrimitiveArrays(kryo);
     }
     /**
      * Loads the package names from the XML configuration file.
@@ -377,8 +379,7 @@ public class PacketRegistrar {
      * @return A set of package names for scanning.
      */
     private static Set<String> getPackages() {
-        Set<String> packages = new LinkedHashSet<>();
-        packages.addAll(loadPackages());
+        Set<String> packages = new LinkedHashSet<>(loadPackages());
         return packages;
     }
 
@@ -388,28 +389,8 @@ public class PacketRegistrar {
      * @return A set of class names to exclude.
      */
     private static Set<String> getExcludedClasses() {
-        Set<String> excluded = new LinkedHashSet<>();
-        excluded.addAll(loadExcludedClasses());
+        Set<String> excluded = new LinkedHashSet<>(loadExcludedClasses());
         return excluded;
-    }
-
-    /**
-     * Retrieves the included class names, combining defaults with XML configurations.
-     *
-     * @return A set of class names to include.
-     */
-    private static Set<Class<?>> getIncludedClasses() {
-        Set<Class<?>> included = new LinkedHashSet<>();
-        included.add(asg.games.yipee.game.PlayerAction.class);
-        Set<String> classes = loadIncludedClasses();
-        for (String classString : classes) {
-            try {
-                included.add(Class.forName(classString));
-            } catch (Exception e) {
-                logger.error("Error converting included classes.", e);
-            }
-        }
-        return included;
     }
 
     /**
@@ -435,20 +416,20 @@ public class PacketRegistrar {
     /**
      * Registers primitive array types in Kryo.
      *
-     * @param kryo Kryo instance.
      */
-    private static void registerPrimitiveArrays(Kryo kryo) {
+    private static Map<String, Integer> getPrimitiveMapping() {
         logger.info("Registering primitive array types....");
-        kryo.register(int[].class, 1);
-        kryo.register(float[].class, 2);
-        kryo.register(double[].class, 3);
-        kryo.register(boolean[].class, 4);
-        kryo.register(char[].class, 5);
-        kryo.register(Object[].class, 6);
-        kryo.register(byte[].class, 7);
-        kryo.register(short[].class, 8);
-        kryo.register(long[].class, 9);
-        kryo.register(char[].class, 10);
-        kryo.register(String[].class, 11);
+        Map<String, Integer> primMap = new LinkedHashMap<>();
+        primMap.put("int[].class", 1);
+        primMap.put("float[].class", 2);
+        primMap.put("double[].class", 3);
+        primMap.put("boolean[].class", 4);
+        primMap.put("char[].class", 5);
+        primMap.put("Object[].class", 6);
+        primMap.put("byte[].class", 7);
+        primMap.put("short[].class", 8);
+        primMap.put("long[].class", 9);
+        primMap.put("String[].class", 10);
+        return primMap;
     }
 }
