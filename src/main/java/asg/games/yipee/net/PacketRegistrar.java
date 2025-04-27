@@ -61,8 +61,6 @@ public class PacketRegistrar {
                 packetsXMLDocument = getXMLDocument();
                 packages = getPackages();
                 excludedClasses = getExcludedClasses();
-                //Add primitive mappings
-                explicitClassIds.putAll(getPrimitiveMapping());
                 loadExplicitClassIds(packetsXMLDocument); // Load explicit IDs from XML
             } else {
                 logger.warn("'packets.xml' not found. No packets will be loaded.");
@@ -228,6 +226,13 @@ public class PacketRegistrar {
             logger.error("Kryo instance is null!");
             return;
         }
+
+        try {
+            registerPrimitiveClasses(kryo);
+        } catch (Exception e) {
+            logger.error("Failed to load primitive classes", e.getMessage());
+        }
+
         Set<Class<?>> registeredClasses = new LinkedHashSet<>();
 
         // Register explicit classes from packets.xml
@@ -416,20 +421,34 @@ public class PacketRegistrar {
     /**
      * Registers primitive array types in Kryo.
      *
+     * @param kryo
      */
-    private static Map<String, Integer> getPrimitiveMapping() {
+    private static void registerPrimitiveClasses(Kryo kryo) throws Exception {
         logger.info("Registering primitive array types....");
-        Map<String, Integer> primMap = new LinkedHashMap<>();
-        primMap.put("int[].class", 1);
-        primMap.put("float[].class", 2);
-        primMap.put("double[].class", 3);
-        primMap.put("boolean[].class", 4);
-        primMap.put("char[].class", 5);
-        primMap.put("Object[].class", 6);
-        primMap.put("byte[].class", 7);
-        primMap.put("short[].class", 8);
-        primMap.put("long[].class", 9);
-        primMap.put("String[].class", 10);
-        return primMap;
+        if (kryo != null) {
+            kryo.register(int[].class, 1);
+            logger.debug("Registering {}.class", "int[]");
+            kryo.register(float[].class, 2);
+            logger.debug("Registering {}.class", "float[]");
+            kryo.register(double[].class, 3);
+            logger.debug("Registering {}.class", "double]");
+            kryo.register(boolean[].class, 4);
+            logger.debug("Registering {}.class", "boolean[]");
+            kryo.register(char[].class, 5);
+            logger.debug("Registering {}.class", "char[]");
+            kryo.register(Object[].class, 6);
+            logger.debug("Registering {}.class", "Object[]");
+            kryo.register(byte[].class, 7);
+            logger.debug("Registering {}.class", "byte[]");
+            kryo.register(short[].class, 8);
+            logger.debug("Registering {}.class", "short[]");
+            kryo.register(long[].class, 9);
+            logger.debug("Registering {}.class", "long[]");
+            kryo.register(String[].class, 10);
+            logger.debug("Registering {}.class", "String[]");
+        } else {
+            throw new Exception("Kryo object was null, was it initialized?");
+        }
+        logger.info("Registering primitive array types complete");
     }
 }
