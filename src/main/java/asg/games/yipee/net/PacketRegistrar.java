@@ -1,24 +1,6 @@
-/**
- * Copyright 2024 See AUTHORS file.
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package asg.games.yipee.net;
 
-import asg.games.yipee.objects.YipeeSerializable;
 import com.esotericsoftware.kryo.Kryo;
-import org.reflections.Reflections;
-import org.reflections.scanners.Scanners;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -32,10 +14,17 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -46,409 +35,261 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class PacketRegistrar {
     private static final Logger logger = LoggerFactory.getLogger(PacketRegistrar.class);
     private static final String CONFIG_FILE = "packets.xml";
-    private static File packetFile;
-    private static final AtomicInteger atomicIdCounter = new AtomicInteger(1001); // Start from 1001 for dynamic classes
-    private static final Map<String, Integer> explicitClassIds = new LinkedHashMap<>(); // Store explicit class IDs from XML
-    private static Set<String> packages = getPackages();
-    private static Set<String> excludedClasses = getExcludedClasses();
+    private static final AtomicInteger atomicIdCounter = new AtomicInteger(2000);
+    private static final Map<String, Integer> explicitClassIds = new LinkedHashMap<>();
+    private static Set<String> excludedClasses = new LinkedHashSet<>();
     private static Document packetsXMLDocument = null;
 
-    static {
-        try {
-            packetFile = getPacketFile();
-            logger.info("PacketFile={} loaded.", packetFile);
-            if (packetFile.exists()) {
-                packetsXMLDocument = getXMLDocument();
-                packages = getPackages();
-                excludedClasses = getExcludedClasses();
-                loadExplicitClassIds(packetsXMLDocument); // Load explicit IDs from XML
-            } else {
-                logger.warn("'packets.xml' not found. No packets will be loaded.");
-            }
-        } catch (ParserConfigurationException | IOException | SAXException e) {
-            logger.error("Error loading 'packets.xml'", e);
-        }
-    }
-
     /**
-     * Loads classes with given Ids or an atomic Ids
+     * Reloads the configuration from the specified path.
      *
-     * @param xmlDocument XML document with Packet registrations
-     */
-    private static void loadExplicitClassIds(Document xmlDocument) {
-        NodeList mappingNodes = xmlDocument.getElementsByTagName("mapping");
-
-        for (int i = 0; i < mappingNodes.getLength(); i++) {
-            Node node = mappingNodes.item(i);
-            if (node.getNodeType() == Node.ELEMENT_NODE) {
-                Element element = (Element) node;
-
-                String className = element.getAttribute("class").trim();
-                String idString = element.getAttribute("id").trim();
-
-                if (!className.isEmpty() && !idString.isEmpty()) {
-                    try {
-                        int id = Integer.parseInt(idString);
-                        if (explicitClassIds.containsValue(id)) {
-                            logger.warn("Duplicate ID {} detected for class '{}'. Skipping.", id, className);
-                        } else {
-                            explicitClassIds.put(className, id);
-                            logger.info("Loaded explicit mapping: {} -> {}", className, id);
-                        }
-                    } catch (NumberFormatException e) {
-                        logger.warn("Invalid ID format for class '{}'. Skipping.", className);
-                    }
-                } else {
-                    logger.warn("Skipping entry with missing attributes: class='{}', id='{}'", className, idString);
-                }
-            }
-        }
-    }
-
-    /**
-     * Register a class with an explicit or generated ID
-     *
-     * @param kryo              Kryo instance to register classes with.
-     * @param clazz             Class to register
-     * @param registeredClasses Unique Set of already registered Classes
-     */
-    private static void registerClassWithId(Kryo kryo, Class<?> clazz, Set<Class<?>> registeredClasses) {
-        if (clazz == null || registeredClasses.contains(clazz) || clazz.isPrimitive()) {
-            logger.debug("Skipping already registered or primitive class: {}", clazz != null ? clazz.getName() : null);
-            return;
-        }
-
-        // Skip excluded classes
-        if (excludedClasses.contains(clazz.getName())) {
-            logger.warn("Excluding class: {}", clazz.getName());
-            return;
-        }
-
-        // Determine the class ID
-        int classId = getClassId(clazz);
-
-        // Register the class with the determined ID
-        logger.info("Registering class: {} with ID: {}", clazz.getName(), classId);
-        kryo.register(clazz, classId);
-        registeredClasses.add(clazz);
-
-        // Recursively register field types and nested classes
-        for (Field field : clazz.getDeclaredFields()) {
-            Class<?> fieldType = field.getType();
-            if (fieldType.isArray()) {
-                registerClassWithId(kryo, fieldType, registeredClasses);
-                if (fieldType.getComponentType() != null) {
-                    registerClassWithId(kryo, fieldType.getComponentType(), registeredClasses);
-                }
-            } else if (!registeredClasses.contains(fieldType)) {
-                registerClassWithId(kryo, fieldType, registeredClasses);
-            }
-        }
-
-        // Register nested classes
-        for (Class<?> innerClass : clazz.getDeclaredClasses()) {
-            if (!registeredClasses.contains(innerClass)) {
-                registerClassWithId(kryo, innerClass, registeredClasses);
-            }
-        }
-    }
-
-    /**
-     * Method to get the ID for a class (either from XML, hardcoded, or atomic counter)
-     *
-     * @param clazz Class to get an ID
-     * @return an incremental unique Integer ID
-     */
-    private static int getClassId(Class<?> clazz) {
-        // First check if the class has an explicitly defined ID from XML
-        Integer explicitId = explicitClassIds.get(clazz.getName());
-        if (explicitId != null) {
-            return explicitId;
-        }
-
-        // If no explicit ID, generate an atomic incremental ID
-        return atomicIdCounter.getAndIncrement();
-    }
-
-    /**
-     * Reloads the configurations
-     *
-     * @param path Path of configuration
-     * @throws ParserConfigurationException Parsing Exception
-     * @throws IOException                  I/O error
-     * @throws SAXException
+     * @param path Configuration file path.
+     * @throws ParserConfigurationException if XML parser is misconfigured.
+     * @throws IOException                  if an IO error occurs.
+     * @throws SAXException                 if an XML parsing error occurs.
      */
     public static void reloadConfiguration(String path) throws ParserConfigurationException, IOException, SAXException {
-        String localFilePath = path;
-        if (localFilePath == null) {
-            localFilePath = CONFIG_FILE;
+        String localFilePath = path != null ? path : CONFIG_FILE;
+        File packetFile = getPacketFile(localFilePath);
+        if (packetFile.exists()) {
+            packetsXMLDocument = loadXMLDocument(packetFile);
+            Set<String> packages = loadEntries("packages", "package");
+            excludedClasses = loadEntries("excludedClasses", "class");
+            loadExplicitMappings();
+            logger.info("PacketRegistrar initialized with {} packages and {} explicit mappings.", packages.size(), explicitClassIds.size());
+        } else {
+            logger.error("No packets.xml found at {}", packetFile.getAbsolutePath());
+            throw new ParserConfigurationException("No packets.xml found at " + packetFile.getAbsolutePath());
         }
-
-        packetFile = getPacketFile(localFilePath);
-        logger.debug("packetFile={}", packetFile);
-        packetsXMLDocument = getXMLDocument();
-        logger.debug("packetsXMLDocument={}", packetsXMLDocument);
-        packages = getPackages();
-        logger.debug("packages={}", packages);
-        excludedClasses = getExcludedClasses();
-        logger.debug("excludedClasses={}", excludedClasses);
     }
 
-    /*public static void registerPackets(Kryo kryo) {
-        if (kryo == null) {
-            logger.error("Kryo instance is null!");
-            return;
-        }
-
-        // Scan the package for all classes
-        Set<Class<?>> registeredClasses = new LinkedHashSet<>();
-
-        // Register each class
-        for (String packageName : Util.safeIterable(packages)) {
-            logger.info("Registering classes from the following package: {}", packageName);
-            // Register each class
-            for (Class<?> clazz : Util.safeIterable(getClassesToRegister(getReflectionsFromPackage(packageName)))) {
-                registerClassWithId(kryo, clazz, registeredClasses);
+    /**
+     * Reloads the configuration from a classpath resource.
+     *
+     * @throws ParserConfigurationException if XML parser is misconfigured.
+     * @throws IOException                  if an IO error occurs.
+     * @throws SAXException                 if an XML parsing error occurs.
+     */
+    public static void reloadConfigurationFromResource() throws ParserConfigurationException, IOException, SAXException {
+        try (InputStream inputStream = PacketRegistrar.class.getClassLoader().getResourceAsStream("packets.xml")) {
+            if (inputStream == null) {
+                throw new IOException("packets.xml not found in classpath.");
             }
+            packetsXMLDocument = loadXMLDocument(inputStream);
+            Set<String> packages = loadEntries("packages", "package");
+            excludedClasses = loadEntries("excludedClasses", "class");
+            loadExplicitMappings();
+            logger.info("PacketRegistrar initialized from classpath with {} packages and {} explicit mappings.", packages.size(), explicitClassIds.size());
         }
-
-        // Register primitive arrays
-        registerPrimitiveArrays(kryo);
-    }*/
+    }
 
     /**
-     * Scans the package and registers all classes for Kryo serialization.
-     *
-     * @param kryo Kryo instance to register classes with.
+     * Loads explicit class-ID mappings from the XML configuration.
+     */
+    static void loadExplicitMappings() {
+        if (packetsXMLDocument == null) return;
+
+        NodeList mappings = packetsXMLDocument.getElementsByTagName("mappings");
+        if (mappings.getLength() > 0) {
+            NodeList list = mappings.item(0).getChildNodes();
+            for (int i = 0; i < list.getLength(); i++) {
+                Node node = list.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals("mapping")) {
+                    Element element = (Element) node;
+                    String className = element.getAttribute("class").trim();
+                    String idText = element.getAttribute("id").trim();
+                    if (!className.isEmpty() && !idText.isEmpty()) {
+                        try {
+                            int id = Integer.parseInt(idText);
+                            if (!explicitClassIds.containsKey(className)) {
+                                explicitClassIds.put(className, id);
+                                logger.info("Mapped {} => ID {}", className, id);
+                            } else {
+                                logger.warn("Duplicate mapping ignored for class: {}", className);
+                            }
+                        } catch (NumberFormatException e) {
+                            logger.error("Invalid ID for class {}", className);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Registers all packet classes and array types to the provided Kryo instance.
+     * @param kryo Kryo instance to register classes.
      */
     public static void registerPackets(Kryo kryo) {
         if (kryo == null) {
-            logger.error("Kryo instance is null!");
+            logger.error("Kryo instance is null");
             return;
         }
 
-        try {
-            registerPrimitiveClasses(kryo);
-        } catch (Exception e) {
-            logger.error("Failed to load primitive classes", e.getMessage());
-        }
+        Set<Class<?>> registered = new HashSet<>();
+        registerAllArrayTypes(kryo);
 
-        Set<Class<?>> registeredClasses = new LinkedHashSet<>();
-
-        // Register explicit classes from packets.xml
         for (Map.Entry<String, Integer> entry : explicitClassIds.entrySet()) {
-            String className = entry.getKey();
-            int classId = entry.getValue();
             try {
-                Class<?> clazz = Class.forName(className);
-                if (!registeredClasses.contains(clazz) && !excludedClasses.contains(className) &&
-                        Serializable.class.isAssignableFrom(clazz)) {
-                    logger.info("Registering explicit class: {} (ID: {})", className, classId);
-                    kryo.register(clazz, classId);
-                    registeredClasses.add(clazz);
-                    // Register field types
-                    for (Field field : clazz.getDeclaredFields()) {
-                        Class<?> fieldType = field.getType();
-                        if (!registeredClasses.contains(fieldType) && !fieldType.isPrimitive() && !explicitClassIds.containsKey(fieldType.getName())) {
-                            logger.debug("Registering field type: {} from {}", fieldType.getName(), className);
-                            kryo.register(fieldType); // Default ID for fields
-                            registeredClasses.add(fieldType);
-                        }
-                    }
+                Class<?> clazz = Class.forName(entry.getKey());
+                if (!excludedClasses.contains(clazz.getName())) {
+                    kryo.register(clazz, entry.getValue());
+                    registered.add(clazz);
+                    registerFieldTypes(kryo, clazz, registered);
                 }
             } catch (ClassNotFoundException e) {
-                logger.error("Failed to load class {}: {}", className, e.getMessage());
+                logger.warn("Explicit class not found: {}", entry.getKey());
             }
         }
     }
-    /**
-     * Loads the package names from the XML configuration file.
-     *
-     * @return A set of package names to scan for packets.
-     */
-    private static Set<String> loadPackages() {
-        return parseXmlEntries("packages", "package");
-    }
 
     /**
-     * Loads the excluded class names from the XML configuration file.
-     *
-     * @return A set of class names to exclude from registration.
+     * Registers Serializable field types of the specified class.
+     * @param kryo Kryo instance to register fields.
+     * @param clazz Class whose fields are to be registered.
+     * @param registered Set of already registered classes.
      */
-    private static Set<String> loadExcludedClasses() {
-        return parseXmlEntries("excludedClasses", "class");
-    }
-
-    /**
-     * Loads the excluded class names from the XML configuration file.
-     *
-     * @return A set of class names to exclude from registration.
-     */
-    private static Set<String> loadIncludedClasses() {
-        return parseXmlEntries("includedClasses", "class");
-    }
-
-    /**
-     * Retrieves the file reference for the XML configuration file using the default path.
-     *
-     * @return The packets.xml file.
-     */
-    private static File getPacketFile() throws IOException {
-        String resourcePath = getResourcePath();
-        logger.debug("resourcePath={}", resourcePath);
-        return getPacketFile(resourcePath + File.separator + CONFIG_FILE);
-    }
-
-    private static String getResourcePath() throws IOException {
-        ClassLoader classLoader = PacketRegistrar.class.getClassLoader();
-        Enumeration<URL> resources = classLoader.getResources("");
-        String path = "";
-        String classesPathString = "/classes/";
-        logger.debug("classesPathString: {}", classesPathString);
-        while (resources.hasMoreElements()) {
-            URL resourceElement = resources.nextElement();
-            String resourceElementPath = resourceElement.getPath();
-            logger.debug("resourceElement: {}", resourceElement);
-            logger.debug("resourceElementPath: {}", resourceElementPath);
-            if (resourceElementPath != null && resourceElementPath.contains(classesPathString)) {
-                path = resourceElementPath;
-                break;
+    private static void registerFieldTypes(Kryo kryo, Class<?> clazz, Set<Class<?>> registered) {
+        for (Field field : clazz.getDeclaredFields()) {
+            Class<?> type = field.getType();
+            if (!type.isPrimitive() && !registered.contains(type) && Serializable.class.isAssignableFrom(type)) {
+                try {
+                    kryo.register(type);
+                    registered.add(type);
+                    logger.debug("Auto-registered field type: {}", type.getName());
+                } catch (Exception e) {
+                    logger.warn("Could not auto-register type: {}", type.getName());
+                }
             }
         }
-        return path;
     }
 
     /**
-     * Retrieves the file reference for the XML configuration file.
-     *
-     * @return The packets.xml file.
+     * Converts a file path string into a File object.
+     * @param path File path.
+     * @return File object.
      */
     private static File getPacketFile(String path) {
         return new File(path);
     }
 
     /**
-     * Parses the XML configuration file and returns a normalized document.
-     * Ensures thread-safe access.
-     *
-     * @return A parsed XML document representing the packet configuration.
-     *
-     * @throws ParserConfigurationException If a DocumentBuilder cannot be created.
-     * @throws IOException                  If an I/O error occurs.
-     * @throws SAXException                 If a parsing error occurs.
+     * Loads and parses the XML document from the specified file.
+     * @param file XML configuration file.
+     * @return Parsed XML Document.
+     * @throws ParserConfigurationException if a parser cannot be created.
+     * @throws IOException if an IO error occurs.
+     * @throws SAXException if parsing fails.
      */
-    private static synchronized Document getXMLDocument() throws ParserConfigurationException, IOException, SAXException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        logger.info("packetFile={}", packetFile);
-        Document document = builder.parse(packetFile);
+    private static Document loadXMLDocument(File file) throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document doc = db.parse(file);
+        doc.getDocumentElement().normalize();
+        return doc;
+    }
+
+    /**
+     * Loads and parses the XML document from an InputStream.
+     *
+     * @param inputStream XML input stream.
+     * @return Parsed XML Document.
+     * @throws ParserConfigurationException if a parser cannot be created.
+     * @throws IOException                  if an IO error occurs.
+     * @throws SAXException                 if parsing fails.
+     */
+    private static Document loadXMLDocument(InputStream inputStream) throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        Document document = db.parse(inputStream);
         document.getDocumentElement().normalize();
         return document;
     }
 
     /**
-     * Parses XML entries for the given parent and child tag names.
-     *
-     * @param parentTag The parent XML tag (e.g., "packages").
-     * @param childTag  The child XML tag within the parent (e.g., "package").
-     * @return A set of extracted values from the XML.
+     * Loads entries from a specific parent and child XML structure.
+     * @param parentTag Parent XML tag name.
+     * @param childTag Child XML tag name.
+     * @return Set of loaded entries.
      */
-    private static Set<String> parseXmlEntries(String parentTag, String childTag) {
+    private static Set<String> loadEntries(String parentTag, String childTag) {
         Set<String> entries = new LinkedHashSet<>();
-        try {
-            if (packetsXMLDocument == null) {
-                logger.warn("packetsXMLDocument was not loaded. Using defaults.");
-                return entries; // Return empty set instead of throwing an error
-            }
+        if (packetsXMLDocument == null) return entries;
 
-            NodeList nodeList = packetsXMLDocument.getElementsByTagName(parentTag);
-            if (nodeList.getLength() > 0) {
-                Node parentNode = nodeList.item(0);
-                NodeList childNodes = parentNode.getChildNodes();
-                for (int i = 0; i < childNodes.getLength(); i++) {
-                    Node node = childNodes.item(i);
-                    if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals(childTag)) {
-                        entries.add(node.getTextContent().trim());
-                    }
+        NodeList nodes = packetsXMLDocument.getElementsByTagName(parentTag);
+        if (nodes.getLength() > 0) {
+            Node parent = nodes.item(0);
+            NodeList children = parent.getChildNodes();
+            for (int i = 0; i < children.getLength(); i++) {
+                Node node = children.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals(childTag)) {
+                    entries.add(node.getTextContent().trim());
                 }
             }
-        } catch (Exception e) {
-            logger.error("Error reading XML file '{}': {}", CONFIG_FILE, e.getMessage(), e);
         }
         return entries;
     }
 
     /**
-     * Retrieves the default package names to scan, supplemented by XML configurations.
-     *
-     * @return A set of package names for scanning.
+     * Registers primitive and boxed array types (including 2D arrays) in Kryo.
+     * @param kryo Kryo instance to register array types.
      */
-    private static Set<String> getPackages() {
-        Set<String> packages = new LinkedHashSet<>(loadPackages());
-        return packages;
-    }
+    public static void registerAllArrayTypes(Kryo kryo) {
+        List<Class<?>> baseTypes = Arrays.asList(
+            int.class, float.class, double.class, boolean.class,
+            char.class, byte.class, short.class, long.class, String.class,
+            Integer.class, Float.class, Double.class, Boolean.class,
+            Character.class, Byte.class, Short.class, Long.class
+        );
 
-    /**
-     * Retrieves the excluded class names, combining defaults with XML configurations.
-     *
-     * @return A set of class names to exclude.
-     */
-    private static Set<String> getExcludedClasses() {
-        Set<String> excluded = new LinkedHashSet<>(loadExcludedClasses());
-        return excluded;
-    }
+        int idCounter = 0;
 
-    /**
-     * Retrieves all classes to register within a given package.
-     *
-     * @param reflections Reflections instance for scanning.
-     * @return A set of classes found in the package.
-     */
-    private static Set<Class<? extends YipeeSerializable>> getClassesToRegister(Reflections reflections) {
-        return reflections != null ? reflections.getSubTypesOf(YipeeSerializable.class) : new LinkedHashSet<>();
-    }
+        for (Class<?> base : baseTypes) {
+            try {
+                Class<?> oneDimArray = java.lang.reflect.Array.newInstance(base, 0).getClass();
+                kryo.register(oneDimArray, ++idCounter);
+                logger.debug("Registered array type: {} with ID {}", oneDimArray.getTypeName(), idCounter);
 
-    /**
-     * Creates a Reflections instance for scanning a package.
-     *
-     * @param packageName The package to scan.
-     * @return A Reflections instance.
-     */
-    private static Reflections getReflectionsFromPackage(String packageName) {
-        return new Reflections(packageName, Scanners.SubTypes, Scanners.TypesAnnotated);
-    }
-
-    /**
-     * Registers primitive array types in Kryo.
-     *
-     * @param kryo
-     */
-    private static void registerPrimitiveClasses(Kryo kryo) throws Exception {
-        logger.info("Registering primitive array types....");
-        if (kryo != null) {
-            kryo.register(int[].class, 1);
-            logger.debug("Registering {}.class", "int[]");
-            kryo.register(float[].class, 2);
-            logger.debug("Registering {}.class", "float[]");
-            kryo.register(double[].class, 3);
-            logger.debug("Registering {}.class", "double]");
-            kryo.register(boolean[].class, 4);
-            logger.debug("Registering {}.class", "boolean[]");
-            kryo.register(char[].class, 5);
-            logger.debug("Registering {}.class", "char[]");
-            kryo.register(Object[].class, 6);
-            logger.debug("Registering {}.class", "Object[]");
-            kryo.register(byte[].class, 7);
-            logger.debug("Registering {}.class", "byte[]");
-            kryo.register(short[].class, 8);
-            logger.debug("Registering {}.class", "short[]");
-            kryo.register(long[].class, 9);
-            logger.debug("Registering {}.class", "long[]");
-            kryo.register(String[].class, 10);
-            logger.debug("Registering {}.class", "String[]");
-        } else {
-            throw new Exception("Kryo object was null, was it initialized?");
+                Class<?> twoDimArray = java.lang.reflect.Array.newInstance(oneDimArray, 0).getClass();
+                kryo.register(twoDimArray, ++idCounter);
+                logger.debug("Registered 2D array type: {} with ID {}", twoDimArray.getTypeName(), idCounter);
+            } catch (Exception e) {
+                logger.error("Failed to register array type for: {}", base.getName(), e);
+            }
         }
-        logger.info("Registering primitive array types complete");
+
+        logger.info("All primitive and boxed arrays (1D and 2D) registration complete.");
     }
+
+    /**
+     * Returns explicitClassIds
+     *
+     * @return
+     */
+    public static Map<String, Integer> getExplicitMappings() {
+        return Collections.unmodifiableMap(explicitClassIds);
+    }
+
+    /**
+     * Returns a formatted string listing all registered packets.
+     *
+     * @return Formatted list of packet IDs and classes.
+     */
+    public static String dumpRegisteredPackets() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("=== Registered Packets ===\n");
+        explicitClassIds.forEach((className, id) -> builder.append(
+            String.format("ID: %-5d  Class: %s\n", id, className)
+        ));
+        builder.append("===========================\n");
+        return builder.toString();
+    }
+
+    /**
+     * Prints the registered packets to System.out.
+     */
+    public static void printRegisteredPackets() {
+        System.out.print(dumpRegisteredPackets());
+    }
+
 }
