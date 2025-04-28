@@ -31,7 +31,7 @@
         <class>[Z</class>
         <class>[Ljava.io.ObjectStreamField</class>
     </excludedClasses>
-    <includedClasses>
+    <mappings>
         <mapping class="asg.games.yipee.objects.YipeePlayer" id="900"/>
         <mapping class="asg.games.yipee.net.ConnectionRequest" id="901"/>
         <mapping class="asg.games.yipee.net.ConnectionResponse" id="902"/>
@@ -55,5 +55,5 @@
         <mapping class="asg.games.yipee.objects.YipeeTable" id="1029"/>
         <mapping class="asg.games.yipee.net.StartGameRequest" id="1046"/>
         <mapping class="asg.games.yipee.net.DisconnectRequest" id="1047"/>
-    </includedClasses>
+    </mappings>
 </packet-config>
