@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,6 +38,10 @@ public class PacketRegistrar {
     private static final String CONFIG_FILE = "packets.xml";
     private static final AtomicInteger atomicIdCounter = new AtomicInteger(2000);
     private static final Map<String, Integer> explicitClassIds = new LinkedHashMap<>();
+    private static final Map<String, Integer> primitiveClassIds = new LinkedHashMap<>();
+    private static final Map<String, Integer> kryoClassIds = new LinkedHashMap<>();
+    static final int PRIMITIVE_START_COUNTER = 500;
+    static final int INTERNAL_START_COUNTER = 50;
     private static Set<String> excludedClasses = new LinkedHashSet<>();
     private static Document packetsXMLDocument = null;
 
@@ -152,11 +157,17 @@ public class PacketRegistrar {
      * @param kryo Kryo instance to register framework classes.
      */
     private static void registerFrameworkMessages(Kryo kryo) {
+        int counter = INTERNAL_START_COUNTER;
         kryo.register(com.esotericsoftware.kryonet.FrameworkMessage.RegisterTCP.class);
+        kryoClassIds.put(com.esotericsoftware.kryonet.FrameworkMessage.RegisterTCP.class.getSimpleName(), counter);
         kryo.register(com.esotericsoftware.kryonet.FrameworkMessage.RegisterUDP.class);
+        kryoClassIds.put(com.esotericsoftware.kryonet.FrameworkMessage.RegisterUDP.class.getSimpleName(), ++counter);
         kryo.register(com.esotericsoftware.kryonet.FrameworkMessage.KeepAlive.class);
+        kryoClassIds.put(com.esotericsoftware.kryonet.FrameworkMessage.KeepAlive.class.getSimpleName(), ++counter);
         kryo.register(com.esotericsoftware.kryonet.FrameworkMessage.DiscoverHost.class);
+        kryoClassIds.put(com.esotericsoftware.kryonet.FrameworkMessage.DiscoverHost.class.getSimpleName(), ++counter);
         kryo.register(com.esotericsoftware.kryonet.FrameworkMessage.Ping.class);
+        kryoClassIds.put(com.esotericsoftware.kryonet.FrameworkMessage.Ping.class.getSimpleName(), ++counter);
     }
 
     /**
@@ -258,17 +269,19 @@ public class PacketRegistrar {
             Character.class, Byte.class, Short.class, Long.class
         );
 
-        int idCounter = 0;
+        int idCounter = PRIMITIVE_START_COUNTER;
 
         for (Class<?> base : baseTypes) {
             try {
-                Class<?> oneDimArray = java.lang.reflect.Array.newInstance(base, 0).getClass();
+                Class<?> oneDimArray = Array.newInstance(base, 0).getClass();
                 kryo.register(oneDimArray, ++idCounter);
                 logger.debug("Registered array type: {} with ID {}", oneDimArray.getTypeName(), idCounter);
+                primitiveClassIds.put(oneDimArray.getTypeName(), idCounter);
 
-                Class<?> twoDimArray = java.lang.reflect.Array.newInstance(oneDimArray, 0).getClass();
+                Class<?> twoDimArray = Array.newInstance(oneDimArray, 0).getClass();
                 kryo.register(twoDimArray, ++idCounter);
                 logger.debug("Registered 2D array type: {} with ID {}", twoDimArray.getTypeName(), idCounter);
+                primitiveClassIds.put(twoDimArray.getTypeName(), idCounter);
             } catch (Exception e) {
                 logger.error("Failed to register array type for: {}", base.getName(), e);
             }
@@ -293,11 +306,39 @@ public class PacketRegistrar {
      */
     public static String dumpRegisteredPackets() {
         StringBuilder builder = new StringBuilder();
-        builder.append("=== Registered Packets ===\n");
+        builder.append("=== Registered Packets ======\n");
+        builder.append("<-- Kryo Classes ------------>\n");
+        kryoClassIds.forEach((className, id) -> builder.append(
+            String.format("ID: %-5d  Class: %s\n", id, className)
+        ));
+        builder.append("<-- Registered Primitives -->\n");
+        primitiveClassIds.forEach((className, id) -> builder.append(
+            String.format("ID: %-5d  Class: %s\n", id, className)
+        ));
+        builder.append("<-- Registered Classes ------>\n");
         explicitClassIds.forEach((className, id) -> builder.append(
             String.format("ID: %-5d  Class: %s\n", id, className)
         ));
         builder.append("===========================\n");
         return builder.toString();
+    }
+
+    /**
+     * Prints the registered packets to System.out.
+     */
+    public static void printRegisteredPackets() {
+        System.out.print(dumpRegisteredPackets());
+    }
+
+    /**
+     * Resets internal state of the registrar.  (Testing purposes)
+     */
+    public static void reset() {
+        explicitClassIds.clear();
+        primitiveClassIds.clear();
+        kryoClassIds.clear();
+        excludedClasses.clear();
+        atomicIdCounter.set(2000);
+        packetsXMLDocument = null;
     }
 }
