@@ -141,6 +141,22 @@ public class PacketRegistrar {
                 logger.warn("Explicit class not found: {}", entry.getKey());
             }
         }
+
+        //Register Internal Kryo Framework Messages
+        registerFrameworkMessages(kryo);
+    }
+
+    /**
+     * Registers KryoNet internal framework messages required for TCP/UDP handshake.
+     *
+     * @param kryo Kryo instance to register framework classes.
+     */
+    private static void registerFrameworkMessages(Kryo kryo) {
+        kryo.register(com.esotericsoftware.kryonet.FrameworkMessage.RegisterTCP.class);
+        kryo.register(com.esotericsoftware.kryonet.FrameworkMessage.RegisterUDP.class);
+        kryo.register(com.esotericsoftware.kryonet.FrameworkMessage.KeepAlive.class);
+        kryo.register(com.esotericsoftware.kryonet.FrameworkMessage.DiscoverHost.class);
+        kryo.register(com.esotericsoftware.kryonet.FrameworkMessage.Ping.class);
     }
 
     /**
@@ -284,12 +300,4 @@ public class PacketRegistrar {
         builder.append("===========================\n");
         return builder.toString();
     }
-
-    /**
-     * Prints the registered packets to System.out.
-     */
-    public static void printRegisteredPackets() {
-        System.out.print(dumpRegisteredPackets());
-    }
-
 }
