@@ -33,8 +33,19 @@
     </excludedClasses>
     <mappings>
         <mapping class="asg.games.yipee.objects.YipeePlayer" id="900"/>
-        <mapping class="asg.games.yipee.net.ConnectionRequest" id="901"/>
-        <mapping class="asg.games.yipee.net.ConnectionResponse" id="902"/>
+        <mapping class="asg.games.yipee.net.ClientHandshakeRequest" id="901"/>
+        <mapping class="asg.games.yipee.net.ClientHandshakeResponse" id="902"/>
+        <mapping class="asg.games.yipee.net.DisconnectRequest" id="904"/>
+        <mapping class="asg.games.yipee.net.ErrorMessagePacket" id="905"/>
+        <mapping class="asg.games.yipee.net.GameBoardStateTick" id="906"/>
+        <mapping class="asg.games.yipee.net.HeartbeatPacket" id="907"/>
+        <mapping class="asg.games.yipee.net.JoinTableRequest" id="908"/>
+        <mapping class="asg.games.yipee.net.JoinTableResponse" id="909"/>
+        <mapping class="asg.games.yipee.net.MappedKeyUpdateRequest" id="910"/>
+        <mapping class="asg.games.yipee.net.PlayerActionPacket" id="911"/>
+        <mapping class="asg.games.yipee.net.TableUpdateType" id="912"/>
+        <mapping class="asg.games.yipee.net.TableStateUpdateRequest" id="913"/>
+        <mapping class="asg.games.yipee.game.PlayerAction" id="914"/>
         <mapping class="asg.games.yipee.objects.YipeeKeyMap" id="903"/>
         <mapping class="java.lang.String" id="1003"/>
         <mapping class="java.util.ArrayList" id="1006"/> <!-- For collections -->
@@ -53,7 +64,5 @@
         <mapping class="asg.games.yipee.objects.YipeeSeat" id="1027"/>
         <mapping class="asg.games.yipee.objects.YipeeBoardPair" id="1028"/>
         <mapping class="asg.games.yipee.objects.YipeeTable" id="1029"/>
-        <mapping class="asg.games.yipee.net.StartGameRequest" id="1046"/>
-        <mapping class="asg.games.yipee.net.DisconnectRequest" id="1047"/>
     </mappings>
 </packet-config>

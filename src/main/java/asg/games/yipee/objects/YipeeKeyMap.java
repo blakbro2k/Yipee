@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.objects;
 
+import asg.games.yipee.net.YipeeSerializable;
 import asg.games.yipee.tools.Input;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

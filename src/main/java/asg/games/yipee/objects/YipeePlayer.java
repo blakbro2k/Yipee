@@ -146,9 +146,10 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
     }
 
     /**
-     * Increases the player rating by a given amount
+     * Increases the player's rating by the specified amount.
      *
-     * @param inc
+     * @param inc the amount to add to the current rating (must be non-negative)
+     * @throws IllegalArgumentException if {@code inc} is negative
      */
     public void increaseRating(int inc) {
         if (inc < 0) throw new IllegalArgumentException("Increment must be non-negative.");

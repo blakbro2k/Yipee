@@ -83,8 +83,11 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         }
     }
 
+    @Getter
     private ACCESS_TYPE accessType = ACCESS_TYPE.PUBLIC;
 
+    @Setter
+    @Getter
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<YipeeSeat> seats = new LinkedHashSet<>();
 
@@ -171,10 +174,6 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         }
     }
 
-    public ACCESS_TYPE getAccessType() {
-        return accessType;
-    }
-
     public void setRated(boolean rated) {
         this.isRated = rated;
     }
@@ -231,14 +230,6 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
                 seat.setSeatReady(false);
             }
         }
-    }
-
-    public Set<YipeeSeat> getSeats() {
-        return seats;
-    }
-
-    public void setSeats(Set<YipeeSeat> seats) {
-        this.seats = seats;
     }
 
     public YipeeSeat getSeat(int seatNum) {
