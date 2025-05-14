@@ -16,6 +16,8 @@
 package asg.games.yipee.objects;
 
 
+import asg.games.yipee.net.YipeeSerializable;
+
 /**
  * A game object
  *

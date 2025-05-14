@@ -44,6 +44,16 @@ import java.util.Vector;
 @Getter
 @Setter
 public class YipeeGameBoard implements Disposable {
+    public enum GamePhase {
+        SPAWN_NEXT,
+        FALLING,
+        LOCKING,
+        BREAKING,
+        COLLAPSING,
+        CASCADE_CHECK,
+        GAME_OVER
+    }
+
     public static final int MAX_RANDOM_BLOCK_NUMBER = 2048;
     public static final int MAX_COLS = 6;
     public static final int MAX_ROWS = 16;
@@ -55,6 +65,7 @@ public class YipeeGameBoard implements Disposable {
     public static final float FAST_FALL_RATE = 0.496f;
     private static final int MAX_FALL_VALUE = 1;
     private static final int CONST_ROW_ADD = 1;
+    private GamePhase currentPhase = GamePhase.SPAWN_NEXT;
 
     //private final YokelPiece MEDUSA_PIECE = new YokelPiece(0, YokelBlock.MEDUSA, YokelBlock.MEDUSA, YokelBlock.MEDUSA);
     //private final YokelPiece MIDAS_PIECE = new YokelPiece(0, YokelBlock.BOT_MIDAS, YokelBlock.MID_MIDAS, YokelBlock.TOP_MIDAS);
@@ -121,8 +132,6 @@ public class YipeeGameBoard implements Disposable {
     private boolean debug = false;
     private String name = null;
 
-    private static final YipeeGameBoardState state = new YipeeGameBoardState();
-
     //Empty Constructor required for Json.Serializable
     public YipeeGameBoard() {
     }
@@ -134,11 +143,11 @@ public class YipeeGameBoard implements Disposable {
         specialPieces = new LinkedList<>();
         gameClock = new YipeeClock();
         reset(seed);
-        setGameState();
     }
 
     private void loadFromState(YipeeGameBoardState state) {
         if (state != null) {
+            setCurrentPhase(state.getCurrentPhase());
             setBrokenBlockCount(state.getBrokenBlockCount());
             setFastDown(state.isFastDown());
             setCurrentBlockPointer(state.getCurrentBlockPointer());
@@ -166,7 +175,9 @@ public class YipeeGameBoard implements Disposable {
         }
     }
 
-    private void setGameState() {
+    public YipeeGameBoardState exportGameState() {
+        YipeeGameBoardState state = new YipeeGameBoardState();
+        state.setCurrentPhase(currentPhase);
         state.setBrokenBlockCount(brokenBlockCount);
         state.setFastDown(fastDown);
         state.setCurrentBlockPointer(currentBlockPointer);
@@ -192,18 +203,15 @@ public class YipeeGameBoard implements Disposable {
         state.setSpecialPieces(specialPieces);
         state.setHasGameStarted(hasGameStarted);
         if (partnerBoard != null) {
-            state.setPartnerBoard(partnerBoard.getGameState());
+            state.setPartnerBoard(partnerBoard.exportGameState());
         } else {
             state.setPartnerBoard(null);
         }
+        return state;
     }
 
     public void setDebug(boolean isDebug) {
         this.debug = isDebug;
-    }
-
-    public YipeeGameBoardState getGameState() {
-        return state;
     }
 
     private void resetPieceFallTimer() {
@@ -1579,7 +1587,7 @@ public class YipeeGameBoard implements Disposable {
                 }
             }
         }
-        state.setCellsToDrop(cellsToDrop);
+        //state.setCellsToDrop(cellsToDrop);
     }
 
     public void checkBoardForPartnerBreaks(YipeeGameBoard partner, boolean isPartnerOnRight) {
@@ -1797,15 +1805,92 @@ public class YipeeGameBoard implements Disposable {
         update(delta);
     }
 
-    public void update(float delta) {
-        updateGame(delta);
-    }
-
     private void updateState(YipeeGameBoardState state) {
         loadFromState(state);
     }
 
-    private void updateGame(float delta) {
+    public void update(float delta) {
+        if (!hasGameStarted || hasPlayerDied()) {
+            currentPhase = GamePhase.GAME_OVER;
+            return;
+        }
+
+        switch (currentPhase) {
+            case SPAWN_NEXT:
+                if (piece == null) {
+                    getNewNextPiece();
+                    resetLockOutTimer(); //Important: gives player time to move piece
+                    brokenCells.clear();
+                    currentPhase = GamePhase.FALLING;
+                }
+                break;
+
+            case FALLING:
+                pieceFallTimer -= getCurrentFallRate();
+                if (pieceFallTimer <= 0) {
+                    if (isDownCellFree(piece.column, piece.row)) {
+                        movePieceDown();
+                        pieceFallTimer = MAX_FALL_VALUE;
+                    } else {
+                        currentPhase = GamePhase.LOCKING;
+                        pieceLockTimer = MAX_FALL_VALUE;
+                    }
+                }
+                break;
+
+            case LOCKING:
+                pieceLockTimer -= getCurrentFallRate();
+                if (pieceLockTimer <= 0) {
+                    setNextPiece();
+                    piece = null;
+                    checkForYahoos();
+                    currentPhase = GamePhase.BREAKING;
+                }
+                break;
+
+            case BREAKING:
+                updateBoard();
+                brokenBlockCount = getBrokenCellCount();
+                if (brokenBlockCount > 0) {
+                    handleBrokenCellDrops();
+                    getCellsToBeDropped();
+                    blockAnimationTimer = 1;
+                    currentPhase = GamePhase.COLLAPSING;
+                } else {
+                    currentPhase = GamePhase.SPAWN_NEXT;
+                }
+                break;
+
+            case COLLAPSING:
+                blockAnimationTimer -= delta;
+                if (blockAnimationTimer <= 0) {
+                    for (YipeeBlockMove move : Util.safeIterable(cellsToDrop)) {
+                        setCell(move.getTargetRow(), move.getCol(), move.getCellId());
+                    }
+                    cellsToDrop.clear();
+                    resetAnimationTimer();
+                    currentPhase = GamePhase.CASCADE_CHECK;
+                }
+                break;
+
+            case CASCADE_CHECK:
+                updateBoard();
+                brokenBlockCount = getBrokenCellCount();
+                if (brokenBlockCount > 0) {
+                    currentPhase = GamePhase.BREAKING;
+                } else {
+                    currentPhase = GamePhase.SPAWN_NEXT;
+                }
+                break;
+
+            case GAME_OVER:
+                end();
+                break;
+        }
+    }
+
+    /*
+    public void update(float delta) {
         //If the player is alive
         if (!hasPlayerDied() && hasGameStarted) {
             //if there are cells to break, handle
@@ -1817,12 +1902,12 @@ public class YipeeGameBoard implements Disposable {
             System.out.println("}}###}}brokenBlockCount=" + brokenBlockCount);
             System.out.println("}}###}}cellsToDrop.size=" + cellsToDrop.size);
             System.out.println("}}###}}blockAnimationTimer=" + blockAnimationTimer);
-            */
+
 
             if (brokenBlockCount > 0 || Util.size(cellsToDrop) > 0 || blockAnimationTimer < 1) {
                 //System.out.println("}}}}drop cell block");
                 //Reset Piece Set
-                state.setPieceSet(false);
+                //setPieceSet(false);
 
                 //Get rows to drop
                 getCellsToBeDropped();
@@ -1908,8 +1993,8 @@ public class YipeeGameBoard implements Disposable {
                 }
             }
         }
-        setGameState();
-    }
+        //setGameState();
+    }*/
 
     private void dropCellRows(Vector<YipeeBlockMove> cellsToDrop) {
         //Remove matches
@@ -2023,7 +2108,7 @@ public class YipeeGameBoard implements Disposable {
 
             //Place piece
             placeBlockAt(piece, piece.column, piece.row);
-            state.setPieceSet(true);
+            //state.setPieceSet(true);
 
             //Handle special O then remove powers from placed block so they can be marked broken
             if (block == YipeeBlock.MEDUSA || block == YipeeBlock.TOP_MIDAS || block == YipeeBlock.MID_MIDAS || block == YipeeBlock.BOT_MIDAS) {

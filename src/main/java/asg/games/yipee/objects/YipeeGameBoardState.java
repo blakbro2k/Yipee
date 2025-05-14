@@ -18,53 +18,186 @@ package asg.games.yipee.objects;
 import asg.games.yipee.game.YipeeBlockEval;
 import asg.games.yipee.game.YipeeGameBoard;
 import asg.games.yipee.tools.RandomUtil;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Queue;
 
-@Getter
-@Setter
+/**
+ * Represents a full snapshot of the state of a single game board in Yipee,
+ * including active and next pieces, board contents, timers, animation state,
+ * partner information, and debug metadata.
+ *
+ * <p>This object is sent from server to client in {@link asg.games.yipee.net.GameBoardStateTick}
+ * and can also be used for saving replays or debugging gameplay ticks.
+ *
+ * <p>Fields such as {@code playerCells}, {@code brokenCells}, {@code pieceFallTimer},
+ * and {@code currentPhase} represent the real-time progression of the match and
+ * are updated on each game loop tick.
+ *
+ * @see asg.games.yipee.game.YipeeGameBoard
+ * @see asg.games.yipee.game.YipeeBlockEval
+ * @see asg.games.yipee.net.GameBoardStateTick
+ */
+// NOTE: This class must remain Kryo-serializable for network synchronization
+@Data
+@NoArgsConstructor
 public class YipeeGameBoardState extends AbstractYipeeObject {
     private static final Logger logger = LoggerFactory.getLogger(YipeeGameBoardState.class);
 
-    private long serverGameStartTime = 0;
-    private long currentStateTimeStamp = 0;
-    private long previousStateTimeStamp = 0;
-    private YipeePiece piece = null;
-    private YipeePiece nextPiece = null;
-    private YipeeClock gameClock = null;
-    private int[][] playerCells = new int[YipeeGameBoard.MAX_ROWS][YipeeGameBoard.MAX_COLS];
-    private int[][] partnerCells = new int[YipeeGameBoard.MAX_ROWS][YipeeGameBoard.MAX_COLS];
-    private YipeeGameBoardState partnerBoard = null;
-    private Queue<YipeeBrokenBlock> brokenCells = null;
-    private Queue<YipeeBlockMove> cellsToDrop = null;
-    private Queue<Integer> powers = null;
-    private int yahooDuration = 0;
-    private float pieceFallTimer = 0;
-    private float pieceLockTimer = 0;
+    /**
+     * The current game phase (e.g. SPAWN_NEXT, COLLAPSING, etc.).
+     */
+    private YipeeGameBoard.GamePhase currentPhase;
+
+    /**
+     * The server-side timestamp when the game began for this board.
+     */
+    private long serverGameStartTime;
+
+    /**
+     * Timestamp of the current state (used for interpolation or tick validation).
+     */
+    private long currentStateTimeStamp;
+
+    /**
+     * Timestamp of the previous state for delta computation.
+     */
+    private long previousStateTimeStamp;
+
+    /**
+     * The currently falling piece controlled by the player.
+     */
+    private YipeePiece piece;
+
+    /**
+     * The next piece to be spawned after the current piece locks.
+     */
+    private YipeePiece nextPiece;
+
+    /**
+     * Clock object that tracks total elapsed time and pauses.
+     */
+    private YipeeClock gameClock;
+
+    /**
+     * The main board grid of the current player.
+     */
+    private int[][] playerCells;
+
+    /**
+     * The main board grid of the player's partner.
+     */
+    private int[][] partnerCells;
+
+    /**
+     * State reference to the partner board, for symmetrical rendering or logic.
+     */
+    private YipeeGameBoardState partnerBoard;
+
+    /**
+     * Blocks that have just broken and are waiting for animation.
+     */
+    private Queue<YipeeBrokenBlock> brokenCells;
+
+    /**
+     * List of blocks that need to fall downward due to breaks.
+     */
+    private Queue<YipeeBlockMove> cellsToDrop;
+
+    /**
+     * Queued power-up or attack actions available to the player.
+     */
+    private Queue<Integer> powers;
+
+    /**
+     * Number of rows queued for Yahoo! drop animation.
+     */
+    private int yahooDuration;
+
+    /**
+     * Timer tracking how long the current piece has been falling.
+     */
+    private float pieceFallTimer;
+
+    /**
+     * Timer tracking how long the current piece has been locked but not set.
+     */
+    private float pieceLockTimer;
+
+    /**
+     * Indicates whether the player's partner is to their right or left.
+     */
     private boolean isPartnerRight;
+
+    /**
+     * Timer used to animate block collapse.
+     */
     private float blockAnimationTimer;
+
+    /**
+     * Whether the current piece has locked into place.
+     */
     private boolean isPieceSet;
+
+    /**
+     * Queue of special pieces coming up in the game.
+     */
     private Queue<Integer> specialPieces;
+
+    /** Number of break events by type. Used for scoring and power-ups. */
     private int[] countOfBreaks;
+
+    /** Flag to enable extended debugging information in the output. */
     private boolean isDebug;
+
+    /** Internal tracking for persistent power types. */
     private int[] powersKeep;
+
+    /**
+     * Internal random seed state for deterministic generation.
+     */
     private boolean[] ids;
+
+    /**
+     * Pointer to current index of {@code ids} being used.
+     */
     private int idIndex;
-    private int[] randomColumnIndices = new int[YipeeGameBoard.MAX_COLS];
-    private RandomUtil.RandomNumberArray nextBlocks = null;
-    private int currentBlockPointer = -1;
+
+    /**
+     * Shuffled column indexes for random piece drop locations.
+     */
+    private int[] randomColumnIndices;
+
+    /**
+     * Pre-generated list of upcoming piece values for this board.
+     */
+    private RandomUtil.RandomNumberArray nextBlocks;
+
+    /**
+     * Pointer to the current index in {@code nextBlocks}.
+     */
+    private int currentBlockPointer;
+
+    /** Whether the player is currently holding the "fast drop" button. */
     private boolean fastDown;
-    private int brokenBlockCount = 0;
-    private boolean hasGameStarted = false;
+
+    /**
+     * Total number of blocks broken this tick.
+     */
+    private int brokenBlockCount;
+
+    /**
+     * Whether the game has officially started.
+     */
+    private boolean hasGameStarted;
+
+    /** Debugging name or identifier for the board. */
     private String name;
 
-    public YipeeGameBoardState() {
-    }
 
     public void setCurrentStateTimeStamp(long currentStateTimeStamp) {
         setPreviousStateTimeStamp(currentStateTimeStamp);

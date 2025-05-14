@@ -53,7 +53,7 @@ public class YipeePrinter {
 
     public void printYipeeBoard(YipeeGameBoard board) {
         if (board != null) {
-            printYipeeBoardState(board.getGameState());
+            printYipeeBoardState(board.exportGameState());
         }
     }
 
@@ -63,7 +63,7 @@ public class YipeePrinter {
 
     public String getYipeeBoardOutput(YipeeGameBoard board) {
         if (board != null) {
-            return getYipeeBoardStateOutput(board.getGameState());
+            return getYipeeBoardStateOutput(board.exportGameState());
         }
         return "";
     }

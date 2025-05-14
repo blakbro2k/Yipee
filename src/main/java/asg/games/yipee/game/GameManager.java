@@ -290,7 +290,7 @@ public class GameManager {
             synchronized (board) {
                 board.update(delta);
                 board.applyPlayerAction(action);
-                addState(targetSeatId, board.getGameState());
+                addState(targetSeatId, board.exportGameState());
             }
         });
     }
