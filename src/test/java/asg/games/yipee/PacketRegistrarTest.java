@@ -22,6 +22,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -71,7 +72,9 @@ public class PacketRegistrarTest {
         Exception exception = assertThrows(ParserConfigurationException.class, () -> {
             PacketRegistrar.reloadConfiguration("nonexistent-file.xml");
         });
+        StringBuilder path = new StringBuilder();
+        path.append("src").append(File.separator).append("main").append(File.separator).append("resources").append(File.separator).append("packets.xml");
         assertTrue(exception.getMessage().contains("No packets.xml"));
-        assertDoesNotThrow(() -> PacketRegistrar.reloadConfiguration("U:\\Yipee\\src\\main\\resources\\packets.xml"));
+        assertDoesNotThrow(() -> PacketRegistrar.reloadConfiguration(path.toString()));
     }
 }
