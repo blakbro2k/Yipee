@@ -15,43 +15,42 @@
  */
 package asg.games.yipee.net;
 
-import asg.games.yipee.game.PlayerAction;
 import asg.games.yipee.objects.YipeePlayer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Sent by a player during gameplay to perform an in-game action
- * such as rotate, drop, attack, or trigger a special move.
- * <p>
- * The server processes these actions deterministically during each game tick.
+ * Sent by the client to select a seat at an already assigned table.
+ *
+ * <p>This request is typically issued after a successful handshake and table assignment
+ * from the CMS (e.g., WordPress), allowing the game server to place the player into a
+ * specific seat or register them as a spectator.</p>
  *
  * <p><b>Direction:</b> Client → Server</p>
  */
 @Data
 @NoArgsConstructor
-public class PlayerActionPacket implements YipeeSerializable {
+public class SeatSelectionRequest extends AbstractClientRequest {
 
     /**
-     * The player who initiated the action.
+     * The ID of the table the player is assigned to.
+     * This is typically issued by the web layer.
+     */
+    private String tableId;
+
+    /**
+     * The index of the seat being requested (0–7).
+     * Ignored if {@code spectator} is true.
+     */
+    private int seatIndex;
+
+    /**
+     * Indicates whether the player is joining as a spectator.
+     */
+    private boolean spectator;
+
+    /**
+     * The player initiating the seat selection.
      */
     private YipeePlayer player;
-
-    /**
-     * Optional string describing the action type (e.g. "ROTATE", "ATTACK").
-     * Consider removing this if PlayerAction already contains it.
-     */
-    private String actionType;
-
-    /**
-     * The index of the game board the action is targeting.
-     * Used for team-based actions or attacks.
-     */
-    private int targetBoardIndex;
-
-    /**
-     * The full PlayerAction object containing details like move direction,
-     * attack strength, combo multiplier, etc.
-     */
-    private PlayerAction playerAction;
 }

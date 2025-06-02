@@ -19,30 +19,27 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Sent by the server to notify the client of an error that occurred while
- * processing a previous request.
+ * Response sent by the server after processing a {@link MappedKeyUpdateRequest}.
  *
- * <p>This packet allows the server to return structured feedback when
- * something fails due to invalid input, permission issues, or game state violations.</p>
+ * <p>Indicates whether the key mapping update was accepted, and optionally includes
+ * a message explaining the result (e.g., success, validation error, or failure to persist).</p>
  *
  * <p><b>Direction:</b> Server → Client</p>
  *
- * @see TableStateUpdateRequest
- * @see ClientHandshakeRequest
+ * @see MappedKeyUpdateRequest
  */
 @Data
 @NoArgsConstructor
-public class ErrorMessagePacket implements YipeeSerializable {
+public class MappedKeyUpdateResponse extends AbstractServerResponse {
 
     /**
-     * A short machine-readable error string (e.g., "INVALID_SESSION", "NOT_AUTHORIZED").
-     * Can be used on the client for conditionals or logs.
+     * Indicates whether the key mapping update was successfully applied.
      */
-    private String error;
+    private boolean accepted;
 
     /**
-     * A human-readable explanation of the context or reason for the error.
-     * Suitable for UI display or user debugging.
+     * A message describing the result of the request.
+     * For example: "Update successful", "Invalid key mapping", etc.
      */
-    private String context;
+    private String message;
 }

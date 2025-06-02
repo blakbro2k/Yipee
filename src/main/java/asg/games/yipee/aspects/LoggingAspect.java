@@ -126,7 +126,7 @@ public class LoggingAspect {
         }
     }
 
-    private static boolean isContuctorOfInnerClass(JoinPoint joinPoint) {
+    private static boolean isConstructorOfInnerClass(JoinPoint joinPoint) {
         String kind = joinPoint.getKind();
         if (JoinPoint.CONSTRUCTOR_EXECUTION.equals(kind)) {
             return false;
@@ -160,21 +160,23 @@ public class LoggingAspect {
         String[] params = sig.getParameterNames();
         Object[] paramVals = joinPoint.getArgs();
         int startParam = 0;
-        if (isContuctorOfInnerClass(joinPoint)) {
+        if (isConstructorOfInnerClass(joinPoint)) {
             startParam = 1;
         }
 
         for (int i = startParam; i < params.length; ++i) {
+            if (i > startParam) {
+                addParamSeparator(buf);
+            }
+
             addParamDeclaration(buf, params[i]);
+
             if (isSensitive(params[i])) {
                 buf.append(SENSITIVE_VALUE_REPLACEMENT);
             } else {
                 buf.append(filterValue(paramVals[i]));
             }
 
-            if (i != params.length - 1) {
-                addParamSeparator(buf);
-            }
         }
     }
 
@@ -182,16 +184,17 @@ public class LoggingAspect {
         MethodSignature sig = (MethodSignature) joinPoint.getSignature();
         Method method = sig.getMethod();
         TracedKeyValueParams annot = method.getDeclaredAnnotation(TracedKeyValueParams.class);
+
+        String[] params = sig.getParameterNames();
+        Object[] paramVals = joinPoint.getArgs();
+        int startParam = 0;
+        if (isConstructorOfInnerClass(joinPoint)) {
+            startParam = 1;
+        }
+
         if (annot == null) {
             processStandardParams(buf, joinPoint);
         } else {
-            String[] params = sig.getParameterNames();
-            Object[] paramVals = joinPoint.getArgs();
-            int startParam = 0;
-            if (isContuctorOfInnerClass(joinPoint)) {
-                startParam = 1;
-            }
-
             String keyName = annot.keyParamName();
             String valueName = annot.valueParamName();
             int posKey = -1;
@@ -215,7 +218,12 @@ public class LoggingAspect {
                 }
 
                 for (int i = startParam; i < params.length; ++i) {
+                    if (i > startParam) {
+                        addParamSeparator(buf);
+                    }
+
                     addParamDeclaration(buf, params[i]);
+
                     if (i == posKey) {
                         buf.append(paramVals[i]);
                     } else if (i == posValue) {
@@ -246,7 +254,7 @@ public class LoggingAspect {
     }
 
     private static void addParamDeclaration(StringBuffer buf, String paramName) {
-        buf.append(", ");
+        buf.append(paramName).append("=");
     }
 
     private static void addParamSeparator(StringBuffer buf) {

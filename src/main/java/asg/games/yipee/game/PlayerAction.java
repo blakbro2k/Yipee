@@ -83,10 +83,9 @@ public class PlayerAction implements YipeeSerializable {
      */
     private Object actionData;
 
-    /**
-     * Optional precomputed damage or effect strength.
-     */
-    private int attackValue = -1;
+    public PlayerAction() {
+        this(-1, null, -2, null);
+    }
 
     public PlayerAction(int initiatingBoardId, ActionType actionType, int targetBoardId, Object actionData) {
         this.initiatingBoardId = initiatingBoardId;
@@ -96,13 +95,34 @@ public class PlayerAction implements YipeeSerializable {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        PlayerAction that = (PlayerAction) obj;
+
+        return initiatingBoardId == that.initiatingBoardId &&
+            targetBoardId == that.targetBoardId &&
+            actionType == that.actionType && // assuming this is an enum
+            (actionData == null ? that.actionData == null : actionData.equals(that.actionData));
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Integer.hashCode(initiatingBoardId);
+        result = 31 * result + Integer.hashCode(targetBoardId);
+        result = 31 * result + (actionType != null ? actionType.hashCode() : 0);
+        result = 31 * result + (actionData != null ? actionData.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "PlayerAction{" +
             "initiatingBoardId=" + initiatingBoardId +
             ", actionType=" + actionType +
             ", targetBoardId=" + targetBoardId +
             ", actionData=" + actionData +
-            ", attackValue=" + attackValue +
             '}';
     }
 }

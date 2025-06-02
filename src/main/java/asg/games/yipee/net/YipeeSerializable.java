@@ -16,10 +16,15 @@
 package asg.games.yipee.net;
 
 
+import java.io.Serializable;
+
 /**
  * A net serializable game object
  *
  * @author Blakbro2k
  */
-public interface YipeeSerializable {
+public interface YipeeSerializable extends Serializable {
+    default String getPacketType() {
+        return this.getClass().getSimpleName();
+    }
 }

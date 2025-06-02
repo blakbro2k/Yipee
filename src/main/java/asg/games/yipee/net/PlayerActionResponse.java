@@ -15,44 +15,34 @@
  */
 package asg.games.yipee.net;
 
+import asg.games.yipee.game.PlayerAction;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Response packet sent by the server after processing a {@link JoinTableRequest}.
+ * Response sent by the server after processing a {@link PlayerActionRequest}.
  *
- * <p>Indicates whether the client's attempt to join the specified table was
- * accepted or rejected, along with a status message for context.</p>
- *
- * <p>This may be triggered due to reasons such as:
- * <ul>
- *   <li>Table not found</li>
- *   <li>Table is full or locked</li>
- *   <li>Player lacks permission</li>
- * </ul>
- * </p>
+ * <p>This allows the server to confirm or reject the action, provide updated state,
+ * or trigger a rollback/retry in case of desync.</p>
  *
  * <p><b>Direction:</b> Server → Client</p>
- *
- * @see JoinTableRequest
  */
 @Data
 @NoArgsConstructor
-public class JoinTableResponse implements YipeeSerializable {
+public class PlayerActionResponse extends AbstractServerResponse {
 
     /**
-     * Indicates whether the table join was successful.
+     * Whether the action was accepted and applied successfully.
      */
     private boolean accepted;
 
     /**
-     * A human-readable message explaining the result
-     * (e.g., "Joined successfully", "Table is full").
+     * Optional message describing the result (e.g., "OK", "Invalid move", "Out of sync").
      */
     private String message;
 
     /**
-     * The ID of the table this response corresponds to.
+     * Echo of the original action for reference or reconciliation.
      */
-    private String tableId;
+    private PlayerAction playerAction;
 }
