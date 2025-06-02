@@ -20,11 +20,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Sent by the client to notify the server that it is disconnecting from the session.
- *
- * <p>This packet is typically sent during a clean shutdown (e.g., app exit, logout)
- * and gives the server an opportunity to clean up resources, update session
- * status, and persist disconnection events.</p>
+ * Sent by the client to notify the server it is disconnecting from the session.
+ * <p>
+ * Typically used during a clean shutdown (e.g., logout, app exit), giving the server
+ * a chance to clean up the session, release resources, or persist disconnection events.
+ * </p>
  *
  * <p><b>Direction:</b> Client → Server</p>
  *
@@ -33,29 +33,11 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-public class DisconnectRequest implements YipeeSerializable {
+public class DisconnectRequest extends AbstractClientRequest {
 
     /**
-     * The unique identifier of the client that is disconnecting.
-     * This may be used to match against the original handshake or connection record.
-     */
-    private String clientId;
-
-    /**
-     * The session ID associated with this connection.
-     * Helps the server identify which active session to close or release.
-     */
-    private String sessionId;
-
-    /**
-     * The client-side timestamp of the disconnection event.
-     * Useful for analytics or last-seen tracking.
-     */
-    private long timeStamp;
-
-    /**
-     * The player associated with this session.
-     * Used for state cleanup, notifications, or removal from the game world.
+     * The player associated with the current session.
+     * Used for cleanup, notification, or session teardown.
      */
     private YipeePlayer player;
 }

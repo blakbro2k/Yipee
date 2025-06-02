@@ -53,12 +53,16 @@ public class GameManager {
     private final ExecutorService playerActionExecutor; // Handles player action processing
     private final Queue<PlayerAction> playersActionQueue = new ConcurrentLinkedQueue<>(); // Stores pending player actions
     private final Map<Integer, GamePlayerBoard> gameBoardMap = new ConcurrentHashMap<>(); // Maps seat IDs to game boards
+    private long gameSeed;
 
+    /**
+     * Helper class that represents one seat with information on the game states and the player seated
+     */
     @Getter
     @Setter
     static class GamePlayerBoard {
-        private YipeePlayer player = new YipeePlayer();
-        private YipeeGameBoard board = new YipeeGameBoard(-1);
+        private YipeePlayer player;
+        private YipeeGameBoard board;
         private final Queue<YipeeGameBoardState> gameBoardStates = new ConcurrentLinkedQueue<>(); // Tracks states by seat ID
 
         public boolean addState(YipeeGameBoardState state) {
@@ -69,8 +73,29 @@ public class GameManager {
             return gameBoardStates.remove(state);
         }
 
+        public GamePlayerBoard() {
+            this(-1);
+        }
+
+        public GamePlayerBoard(long seed) {
+            board = new YipeeGameBoard(seed);
+        }
+
+        /**
+         * Resets the board with a default seed of -1
+         */
         public void reset() {
-            board.reset(-1);
+            reset(-1);
+        }
+
+        /**
+         * Resets the board with the given seed
+         *
+         * @param seed
+         */
+        public void reset(long seed) {
+            setBoardSeed(seed);
+            setPlayer(null);
             gameBoardStates.clear();
         }
 
@@ -80,6 +105,10 @@ public class GameManager {
 
         public void startBoard() {
             board.begin();
+        }
+
+        public void stopBoard() {
+            board.end();
         }
 
         public YipeeGameBoardState getLatestGameState() {
@@ -97,12 +126,13 @@ public class GameManager {
         gameLoopExecutor = Executors.newScheduledThreadPool(1); // Single thread for game loop
         logger.info("Initializing Actions...");
         playerActionExecutor = Executors.newFixedThreadPool(10); // Thread pool for player actions
+        setGameSeed(TimeUtils.millis());
 
         logger.info("Initializing Seats...");
         // Initialize 8 game boards (1 for each seat)
         for (int seatId = 0; seatId < 8; seatId++) {
             logger.trace("Initializing seat[{}]", seatId);
-            gameBoardMap.put(seatId, new GamePlayerBoard());
+            gameBoardMap.put(seatId, new GamePlayerBoard(gameSeed));
         }
     }
 
@@ -134,15 +164,6 @@ public class GameManager {
     private boolean isPlayerEmpty(int seatId) {
         validateSeat(seatId);
         return getGameBoardPlayer(seatId) == null;
-    }
-
-    /**
-     * Resets the board.
-     *
-     * @param seatId the seat ID
-     */
-    public void resetGameBoard(int seatId) {
-        validateSeat(seatId);
     }
 
     /**
@@ -240,12 +261,32 @@ public class GameManager {
         }
     }
 
+    public void setGameSeed(long seed) {
+        gameSeed = seed;
+    }
+
+    public long getGameSeed() {
+        return gameSeed;
+    }
+
     /**
      * Resets all game boards and clears associated states.
      */
     public void resetGameBoards() {
         for (int seatId = 0; seatId < 8; seatId++) {
-            gameBoardMap.get(seatId).reset();
+            resetGameBoard(gameSeed, seatId);
+        }
+    }
+
+    /**
+     * Resets the given board.
+     *
+     * @param seed the gameseed
+     */
+    public void resetGameBoard(long seed, int seatId) {
+        GamePlayerBoard gameBoard = gameBoardMap.get(seatId);
+        if (gameBoard != null) {
+            gameBoard.reset(seed);
         }
     }
 

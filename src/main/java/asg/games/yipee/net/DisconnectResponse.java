@@ -20,30 +20,28 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Sent by the client to request joining a specific table within a room or lobby.
+ * Response sent by the server to acknowledge that a client has disconnected.
+ * <p>
+ * Used to confirm that the session associated with a client has been terminated
+ * cleanly, and may include metadata such as the final player profile.
+ * </p>
  *
- * <p>This packet typically follows a successful handshake and is used to assign
- * a player to a table for either spectating or taking a seat.</p>
+ * <p><b>Direction:</b> Server → Client</p>
  *
- * <p>The server is responsible for validating the request, checking if the table exists,
- * if the player is allowed to join, and whether seats are available.</p>
- *
- * <p><b>Direction:</b> Client → Server</p>
- *
- * @see JoinTableResponse
+ * @see DisconnectRequest
  */
 @Data
 @NoArgsConstructor
-public class JoinTableRequest implements YipeeSerializable {
+public class DisconnectResponse extends AbstractServerResponse {
 
     /**
-     * The unique identifier of the table the player is attempting to join.
-     */
-    private String tableId;
-
-    /**
-     * The player requesting to join the table.
-     * Must be fully initialized with at least an ID and name.
+     * The resolved player profile associated with this session.
+     * Typically extracted from the provided JWT during handshake.
      */
     private YipeePlayer player;
+
+    /**
+     * Indicates whether the disconnection was processed successfully.
+     */
+    private boolean successful;
 }

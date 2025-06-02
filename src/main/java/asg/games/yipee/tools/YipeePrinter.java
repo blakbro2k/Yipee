@@ -30,6 +30,8 @@ import java.util.Arrays;
 @Getter
 @Setter
 public class YipeePrinter {
+    public static final YipeePrinter INSTANCE = new YipeePrinter();
+
     private int logLevel = 0;
 
     private YipeePrinter() {
@@ -51,13 +53,22 @@ public class YipeePrinter {
         return logLevel >= 4;
     }
 
-    public void printYipeeBoard(YipeeGameBoard board) {
+
+    public static YipeePrinter getInstance() {
+        return INSTANCE;
+    }
+
+    public static void printYipeeBoard(YipeeGameBoard board) {
         if (board != null) {
             printYipeeBoardState(board.exportGameState());
         }
     }
 
-    public void printYipeeBoardState(YipeeGameBoardState gameState) {
+    public static void printYipeeBoardState(YipeeGameBoardState gameState) {
+        getInstance().internalPrintYipeeBoardState(gameState);
+    }
+
+    public void internalPrintYipeeBoardState(YipeeGameBoardState gameState) {
         System.out.println(getYipeeBoardStateOutput(gameState));
     }
 
@@ -74,7 +85,12 @@ public class YipeePrinter {
 
     // Print State
     public String stateToString(YipeeGameBoardState gameState) {
+        return stateToString(gameState, 0);
+    }
+
+    public String stateToString(YipeeGameBoardState gameState, int depth) {
         if (gameState == null) throw new IllegalArgumentException("GameState cannot be null.");
+        if (depth > 1) return "(partner omitted to prevent circular reference)";
 
         StringBuilder out = new StringBuilder();
         if (isLogInfo()) {
@@ -88,20 +104,22 @@ public class YipeePrinter {
 
         if (isLogWarn()) {
             out.append("#################").append("\n");
+            out.append("Current 3Piece: ").append(gameState.getPiece()).append("\n");
+            out.append("Next 3Piece: ").append(gameState.getNextPiece()).append("\n");
+            out.append("#################").append("\n");
+            out.append("Current Phase: ").append(gameState.getCurrentPhase()).append("\n");
+            out.append("#################").append("\n");
+        }
+
+        if (isLogDebug()) {
+            out.append("Debug Info: ").append("\n");
+            out.append("#################").append("\n");
             out.append("Fall Animation Timer: ").append(gameState.getBlockAnimationTimer()).append("\n");
             out.append("LockOut Timer: ").append(gameState.getPieceLockTimer()).append("\n");
             out.append("Yahoo Drop Count: ").append(gameState.getYahooDuration()).append("\n");
             out.append("#################").append("\n");
             out.append("Vector of broken cells: ").append(gameState.getBrokenCells()).append("\n");
             out.append("Cells to drop: ").append(gameState.getCellsToDrop()).append("\n");
-            out.append("#################").append("\n");
-            out.append("Current 3Piece: ").append(gameState.getPiece()).append("\n");
-            out.append("Next 3Piece: ").append(gameState.getNextPiece()).append("\n");
-            out.append("#################").append("\n");
-        }
-
-        if (isLogDebug()) {
-            out.append("Debug Info: ").append("\n");
             out.append("#################").append("\n");
             out.append("Broken Block Count [Y,A,H,O,0,!]): ").append(Arrays.toString(gameState.getCountOfBreaks())).append("\n");
             out.append("Powers Break Count [Y,A,H,O,0,!]): ").append(Arrays.toString(gameState.getPowersKeep())).append("\n");
@@ -118,7 +136,7 @@ public class YipeePrinter {
             out.append("#################").append("\n");
             addPrintLine(out);
             for (int r = YipeeGameBoard.MAX_ROWS - 1; r > -1; r--) {
-                printRow(out, r, gameState);
+                printRow(out, r, gameState, depth);
                 printRowReturn(out);
             }
             addPrintLine(out);
@@ -131,22 +149,34 @@ public class YipeePrinter {
 
     private int[][] getPartnerCells(YipeeGameBoardState partnerBoardState) {
         int[][] cells = new int[YipeeGameBoard.MAX_ROWS][YipeeGameBoard.MAX_COLS];
-        ;
+
         if (partnerBoardState != null) {
             cells = partnerBoardState.getPlayerCells();
         }
         return cells;
     }
 
-    private void printRow(StringBuilder out, int r, @NotNull YipeeGameBoardState gameState) {
+    private int[][] getPartnerCells(YipeeGameBoardState partner, int depth) {
+        if (partner != null && partner.getPlayerCells() != null) {
+            return partner.getPlayerCells();
+        }
+        return new int[YipeeGameBoard.MAX_ROWS][YipeeGameBoard.MAX_COLS];
+    }
+
+    private void printRow(StringBuilder out, int r, @NotNull YipeeGameBoardState gameState, int depth) {
         boolean isPartnerRight = gameState.isPartnerRight();
         int[][] playerCells = gameState.getPlayerCells();
         YipeeGameBoardState partnerBoard = gameState.getPartnerBoard();
 
+
+        int[][] partnerCells = partnerBoard != null
+            ? getPartnerCells(partnerBoard, depth + 1)
+            : new int[YipeeGameBoard.MAX_ROWS][YipeeGameBoard.MAX_COLS];
+
         if (isPartnerRight) {
-            printPlayerRows(playerCells, getPartnerCells(partnerBoard), r, out, gameState);
+            printPlayerRows(playerCells, partnerCells, r, out, gameState);
         } else {
-            printPlayerRows(getPartnerCells(partnerBoard), playerCells, r, out, gameState);
+            printPlayerRows(partnerCells, playerCells, r, out, gameState);
         }
     }
 

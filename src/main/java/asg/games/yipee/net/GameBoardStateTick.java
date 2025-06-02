@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,6 +18,8 @@ package asg.games.yipee.net;
 import asg.games.yipee.objects.YipeeGameBoardState;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Map;
 
 /**
  * Sent by the server to all clients during each game loop tick.
@@ -39,12 +41,12 @@ public class GameBoardStateTick implements YipeeSerializable {
      * The tick number corresponding to this game state update.
      * Typically incremented by the server each frame or turn.
      */
-    private int tickNumber;
+    private int tick;
 
     /**
      * The current state of the game board at this tick.
      * This should be replaced with a strongly-typed class (e.g., {@code YipeeGameBoardState})
      * for better serialization and safety.
      */
-    private YipeeGameBoardState gameBoardState; // Replace with actual board state class
+    private Map<Integer, YipeeGameBoardState> gameBoardStates; // Replace with actual board state class
 }

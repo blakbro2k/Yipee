@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,15 +18,16 @@ package asg.games.yipee;
 import asg.games.yipee.net.ClientHandshakeRequest;
 import asg.games.yipee.net.ClientHandshakeResponse;
 import asg.games.yipee.net.DisconnectRequest;
-import asg.games.yipee.net.ErrorMessagePacket;
-import asg.games.yipee.net.GameBoardStateTick;
-import asg.games.yipee.net.HeartbeatPacket;
-import asg.games.yipee.net.JoinTableRequest;
-import asg.games.yipee.net.JoinTableResponse;
+import asg.games.yipee.net.DisconnectResponse;
+import asg.games.yipee.net.ErrorResponse;
 import asg.games.yipee.net.MappedKeyUpdateRequest;
+import asg.games.yipee.net.MappedKeyUpdateResponse;
 import asg.games.yipee.net.PacketRegistrar;
-import asg.games.yipee.net.PlayerActionPacket;
-import asg.games.yipee.net.TableStateBroadcast;
+import asg.games.yipee.net.PlayerActionRequest;
+import asg.games.yipee.net.PlayerActionResponse;
+import asg.games.yipee.net.SeatSelectionRequest;
+import asg.games.yipee.net.SeatSelectionResponse;
+import asg.games.yipee.net.TableStateBroadcastResponse;
 import asg.games.yipee.net.TableStateUpdateRequest;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
@@ -55,14 +56,15 @@ public class PacketSerializationTest {
             {TestYipeeNetworkObjects.getClientHandshakeRequestObject(), ClientHandshakeRequest.class},
             {TestYipeeNetworkObjects.getClientHandshakeResponseObject(), ClientHandshakeResponse.class},
             {TestYipeeNetworkObjects.getDisconnectRequestObject(), DisconnectRequest.class},
-            {TestYipeeNetworkObjects.getErrorMessagePacketObject(), ErrorMessagePacket.class},
-            {TestYipeeNetworkObjects.getGameBoardStateTickObject(), GameBoardStateTick.class},
-            {TestYipeeNetworkObjects.getHeartbeatPacketObject(), HeartbeatPacket.class},
-            {TestYipeeNetworkObjects.getJoinTableRequestObject(), JoinTableRequest.class},
-            {TestYipeeNetworkObjects.getJoinTableResponseObject(), JoinTableResponse.class},
+            {TestYipeeNetworkObjects.getDisconnectResponseObject(), DisconnectResponse.class},
+            {TestYipeeNetworkObjects.getErrorResponseObject(), ErrorResponse.class},
             {TestYipeeNetworkObjects.getMappedKeyUpdateRequestObject(), MappedKeyUpdateRequest.class},
-            {TestYipeeNetworkObjects.getPlayerActionPacketObject(), PlayerActionPacket.class},
-            {TestYipeeNetworkObjects.getTableStateBroadcastObject(), TableStateBroadcast.class},
+            {TestYipeeNetworkObjects.getMappedKeyUpdateResponseObject(), MappedKeyUpdateResponse.class},
+            {TestYipeeNetworkObjects.getPlayerActionRequestObject(), PlayerActionRequest.class},
+            {TestYipeeNetworkObjects.getPlayerActionResponseObject(), PlayerActionResponse.class},
+            {TestYipeeNetworkObjects.getSeatSelectionRequestObject(), SeatSelectionRequest.class},
+            {TestYipeeNetworkObjects.getSeatSelectionResponseObject(), SeatSelectionResponse.class},
+            {TestYipeeNetworkObjects.getTableStateBroadcastResponseObject(), TableStateBroadcastResponse.class},
             {TestYipeeNetworkObjects.getTableStateUpdateRequestObject(), TableStateUpdateRequest.class}
         };
     }

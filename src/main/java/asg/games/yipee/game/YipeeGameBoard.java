@@ -145,7 +145,7 @@ public class YipeeGameBoard implements Disposable {
         reset(seed);
     }
 
-    private void loadFromState(YipeeGameBoardState state) {
+    private void importGameState(YipeeGameBoardState state) {
         if (state != null) {
             setCurrentPhase(state.getCurrentPhase());
             setBrokenBlockCount(state.getBrokenBlockCount());
@@ -171,11 +171,15 @@ public class YipeeGameBoard implements Disposable {
             setBrokenCells(state.getBrokenCells());
             setSpecialPieces(state.getSpecialPieces());
             setHasGameStarted(state.isHasGameStarted());
-            setPartnerBoard(state.getPartnerBoard());
+            setPartnerBoardState(state.getPartnerBoard());
         }
     }
 
     public YipeeGameBoardState exportGameState() {
+        return exportGameState(true);
+    }
+
+    public YipeeGameBoardState exportGameState(boolean includePartner) {
         YipeeGameBoardState state = new YipeeGameBoardState();
         state.setCurrentPhase(currentPhase);
         state.setBrokenBlockCount(brokenBlockCount);
@@ -202,8 +206,9 @@ public class YipeeGameBoard implements Disposable {
         state.setBrokenCells(brokenCells);
         state.setSpecialPieces(specialPieces);
         state.setHasGameStarted(hasGameStarted);
-        if (partnerBoard != null) {
-            state.setPartnerBoard(partnerBoard.exportGameState());
+        if (includePartner && partnerBoard != null) {
+            // Prevent recursive export
+            state.setPartnerBoard(partnerBoard.exportGameState(false));
         } else {
             state.setPartnerBoard(null);
         }
@@ -237,7 +242,7 @@ public class YipeeGameBoard implements Disposable {
         this.isPartnerRight = b;
     }
 
-    public void setPartnerBoard(YipeeGameBoardState partnerB) {
+    public void setPartnerBoardState(YipeeGameBoardState partnerB) {
         this.partnerBoard.updateState(partnerB);
     }
 
@@ -775,7 +780,7 @@ public class YipeeGameBoard implements Disposable {
         if (action != null) {
             if (PlayerAction.ActionType.S_SPEED.equals(action.getActionType())) {
                 //TODO: handle speed special
-            } else if (PlayerAction.ActionType.O_MEDUSA.equals(action.getActionType())) {//TODO: handle medusa/midas
+            } else if (PlayerAction.ActionType.O_MEDUSA.equals(action.getActionType())) {
                 addSpecialPiece(2);
             } else if (PlayerAction.ActionType.O_MIDAS.equals(action.getActionType())) {
                 addSpecialPiece(1);
@@ -1806,7 +1811,7 @@ public class YipeeGameBoard implements Disposable {
     }
 
     private void updateState(YipeeGameBoardState state) {
-        loadFromState(state);
+        importGameState(state);
     }
 
     public void update(float delta) {

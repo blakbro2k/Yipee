@@ -198,6 +198,10 @@ public class YipeeGameBoardState extends AbstractYipeeObject {
     /** Debugging name or identifier for the board. */
     private String name;
 
+    /**
+     * The current tick count from the server.
+     */
+    private int tick;
 
     public void setCurrentStateTimeStamp(long currentStateTimeStamp) {
         setPreviousStateTimeStamp(currentStateTimeStamp);
