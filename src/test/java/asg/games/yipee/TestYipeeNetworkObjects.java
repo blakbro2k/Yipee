@@ -255,7 +255,7 @@ public class TestYipeeNetworkObjects {
 
     public static MappedKeyUpdateRequest getMappedKeyUpdateRequestObject() {
         MappedKeyUpdateRequest request = new MappedKeyUpdateRequest();
-        YipeeKeyMap map = new YipeeKeyMap();
+        YipeeKeyMap map = new YipeeKeyMap("2");
         setUpAbstractPacketRequest(request);
         request.setKeyConfig(player.getKeyConfig());
         return request;
@@ -271,7 +271,7 @@ public class TestYipeeNetworkObjects {
 
     public static PlayerActionResponse getPlayerActionResponseObject() {
         PlayerActionResponse response = new PlayerActionResponse();
-        PlayerAction action = new PlayerAction(1, PlayerAction.ActionType.A_CLUMP, 3, null);
+        PlayerAction action = new PlayerAction(1, PlayerAction.ActionType.A_CLUMP, 2, 3, null);
         setUpAbstractPacketResponse(response);
         response.setAccepted(true);
         response.setPlayerAction(action);
@@ -281,7 +281,7 @@ public class TestYipeeNetworkObjects {
 
     public static PlayerActionRequest getPlayerActionRequestObject() {
         PlayerActionRequest request = new PlayerActionRequest();
-        PlayerAction action = new PlayerAction(1, PlayerAction.ActionType.A_CLUMP, 3, null);
+        PlayerAction action = new PlayerAction(1, PlayerAction.ActionType.A_CLUMP, 3, 3, null);
         setUpAbstractPacketRequest(request);
         request.setPlayerAction(action); // Replace with actual PlayerAction if needed
         return request;

@@ -369,4 +369,71 @@ public class GameManager {
         Queue<YipeeGameBoardState> states = getGameBoardStates(seatId);
         return states.peek(); // Access a specific game board
     }
+
+    /**
+     * Finds the seat ID for the given player.
+     *
+     * @param player the player to look for
+     * @return the seat ID or -1 if not found
+     */
+    public int getSeatForPlayer(YipeePlayer player) {
+        for (Map.Entry<Integer, GamePlayerBoard> entry : gameBoardMap.entrySet()) {
+            YipeePlayer p = entry.getValue().getPlayer();
+            if (p != null && p.equals(player)) {
+                return entry.getKey();
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Returns the partner's GamePlayerBoard (full wrapper) for the given player.
+     */
+    public GamePlayerBoard getPartnerBoard(YipeePlayer player) {
+        int playerSeat = getSeatForPlayer(player);
+        if (playerSeat == -1) return null;
+        int partnerSeat = (playerSeat % 2 == 0) ? playerSeat + 1 : playerSeat - 1;
+        return gameBoardMap.get(partnerSeat);
+    }
+
+    /**
+     * Returns the partner's raw YipeeGameBoard for the given player.
+     */
+    public YipeeGameBoard getPartnerGameBoard(YipeePlayer player) {
+        GamePlayerBoard partner = getPartnerBoard(player);
+        return partner != null ? partner.getBoard() : null;
+    }
+
+    /**
+     * Returns a map of seat ID to enemy GamePlayerBoards (full wrapper).
+     */
+    public Map<Integer, GamePlayerBoard> getEnemyBoards(YipeePlayer player) {
+        Map<Integer, GamePlayerBoard> enemies = new ConcurrentHashMap<>();
+        int playerSeat = getSeatForPlayer(player);
+        if (playerSeat == -1) return enemies;
+        int partnerSeat = (playerSeat % 2 == 0) ? playerSeat + 1 : playerSeat - 1;
+
+        for (Map.Entry<Integer, GamePlayerBoard> entry : gameBoardMap.entrySet()) {
+            int seatId = entry.getKey();
+            if (seatId != playerSeat && seatId != partnerSeat) {
+                GamePlayerBoard board = entry.getValue();
+                if (board.getPlayer() != null) {
+                    enemies.put(seatId, board);
+                }
+            }
+        }
+        return enemies;
+    }
+
+    /**
+     * Returns a map of seat ID to raw YipeeGameBoard for all enemies.
+     */
+    public Map<Integer, YipeeGameBoard> getEnemyGameBoards(YipeePlayer player) {
+        Map<Integer, YipeeGameBoard> enemyBoards = new ConcurrentHashMap<>();
+        for (Map.Entry<Integer, GamePlayerBoard> entry : getEnemyBoards(player).entrySet()) {
+            enemyBoards.put(entry.getKey(), entry.getValue().getBoard());
+        }
+        return enemyBoards;
+    }
+
 }
