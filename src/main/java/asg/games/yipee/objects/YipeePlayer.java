@@ -69,7 +69,7 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
     private String serializedKeyConfig;
 
     @Transient
-    private YipeeKeyMap keyConfig = new YipeeKeyMap();
+    private YipeeKeyMap keyConfig = new YipeeKeyMap(this.getId());
 
     /**
      * Default constructor required for JSON serialization/deserialization.
@@ -119,7 +119,10 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
                 if (keyConfig == null) {
                     try {
                         keyConfig = Util.readValue(serializedKeyConfig, YipeeKeyMap.class);
-                        logger.debug("Serialized keyCofig: " + keyConfig);
+                        // If playerId was not set at creation, patch it here
+                        if (keyConfig.getPlayerId() == null && getId() != null) {
+                            keyConfig.setPlayerId(getId());
+                        }
                     } catch (JsonProcessingException e) {
                         logger.error("Failed to deserialize keyConfig", e);
                         throw new RuntimeException("Failed to deserialize keyConfig", e);
@@ -135,13 +138,16 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
      * @param keyConfig
      */
     public void setKeyConfig(YipeeKeyMap keyConfig) {
+        if (keyConfig != null && keyConfig.getPlayerId() == null && getId() != null) {
+            keyConfig.setPlayerId(getId());
+        }
         this.keyConfig = keyConfig;
         try {
             this.serializedKeyConfig = Util.writeValueAsString(keyConfig);
-            logger.debug("Serialized serializedKeyConfig: " + serializedKeyConfig);
+            logger.debug("Serialized keyConfig: {}", serializedKeyConfig);
         } catch (JsonProcessingException e) {
-            logger.error("Failed to serialize keyConfig  in getKeysConfig()", e);
-            throw new RuntimeException("Failed to serialize keyConfig in getKeysConfig()", e);
+            logger.error("Failed to serialize keyConfig", e);
+            throw new RuntimeException(e);
         }
     }
 

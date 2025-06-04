@@ -622,7 +622,7 @@ public class TestGameObjects {
 
     @Test
     public void testYokelKeyMap() {
-        YipeeKeyMap blockKeyMap = new YipeeKeyMap();
+        YipeeKeyMap blockKeyMap = new YipeeKeyMap("1");
         System.out.println("blockKeyMap: " + blockKeyMap);
 
         Assert.assertEquals(blockKeyMap.getRightKey(), Input.Keys.RIGHT);
