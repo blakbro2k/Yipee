@@ -55,6 +55,13 @@ public class YipeeKeyMap implements Copyable<YipeeKeyMap>, Disposable, YipeeSeri
     private String playerId;
 
     /**
+     * No Arg Constructor for Kryo
+     */
+    public YipeeKeyMap() {
+        this("_NOARG_");
+    }
+
+    /**
      * Constructs a new key map and initializes default bindings.
      *
      * @param playerId optional player identifier
