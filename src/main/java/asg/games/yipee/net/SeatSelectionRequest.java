@@ -17,6 +17,7 @@ package asg.games.yipee.net;
 
 import asg.games.yipee.objects.YipeePlayer;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
@@ -30,6 +31,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode
 public class SeatSelectionRequest extends AbstractClientRequest {
 
     /**
