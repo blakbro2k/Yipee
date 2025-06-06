@@ -77,6 +77,8 @@ public class PacketSerializationTest {
 
         T copy = serializeAndDeserialize(kryo, original, clazz);
 
+        System.out.println("o: " + original);
+        System.out.println("c: " + copy);
         Assertions.assertNotNull(copy, "Deserialized object is null");
         Assertions.assertNotNull(original, "Original object is null");
         Assertions.assertEquals(original, copy, "Objects not equal");

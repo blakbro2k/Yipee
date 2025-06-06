@@ -16,6 +16,7 @@
 package asg.games.yipee.game;
 
 import asg.games.yipee.net.YipeeSerializable;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,6 +26,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@EqualsAndHashCode
 public class PlayerAction implements YipeeSerializable {
 
     /**

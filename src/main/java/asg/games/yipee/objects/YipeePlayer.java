@@ -25,12 +25,11 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Objects;
 
 /**
  * Represents a player in the Yipee game. Each player has a rating and an icon.
@@ -46,6 +45,7 @@ import java.util.Objects;
 @Setter
 @Getter
 @Entity
+@EqualsAndHashCode
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_PLAYERS")
 public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePlayer>, Disposable {
@@ -192,19 +192,19 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
         return copy;
     }
 
-    @Override
-    public boolean equals(Object o) {
+    /*@Override
+    //public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof YipeePlayer)) return false;
         if (!super.equals(o)) return false;
         YipeePlayer player = (YipeePlayer) o;
         return rating == player.rating && icon == player.icon && Objects.equals(keyConfig, player.keyConfig);
-    }
+    }*/
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), rating, icon, keyConfig);
-    }
+    //@Override
+    //public int hashCode() {
+    //    return Objects.hash(super.hashCode(), rating, icon, keyConfig);
+    //}
 
     @Override
     public void dispose() {
