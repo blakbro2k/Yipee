@@ -44,6 +44,13 @@ public class AbstractServerResponse implements YipeeSerializable {
      */
     private long timestamp;
 
+    /**
+     * The local tick rate set on the server
+     * Used to sync the rates with the Client.
+     */
+    private int tickRate; // Optional
+
+
     @Override
     public String toString() {
         return "ServerRequest[" + serverId + ", serverTick=" + serverTick + ", ts=" + timestamp + "]";

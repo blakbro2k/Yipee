@@ -121,7 +121,7 @@ public class YipeeGameBoard implements Disposable {
     private Queue<Integer> specialPieces = new LinkedList<>();
     Queue<YipeeBrokenBlock> brokenCells = new LinkedList<>();
     Queue<YipeeBlockMove> cellsToDrop = new LinkedList<>();
-
+    private int boardNumber = -1;
 
     private int yahooDuration = 0;
     private int brokenBlockCount = 0;
@@ -172,6 +172,7 @@ public class YipeeGameBoard implements Disposable {
             setSpecialPieces(state.getSpecialPieces());
             setHasGameStarted(state.isHasGameStarted());
             setPartnerBoardState(state.getPartnerBoard());
+            setBoardNumber(state.getBoardNumber());
         }
     }
 
@@ -206,6 +207,7 @@ public class YipeeGameBoard implements Disposable {
         state.setBrokenCells(brokenCells);
         state.setSpecialPieces(specialPieces);
         state.setHasGameStarted(hasGameStarted);
+        state.setBoardNumber(boardNumber);
         if (includePartner && partnerBoard != null) {
             // Prevent recursive export
             state.setPartnerBoard(partnerBoard.exportGameState(false));
@@ -213,10 +215,6 @@ public class YipeeGameBoard implements Disposable {
             state.setPartnerBoard(null);
         }
         return state;
-    }
-
-    public void setDebug(boolean isDebug) {
-        this.debug = isDebug;
     }
 
     private void resetPieceFallTimer() {
@@ -244,10 +242,6 @@ public class YipeeGameBoard implements Disposable {
 
     public void setPartnerBoardState(YipeeGameBoardState partnerB) {
         this.partnerBoard.updateState(partnerB);
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public static class TestRandomBlockArray extends RandomUtil.RandomNumberArray {
@@ -322,14 +316,6 @@ public class YipeeGameBoard implements Disposable {
         currentBlockPointer = -1;
         hasGameStarted = false;
         piece = null;
-    }
-
-    public YipeePiece getNextPiece() {
-        return nextPiece;
-    }
-
-    public int[][] getCells() {
-        return cells;
     }
 
     public void setCell(int row, int col, int cell) {
