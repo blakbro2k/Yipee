@@ -24,7 +24,6 @@ import asg.games.yipee.net.DisconnectRequest;
 import asg.games.yipee.net.DisconnectResponse;
 import asg.games.yipee.net.ErrorCode;
 import asg.games.yipee.net.ErrorResponse;
-import asg.games.yipee.net.GameBoardStateTick;
 import asg.games.yipee.net.MappedKeyUpdateRequest;
 import asg.games.yipee.net.MappedKeyUpdateResponse;
 import asg.games.yipee.net.PlayerActionRequest;
@@ -162,13 +161,6 @@ public class TestYipeeNetworkObjects {
                 () -> Assertions.assertEquals(o.getPlayer(), c.getPlayer(), "Player mismatch"),
                 () -> Assertions.assertEquals(o.getTableId(), c.getTableId(), "TableId mismatch"),
                 () -> Assertions.assertEquals(o.isSpectator(), c.isSpectator(), "Is spectator mismatch")
-            );
-        } else if (original instanceof GameBoardStateTick) {
-            GameBoardStateTick o = (GameBoardStateTick) original;
-            GameBoardStateTick c = (GameBoardStateTick) copy;
-            Assertions.assertAll("GameBoardStateTick",
-                () -> Assertions.assertEquals(o.getTick(), c.getTick(), "TickNumber mismatch"),
-                () -> Assertions.assertEquals(o.getGameBoardStates(), c.getGameBoardStates(), "GameBoardState mismatch")
             );
         } else {
             throw new TestException("Object does not have an Assertion Test configured. (" + original.getClass().getSimpleName() + ")");

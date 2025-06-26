@@ -33,7 +33,6 @@
             <mapping class="asg.games.yipee.net.DisconnectResponse" id="908"/>
             <mapping class="asg.games.yipee.net.ErrorCode" id="909"/>
             <mapping class="asg.games.yipee.net.ErrorResponse" id="910"/>
-            <mapping class="asg.games.yipee.net.GameBoardStateTick" id="911"/>
             <mapping class="asg.games.yipee.net.MappedKeyUpdateRequest" id="912"/>
             <mapping class="asg.games.yipee.net.MappedKeyUpdateResponse" id="913"/>
             <mapping class="asg.games.yipee.net.PacketRegistrar" id="914"/>

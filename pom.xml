@@ -10,8 +10,8 @@
 
     <distributionManagement>
         <repository>
-            <id>github</id>
-            <name>GitHub OWNER Apache Maven Packages</name>
+            <id>asg.games.yipee</id>
+            <name>GitHub blakbro2k Apache Maven Packages</name>
             <url>https://maven.pkg.github.com/blakbro2k/Yipee</url>
         </repository>
     </distributionManagement>
@@ -26,10 +26,10 @@
     </repositories>
 
     <properties>
-        <build.version>1.11.5</build.version>
         <java.version>1.8</java.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <build.version>1.11.5</build.version>
         <maven.license.version>1.9.0</maven.license.version>
         <hbm.version>6.2.11.Final</hbm.version>
         <json.version>2.17.2</json.version>
@@ -47,7 +47,7 @@
         <!--Put your own properties -->
         <repository-owner>blakbro2k</repository-owner>
         <github.global.server>github</github.global.server>
-        <maven-source-plugin.version>3.1.0</maven-source-plugin.version>
+        <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
         <site-maven-plugin.version>0.12</site-maven-plugin.version>
     </properties>
 
@@ -196,6 +196,21 @@
                 </configuration>
             </plugin>
 
+            <!-- Add Sources -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven-source-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Build javadocs
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -211,6 +226,7 @@
                 </executions>
             </plugin>-->
 
+            <!-- Compile Java -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>aspectj-maven-plugin</artifactId>
@@ -273,9 +289,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler.version}</version>
                 <configuration>
-                    <source>14</source>
-                    <target>14</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
         </plugins>

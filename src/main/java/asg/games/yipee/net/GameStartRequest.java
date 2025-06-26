@@ -16,43 +16,41 @@
 package asg.games.yipee.net;
 
 import asg.games.yipee.objects.YipeePlayer;
+import asg.games.yipee.objects.YipeeTable;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+
 /**
- * Sent by the client to select a seat at an already assigned table.
- *
- * <p>This request is typically issued after a successful handshake and table assignment
- * from the CMS (e.g., WordPress), allowing the game server to place the player into a
- * specific seat or register them as a spectator.</p>
+ * Sent by the client when a player clicks "Join" and toggles their ready state
+ * before the game begins. The server uses this to determine whether all players
+ * at the table are ready to begin a match.
  *
  * <p><b>Direction:</b> Client → Server</p>
  */
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode
-public class SeatSelectionRequest extends AbstractClientRequest {
+public class GameStartRequest extends AbstractClientRequest {
 
     /**
-     * The ID of the table the player is assigned to.
-     * This is typically issued by the web layer.
+     * Whether the player has marked themselves as ready (true) or unready (false).
+     * The server may start the countdown when all players at a table are ready.
      */
-    private String tableId;
+    private boolean isReady;
 
     /**
-     * The index of the seat being requested (0–7).
-     * Ignored if {@code spectator} is true.
+     * The tick at which this request was sent. Used for debug or timing analysis.
+     * Not used in actual gameplay simulation.
      */
-    private int seatIndex;
+    private int tick;
 
     /**
-     * Indicates whether the player is joining as a spectator.
+     * The table the player is attempting to join or mark ready in.
      */
-    private boolean spectator;
+    private YipeeTable table;
 
     /**
-     * The player initiating the seat selection.
+     * The player sending the request. Typically validated server-side using JWT.
      */
     private YipeePlayer player;
 }

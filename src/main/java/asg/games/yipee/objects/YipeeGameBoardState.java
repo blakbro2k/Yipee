@@ -31,8 +31,6 @@ import java.util.Queue;
  * including active and next pieces, board contents, timers, animation state,
  * partner information, and debug metadata.
  *
- * <p>This object is sent from server to client in {@link asg.games.yipee.net.GameBoardStateTick}
- * and can also be used for saving replays or debugging gameplay ticks.
  *
  * <p>Fields such as {@code playerCells}, {@code brokenCells}, {@code pieceFallTimer},
  * and {@code currentPhase} represent the real-time progression of the match and
@@ -40,7 +38,6 @@ import java.util.Queue;
  *
  * @see asg.games.yipee.game.YipeeGameBoard
  * @see asg.games.yipee.game.YipeeBlockEval
- * @see asg.games.yipee.net.GameBoardStateTick
  */
 // NOTE: This class must remain Kryo-serializable for network synchronization
 @Data
@@ -203,6 +200,11 @@ public class YipeeGameBoardState extends AbstractYipeeObject {
      */
     private int tick;
 
+    /**
+     * The tableNumber that this board represents.  Used to help determine which partner this board is.
+     */
+    private int boardNumber;
+
     public void setCurrentStateTimeStamp(long currentStateTimeStamp) {
         setPreviousStateTimeStamp(currentStateTimeStamp);
         this.currentStateTimeStamp = currentStateTimeStamp;
@@ -211,6 +213,8 @@ public class YipeeGameBoardState extends AbstractYipeeObject {
     // Print State
     public String toString() {
         StringBuilder out = new StringBuilder();
+        out.append("#################").append("\n");
+        out.append("Board Number: ").append(boardNumber).append("\n");
         out.append("#################").append("\n");
         out.append("Server Game Start Time: ").append(getServerGameStartTime()).append("\n");
         out.append("Current Game Time: ").append(getCurrentStateTimeStamp()).append("\n");
