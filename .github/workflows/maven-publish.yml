@@ -39,7 +39,7 @@ jobs:
       uses: jacobtomlinson/gha-find-replace@v3
       with:
 
-        find: "<build\\.version>[1-9\\.]*<\\/build\\.version>"
+        find: "<build\\.version>.*?<\\/build\\.version>"
         replace: "<build.version>${{steps.tag.outputs.tag}}</build.version>"
         include: "pom.xml"
         regex: true
