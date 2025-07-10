@@ -36,6 +36,9 @@ jobs:
     - name: Confirm Tag
       run: echo ${{steps.tag.outputs.tag}}
 
+    - name: Set Working Directory
+      working-directory: ./yipee-parent
+
     - name: Set Maven version to release tag
       run: |
         mvn versions:set -DnewVersion=${{ steps.tag.outputs.tag }} -DgenerateBackupPoms=false
