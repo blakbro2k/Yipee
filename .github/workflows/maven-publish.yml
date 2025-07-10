@@ -32,19 +32,16 @@ jobs:
       with:
         # Optionally strip `v` prefix
         strip_v: true
+
     - name: Confirm Tag
       run: echo ${{steps.tag.outputs.tag}}
 
-    - name: Replace Version in pom.xml
-      uses: jacobtomlinson/gha-find-replace@v3
-      with:
+    - name: Set Maven version to release tag
+      run: |
+        mvn versions:set -DnewVersion=${{ steps.tag.outputs.tag }} -DgenerateBackupPoms=false
+        mvn versions:commit
 
-        find: "<build\\.version>.*?<\\/build\\.version>"
-        replace: "<build.version>${{steps.tag.outputs.tag}}</build.version>"
-        include: "pom.xml"
-        regex: true
-
-          # Step 3: Cache Maven dependencies
+      # Step 3: Cache Maven dependencies
     - name: Cache Maven dependencies
       uses: actions/cache@v3
       with:
@@ -54,7 +51,7 @@ jobs:
           ${{ runner.os }}-maven-
             
     - name: Build with Maven
-      run: mvn -B -e license:format package --file pom.xml
+      run: mvn -B -e clean install license:update-file-header
 
     - name: Publish to GitHub Packages Apache Maven
       run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml

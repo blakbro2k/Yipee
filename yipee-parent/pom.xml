@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>asg.games</groupId>
+    <artifactId>yipee-parent</artifactId>
+    <version>1.11.5</version>
+    <packaging>pom</packaging>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub blakbro2k Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/blakbro2k/Yipee</url>
+        </repository>
+    </distributionManagement>
+
+    <modules>
+        <module>yipee-core</module>
+        <module>yipee-libgdx</module>
+        <module>yipee-net</module>
+    </modules>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.license.version>1.9.0</maven.license.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <!-- Set license file -->
+            <plugin>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <version>${maven.license.version}</version>
+                <executions>
+                    <execution>
+                        <id>add-license</id>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <strictCheck>true</strictCheck>
+                    <header>yipee-core/src/main/resources/license-header.txt</header>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
+            <!-- Build javadocs
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.11.2</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>-->
+        </plugins>
+    </build>
+</project>

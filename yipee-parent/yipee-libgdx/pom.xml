@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>asg.games</groupId>
+        <artifactId>yipee-parent</artifactId>
+        <version>1.11.5</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>yipee-libgdx</artifactId>
+
+    <properties>
+        <libgdx.version>1.11.0</libgdx.version>
+        <lml.version>1.10</lml.version>
+        <lombok.version>1.18.28</lombok.version>
+        <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
+        <lombok.version>1.18.28</lombok.version>
+ </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>asg.games</groupId>
+            <artifactId>yipee-net</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Depend on the pure Java Yipee module -->
+        <dependency>
+            <groupId>asg.games</groupId>
+            <artifactId>yipee</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- LibGDX itself -->
+        <dependency>
+            <groupId>com.badlogicgames.gdx</groupId>
+            <artifactId>gdx</artifactId>
+            <version>${libgdx.version}</version>
+        </dependency>
+
+                <dependency>
+                    <groupId>com.crashinvaders.lml</groupId>
+                    <artifactId>gdx-kiwi</artifactId>
+                    <version>${lml.version}.${libgdx.version}</version>
+                </dependency>
+
+           <!-- Optionally GWT-backend if you need -->
+        <dependency>
+            <groupId>com.badlogicgames.gdx</groupId>
+            <artifactId>gdx-backend-gwt</artifactId>
+            <version>${libgdx.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.gwt.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.gwt.xml</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <plugins>
+            <!-- Add Sources -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven-source-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>**/*.java</include>
+                                <include>**/*.gwt.xml</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
