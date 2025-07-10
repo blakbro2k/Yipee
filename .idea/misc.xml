@@ -5,6 +5,10 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/pom.xsd" />
+        <option value="$PROJECT_DIR$/yipee-parent/yipee-core/pom.xml" />
+        <option value="$PROJECT_DIR$/yipee-parent/yipee-libgdx/pom.xml" />
+        <option value="$PROJECT_DIR$/yipee-parent/yipee-net/pom.xml" />
       </list>
     </option>
   </component>
