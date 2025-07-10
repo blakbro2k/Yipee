@@ -52,4 +52,5 @@ jobs:
       run: mvn -B -e clean deploy -s $GITHUB_WORKSPACE/settings.xml
       working-directory: ./yipee-parent
       env:
+
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
