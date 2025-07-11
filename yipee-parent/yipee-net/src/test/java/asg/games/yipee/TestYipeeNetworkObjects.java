@@ -14,6 +14,10 @@ package asg.games.yipee; /**
  * limitations under the License.
  */
 
+import asg.games.yipee.common.packets.PlayerAction;
+import asg.games.yipee.core.objects.YipeeKeyMap;
+import asg.games.yipee.core.objects.YipeePlayer;
+import asg.games.yipee.core.objects.YipeeTable;
 import asg.games.yipee.net.packets.AbstractClientRequest;
 import asg.games.yipee.net.packets.AbstractServerResponse;
 import asg.games.yipee.net.packets.ClientHandshakeRequest;
@@ -24,7 +28,6 @@ import asg.games.yipee.net.packets.ErrorCode;
 import asg.games.yipee.net.packets.ErrorResponse;
 import asg.games.yipee.net.packets.MappedKeyUpdateRequest;
 import asg.games.yipee.net.packets.MappedKeyUpdateResponse;
-import asg.games.yipee.net.packets.PlayerAction;
 import asg.games.yipee.net.packets.PlayerActionRequest;
 import asg.games.yipee.net.packets.PlayerActionResponse;
 import asg.games.yipee.net.packets.SeatSelectionRequest;
@@ -32,9 +35,6 @@ import asg.games.yipee.net.packets.SeatSelectionResponse;
 import asg.games.yipee.net.packets.TableStateBroadcastResponse;
 import asg.games.yipee.net.packets.TableStateUpdateRequest;
 import asg.games.yipee.net.packets.TableUpdateType;
-import asg.games.yipee.objects.YipeeKeyMap;
-import asg.games.yipee.objects.YipeePlayer;
-import asg.games.yipee.objects.YipeeTable;
 import org.junit.jupiter.api.Assertions;
 import org.testng.TestException;
 

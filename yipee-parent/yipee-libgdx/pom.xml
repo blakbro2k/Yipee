@@ -5,7 +5,7 @@
     <parent>
         <groupId>asg.games</groupId>
         <artifactId>yipee-parent</artifactId>
-        <version>1.11.5</version>
+        <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>yipee-libgdx</artifactId>
@@ -15,14 +15,19 @@
         <lml.version>1.10</lml.version>
         <lombok.version>1.18.28</lombok.version>
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
-        <lombok.version>1.18.28</lombok.version>
  </properties>
 
     <dependencies>
         <dependency>
             <groupId>asg.games</groupId>
             <artifactId>yipee-net</artifactId>
-            <version>${project.version}</version>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>asg.games</groupId>
+            <artifactId>yipee-common</artifactId>
+            <version>${revision}</version>
         </dependency>
 
         <dependency>
@@ -30,13 +35,6 @@
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <scope>provided</scope>
-        </dependency>
-
-        <!-- Depend on the pure Java Yipee module -->
-        <dependency>
-            <groupId>asg.games</groupId>
-            <artifactId>yipee</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <!-- LibGDX itself -->

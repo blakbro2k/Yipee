@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>asg.games</groupId>
     <artifactId>yipee-parent</artifactId>
-    <version>1.11.5</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
 
     <distributionManagement>
@@ -16,18 +16,22 @@
         </repository>
     </distributionManagement>
 
-    <modules>
-        <module>yipee-core</module>
-        <module>yipee-libgdx</module>
-        <module>yipee-net</module>
-    </modules>
+<modules>
+     <module>yipee-common</module>
+     <module>yipee-core</module>
+      <module>yipee-net</module>
+    <module>yipee-libgdx</module>
+</modules>
 
-    <properties>
-        <java.version>1.8</java.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
-        <maven.license.version>1.9.0</maven.license.version>
-    </properties>
+
+<properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>1.8</java.version>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <maven.license.version>1.9.0</maven.license.version>
+    <revision>2.0.0</revision>
+</properties>
 
     <build>
         <plugins>

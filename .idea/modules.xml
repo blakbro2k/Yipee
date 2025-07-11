@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Yipee.iml" filepath="$PROJECT_DIR$/Yipee.iml" />
-      <module fileurl="file://$PROJECT_DIR$/yipee-net/yipee-net.iml" filepath="$PROJECT_DIR$/yipee-net/yipee-net.iml" />
+      <module fileurl="file://$PROJECT_DIR$/yipee-parent/yipee-parent.iml" filepath="$PROJECT_DIR$/yipee-parent/yipee-parent.iml" />
     </modules>
   </component>
 </project>
