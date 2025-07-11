@@ -8,7 +8,7 @@
     <parent>
         <groupId>asg.games</groupId>
         <artifactId>yipee-parent</artifactId>
-        <version>1.11.5</version>
+        <version>${revision}</version>
     </parent>
 
     <repositories>
@@ -46,11 +46,13 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>asg.games</groupId>
-            <artifactId>yipee-net</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+
+    <dependency>
+      <groupId>asg.games</groupId>
+      <artifactId>yipee-common</artifactId>
+        <version>${revision}</version>
+    </dependency>
+
 
         <!-- https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core -->
         <dependency>
@@ -174,7 +176,6 @@
 
     <build>
         <plugins>
-
             <!-- Build javadocs
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

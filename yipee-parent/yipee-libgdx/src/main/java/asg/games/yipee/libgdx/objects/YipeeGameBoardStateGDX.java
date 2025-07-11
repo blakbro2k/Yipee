@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,10 +15,10 @@
  */
 package asg.games.yipee.libgdx.objects;
 
+import asg.games.yipee.common.game.GameBoardState;
 import asg.games.yipee.libgdx.game.YipeeBlockEvalGDX;
 import asg.games.yipee.libgdx.game.YipeeGameBoardGDX;
 import asg.games.yipee.libgdx.tools.LibGDXRandomUtil;
-import asg.games.yipee.net.game.GameBoardState;
 import com.badlogic.gdx.utils.Queue;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -37,8 +37,8 @@ import java.util.Arrays;
  * and {@code currentPhase} represent the real-time progression of the match and
  * are updated on each game loop tick.
  *
- * @see asg.games.yipee.libgdx.game.YipeeGameBoardGDX
- * @see asg.games.yipee.libgdx.game.YipeeBlockEvalGDX
+ * @see YipeeGameBoardGDX
+ * @see YipeeBlockEvalGDX
  */
 // NOTE: This class must remain Kryo-serializable for network synchronization
 @Setter

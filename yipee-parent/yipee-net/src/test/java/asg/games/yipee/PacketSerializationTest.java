@@ -15,7 +15,7 @@
  */
 package asg.games.yipee;
 
-import asg.games.yipee.net.PacketRegistrar;
+import asg.games.yipee.core.net.PacketRegistrar;
 import asg.games.yipee.net.packets.ClientHandshakeRequest;
 import asg.games.yipee.net.packets.ClientHandshakeResponse;
 import asg.games.yipee.net.packets.DisconnectRequest;
