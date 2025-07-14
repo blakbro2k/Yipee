@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.libgdx.objects;
 
+import asg.games.yipee.common.net.NetYipeeKeyMap;
 import asg.games.yipee.common.packets.PlayerAction;
 import asg.games.yipee.common.packets.YipeeSerializable;
 import com.badlogic.gdx.Input;
@@ -36,7 +37,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class YipeeKeyMapGDX implements Copyable<YipeeKeyMapGDX>, Disposable, YipeeSerializable {
+public class YipeeKeyMapGDX implements Copyable<YipeeKeyMapGDX>, Disposable, YipeeSerializable, NetYipeeKeyMap {
 
     /**
      * Internal mapping from actions to keycodes.

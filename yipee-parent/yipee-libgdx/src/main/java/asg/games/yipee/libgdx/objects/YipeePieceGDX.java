@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.libgdx.objects;
 
+import asg.games.yipee.core.objects.YipeePiece;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -70,7 +71,7 @@ import java.util.Arrays;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-public class YipeePieceGDX extends AbstractYipeeObjectGDX {
+public class YipeePieceGDX extends AbstractYipeeObjectGDX implements Copyable<YipeePieceGDX>{
     /**
      * Identifier for Medusa game pieces.
      */
@@ -160,5 +161,21 @@ public class YipeePieceGDX extends AbstractYipeeObjectGDX {
     @Override
     public String toString() {
         return super.toString() + "[row=" + row + ", column=" + column + ", cells=" + Arrays.toString(cells) + "]";
+    }
+
+    @Override
+    public YipeePieceGDX copy() {
+        YipeePieceGDX copy = new YipeePieceGDX();
+        copy.index = this.index;
+        copy.row = this.row;
+        copy.column = this.column;
+        System.arraycopy(this.cells, 0, copy.cells, 0, this.cells.length);
+        return copy;
+    }
+
+    @Override
+    public YipeePieceGDX deepCopy() {
+        // identical here, since cells is the only mutable content needing true duplication
+        return this.copy();
     }
 }

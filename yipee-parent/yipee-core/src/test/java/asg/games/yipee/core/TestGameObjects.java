@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,6 +32,7 @@ import asg.games.yipee.core.objects.YipeeRoom;
 import asg.games.yipee.core.objects.YipeeSeat;
 import asg.games.yipee.core.objects.YipeeTable;
 import asg.games.yipee.core.tools.Input;
+import asg.games.yipee.core.tools.NetUtil;
 import asg.games.yipee.core.tools.RandomUtil;
 import asg.games.yipee.core.tools.TimeUtils;
 import asg.games.yipee.core.tools.Util;
@@ -93,9 +94,9 @@ public class TestGameObjects {
         Assert.assertNotEquals(Objects.hash(y1.getId()), y2.hashCode());
         System.out.println("y1: " + y1);
         System.out.println("y1: " + y1.getClass());
-        System.out.println("serialized y1: " + Util.getJsonString(y1));
+        System.out.println("serialized y1: " + NetUtil.getJsonString(y1));
 
-        YipeeObject copy = Util.getObjectFromJsonString(y1.getClass(), Util.getJsonString(y1));
+        YipeeObject copy = NetUtil.getObjectFromJsonString(y1.getClass(), NetUtil.getJsonString(y1));
         Assert.assertEquals(copy, y1);
         Assert.assertEquals(copy.getId(), y1.getId());
         Assert.assertEquals(copy.hashCode(), y1.hashCode());
@@ -132,9 +133,9 @@ public class TestGameObjects {
     @Test(dataProvider = "yokel_objects_ids")
     public void testJSONConversion(AbstractYipeeObject y1, AbstractYipeeObject y2, AbstractYipeeObject x1) throws JsonProcessingException {
         //Test Json
-        String jsonStringBlock1 = Util.getJsonString(y1);
-        String jsonStringYblock2 = Util.getJsonString(y2);
-        String jsonStringXblock1 = Util.getJsonString(x1);
+        String jsonStringBlock1 = NetUtil.getJsonString(y1);
+        String jsonStringYblock2 = NetUtil.getJsonString(y2);
+        String jsonStringXblock1 = NetUtil.getJsonString(x1);
         System.out.println(y1);
         System.out.println(jsonStringBlock1);
         System.out.println(y2);
@@ -142,12 +143,12 @@ public class TestGameObjects {
         System.out.println(x1);
         System.out.println(jsonStringXblock1);
 
-        YipeeObject readBlock1 = Util.getObjectFromJsonString(y1.getClass(), jsonStringBlock1);
-        YipeeObject readYBlock1 = Util.getObjectFromJsonString(y2.getClass(), jsonStringYblock2);
-        YipeeObject readYBlock2 = Util.getObjectFromJsonString(x1.getClass(), jsonStringXblock1);
-        Assert.assertEquals(jsonStringBlock1, Util.getJsonString(y1));
-        Assert.assertEquals(jsonStringYblock2, Util.getJsonString(y2));
-        Assert.assertEquals(jsonStringXblock1, Util.getJsonString(x1));
+        YipeeObject readBlock1 = NetUtil.getObjectFromJsonString(y1.getClass(), jsonStringBlock1);
+        YipeeObject readYBlock1 = NetUtil.getObjectFromJsonString(y2.getClass(), jsonStringYblock2);
+        YipeeObject readYBlock2 = NetUtil.getObjectFromJsonString(x1.getClass(), jsonStringXblock1);
+        Assert.assertEquals(jsonStringBlock1, NetUtil.getJsonString(y1));
+        Assert.assertEquals(jsonStringYblock2, NetUtil.getJsonString(y2));
+        Assert.assertEquals(jsonStringXblock1, NetUtil.getJsonString(x1));
         Assert.assertEquals(readBlock1, y1);
         Assert.assertEquals(readYBlock1, y2);
         Assert.assertEquals(readYBlock2, x1);
@@ -191,12 +192,12 @@ public class TestGameObjects {
 
         //Test Json
         block1.setPowerIntensity(4);
-        String json = Util.getJsonString(block1);
+        String json = NetUtil.getJsonString(block1);
         System.out.println("json: " + json);
-        YipeeBlock readYokelBlock = Util.getObjectFromJsonString(YipeeBlock.class, json);
-        Assert.assertEquals(json, Util.getJsonString(block1));
-        System.out.println("Expected: " + Util.getJsonString(block1));
-        System.out.println("Actual: " + Util.getJsonString(readYokelBlock));
+        YipeeBlock readYokelBlock = NetUtil.getObjectFromJsonString(YipeeBlock.class, json);
+        Assert.assertEquals(json, NetUtil.getJsonString(block1));
+        System.out.println("Expected: " + NetUtil.getJsonString(block1));
+        System.out.println("Actual: " + NetUtil.getJsonString(readYokelBlock));
         Assert.assertEquals(block1, readYokelBlock);
     }
 
@@ -206,12 +207,12 @@ public class TestGameObjects {
         setIdAndName(clock);
 
         //Test Json
-        String jsonStringClock1 = Util.getJsonString(clock);
+        String jsonStringClock1 = NetUtil.getJsonString(clock);
         System.out.println("clock: " + jsonStringClock1);
 
         //Test methods
-        YipeeClock readClock1 = Util.getObjectFromJsonString(YipeeClock.class, jsonStringClock1);
-        Assert.assertEquals(jsonStringClock1, Util.getJsonString(clock));
+        YipeeClock readClock1 = NetUtil.getObjectFromJsonString(YipeeClock.class, jsonStringClock1);
+        Assert.assertEquals(jsonStringClock1, NetUtil.getJsonString(clock));
         Assert.assertEquals(readClock1, clock);
 
         Assert.assertFalse(clock.isRunning());
@@ -227,12 +228,12 @@ public class TestGameObjects {
         Assert.assertEquals(clock.getElapsedSeconds(), 0);
 
         //Test Json
-        String json = Util.getJsonString(clock);
-        YipeeClock readYokelClock = Util.getObjectFromJsonString(YipeeClock.class, json);
+        String json = NetUtil.getJsonString(clock);
+        YipeeClock readYokelClock = NetUtil.getObjectFromJsonString(YipeeClock.class, json);
 
-        Assert.assertEquals(json, Util.getJsonString(clock));
-        System.out.println("Expected: " + Util.getJsonString(clock));
-        System.out.println("Actual: " + Util.getJsonString(readYokelClock));
+        Assert.assertEquals(json, NetUtil.getJsonString(clock));
+        System.out.println("Expected: " + NetUtil.getJsonString(clock));
+        System.out.println("Actual: " + NetUtil.getJsonString(readYokelClock));
         Assert.assertEquals(clock, readYokelClock);
 
         clock.stop();
@@ -251,8 +252,8 @@ public class TestGameObjects {
         setIdAndName(board1, board2, pair);
 
         //Test methods
-        String jsonStringBoard1 = Util.getJsonString(board1);
-        String jsonStringBoard2 = Util.getJsonString(board2);
+        String jsonStringBoard1 = NetUtil.getJsonString(board1);
+        String jsonStringBoard2 = NetUtil.getJsonString(board2);
         System.out.println("board1: " + jsonStringBoard1);
         System.out.println("board2: " + jsonStringBoard2);
         Assert.assertEquals(pair.getLeftBoard(), board1);
@@ -263,19 +264,19 @@ public class TestGameObjects {
         Assert.assertEquals(pair.getRightBoard(), board4);
         pair.setLeftBoard(board1);
         pair.setRightBoard(board2);
-        String jsonStringPair = Util.getJsonString(pair);
+        String jsonStringPair = NetUtil.getJsonString(pair);
         System.out.println("pair: " + jsonStringPair);
 
         //Json Test
-        YipeeGameBoardState readStringBoard1 = Util.getObjectFromJsonString(YipeeGameBoardState.class, jsonStringBoard1);
-        YipeeGameBoardState readStringBoard2 = Util.getObjectFromJsonString(YipeeGameBoardState.class, jsonStringBoard2);
-        YipeeBoardPair readStringPair = Util.getObjectFromJsonString(YipeeBoardPair.class, jsonStringPair);
+        YipeeGameBoardState readStringBoard1 = NetUtil.getObjectFromJsonString(YipeeGameBoardState.class, jsonStringBoard1);
+        YipeeGameBoardState readStringBoard2 = NetUtil.getObjectFromJsonString(YipeeGameBoardState.class, jsonStringBoard2);
+        YipeeBoardPair readStringPair = NetUtil.getObjectFromJsonString(YipeeBoardPair.class, jsonStringPair);
 
-        Assert.assertEquals(jsonStringBoard1, Util.getJsonString(board1));
-        Assert.assertEquals(jsonStringBoard2, Util.getJsonString(board2));
+        Assert.assertEquals(jsonStringBoard1, NetUtil.getJsonString(board1));
+        Assert.assertEquals(jsonStringBoard2, NetUtil.getJsonString(board2));
         System.out.println("actual: " + jsonStringPair);
-        System.out.println("expected: " + Util.getJsonString(readStringPair));
-        Assert.assertEquals(jsonStringPair, Util.getJsonString(readStringPair));
+        System.out.println("expected: " + NetUtil.getJsonString(readStringPair));
+        Assert.assertEquals(jsonStringPair, NetUtil.getJsonString(readStringPair));
         Assert.assertEquals(readStringBoard1, board1);
         Assert.assertEquals(readStringBoard2, board2);
         Assert.assertEquals(readStringPair, pair);
@@ -298,10 +299,10 @@ public class TestGameObjects {
         Assert.assertEquals(blockMove.getTargetRow(), 4);
 
         //Json Test
-        String json = Util.getJsonString(blockMove);
+        String json = NetUtil.getJsonString(blockMove);
         System.out.println(" blockMove: " + json);
-        YipeeBlockMove readBlockMove = Util.getObjectFromJsonString(YipeeBlockMove.class, json);
-        Assert.assertEquals(json, Util.getJsonString(blockMove));
+        YipeeBlockMove readBlockMove = NetUtil.getObjectFromJsonString(YipeeBlockMove.class, json);
+        Assert.assertEquals(json, NetUtil.getJsonString(blockMove));
         Assert.assertEquals(blockMove, readBlockMove);
 
         Assert.assertEquals(readBlockMove.getBlock(), 5);
@@ -309,8 +310,8 @@ public class TestGameObjects {
         Assert.assertEquals(readBlockMove.getCol(), 1);
         Assert.assertEquals(readBlockMove.getRow(), 2);
         Assert.assertEquals(readBlockMove.getTargetRow(), 4);
-        Assert.assertEquals(json, Util.getJsonString(blockMove));
-        Assert.assertEquals(blockMove, Util.getObjectFromJsonString(YipeeBlockMove.class, json));
+        Assert.assertEquals(json, NetUtil.getJsonString(blockMove));
+        Assert.assertEquals(blockMove, NetUtil.getObjectFromJsonString(YipeeBlockMove.class, json));
     }
 
     @Test
@@ -325,16 +326,16 @@ public class TestGameObjects {
         Assert.assertEquals(brokenBlock.getBlock(), 1);
 
         //Test Json
-        String json = Util.getJsonString(brokenBlock);
-        YipeeBrokenBlock readBrokenBlock = Util.getObjectFromJsonString(YipeeBrokenBlock.class, json);
-        Assert.assertEquals(json, Util.getJsonString(brokenBlock));
+        String json = NetUtil.getJsonString(brokenBlock);
+        YipeeBrokenBlock readBrokenBlock = NetUtil.getObjectFromJsonString(YipeeBrokenBlock.class, json);
+        Assert.assertEquals(json, NetUtil.getJsonString(brokenBlock));
         Assert.assertEquals(brokenBlock, readBrokenBlock);
 
         Assert.assertEquals(readBrokenBlock.getRow(), 4);
         Assert.assertEquals(readBrokenBlock.getCol(), 5);
         Assert.assertEquals(readBrokenBlock.getBlock(), 1);
-        Assert.assertEquals(json, Util.getJsonString(brokenBlock));
-        Assert.assertEquals(brokenBlock, Util.getObjectFromJsonString(YipeeBrokenBlock.class, json));
+        Assert.assertEquals(json, NetUtil.getJsonString(brokenBlock));
+        Assert.assertEquals(brokenBlock, NetUtil.getObjectFromJsonString(YipeeBrokenBlock.class, json));
     }
 
     @Test
@@ -378,11 +379,11 @@ public class TestGameObjects {
         Assert.assertEquals(yokelPiece.getBlock3(), expected[0]);
 
         //Test Json
-        String json = Util.getJsonString(yokelPiece);
-        YipeePiece readBlockMove = Util.getObjectFromJsonString(YipeePiece.class, json);
-        Assert.assertEquals(json, Util.getJsonString(yokelPiece));
-        System.out.println("Expected: " + Util.getJsonString(yokelPiece));
-        System.out.println("Actual: " + Util.getJsonString(readBlockMove));
+        String json = NetUtil.getJsonString(yokelPiece);
+        YipeePiece readBlockMove = NetUtil.getObjectFromJsonString(YipeePiece.class, json);
+        Assert.assertEquals(json, NetUtil.getJsonString(yokelPiece));
+        System.out.println("Expected: " + NetUtil.getJsonString(yokelPiece));
+        System.out.println("Actual: " + NetUtil.getJsonString(readBlockMove));
         Assert.assertEquals(yokelPiece, readBlockMove);
     }
 
@@ -453,7 +454,7 @@ public class TestGameObjects {
         //Assert.assertFalse(yokelPlayer3.addRoom(room2));
         yokelPlayer3.joinRoom(room2);
         Assert.assertEquals(yokelPlayer3.roomsCount(), 2);
-        String jsons = Util.getJsonString(yokelPlayer3);
+        String jsons = NetUtil.getJsonString(yokelPlayer3);
         System.out.println("jsons: " + jsons);
 
         //Assert.assertTrue(yokelPlayer3.addWatcher(table1));
@@ -469,15 +470,15 @@ public class TestGameObjects {
         Assert.assertEquals(yokelPlayer3.watchingCount(), 2);*/
 
         //Test Json
-        String json = Util.getJsonString(yokelPlayer3);
-        YipeePlayer readYokelPlayer3 = Util.getObjectFromJsonString(YipeePlayer.class, json);
+        String json = NetUtil.getJsonString(yokelPlayer3);
+        YipeePlayer readYokelPlayer3 = NetUtil.getObjectFromJsonString(YipeePlayer.class, json);
         System.out.println("readYokelPlayer3: " + readYokelPlayer3.getSerializedKeyConfig());
         System.out.println("yokelPlayer3: " + yokelPlayer3.getSerializedKeyConfig());
 
-        System.out.println("Expected: " + Util.getJsonString(readYokelPlayer3));
-        System.out.println("Actual: " + Util.getJsonString(yokelPlayer3));
+        System.out.println("Expected: " + NetUtil.getJsonString(readYokelPlayer3));
+        System.out.println("Actual: " + NetUtil.getJsonString(yokelPlayer3));
 
-        Assert.assertEquals(json, Util.getJsonString(yokelPlayer3));
+        Assert.assertEquals(json, NetUtil.getJsonString(yokelPlayer3));
         Assert.assertEquals(yokelPlayer3, readYokelPlayer3);
         Assert.assertEquals(readYokelPlayer3.getIcon(), 12);
         Assert.assertEquals(readYokelPlayer3.getRating(), 1495);
@@ -526,14 +527,14 @@ public class TestGameObjects {
 
         //Test Json
         yokelSeat.sitDown(yokelPlayer2);
-        String json = Util.getJsonString(yokelSeat);
+        String json = NetUtil.getJsonString(yokelSeat);
         System.out.println("yokelSeat: " + yokelSeat);
         System.out.println("json: " + json);
-        YipeeSeat readYokelSeat = Util.getObjectFromJsonString(YipeeSeat.class, json);
+        YipeeSeat readYokelSeat = NetUtil.getObjectFromJsonString(YipeeSeat.class, json);
         System.out.println("readYokelSeat: " + readYokelSeat);
-        Assert.assertEquals(json, Util.getJsonString(yokelSeat));
-        System.out.println("Expected: " + Util.getJsonString(readYokelSeat));
-        System.out.println("Actual: " + Util.getJsonString(yokelSeat));
+        Assert.assertEquals(json, NetUtil.getJsonString(yokelSeat));
+        System.out.println("Expected: " + NetUtil.getJsonString(readYokelSeat));
+        System.out.println("Actual: " + NetUtil.getJsonString(yokelSeat));
         Assert.assertEquals(yokelSeat, readYokelSeat);
     }
 
@@ -611,12 +612,12 @@ public class TestGameObjects {
         Assert.assertNotNull(yokelRoom1.getTableAt(2));
 
         //Test Json
-        String json = Util.getJsonString(yokelRoom1);
+        String json = NetUtil.getJsonString(yokelRoom1);
         System.out.println("json: " + json);
-        YipeeRoom readYokelRoom = Util.getObjectFromJsonString(YipeeRoom.class, json);
-        Assert.assertEquals(json, Util.getJsonString(yokelRoom1));
-        System.out.println("Expected: " + Util.getJsonString(yokelRoom1));
-        System.out.println("Actual  : " + Util.getJsonString(readYokelRoom));
+        YipeeRoom readYokelRoom = NetUtil.getObjectFromJsonString(YipeeRoom.class, json);
+        Assert.assertEquals(json, NetUtil.getJsonString(yokelRoom1));
+        System.out.println("Expected: " + NetUtil.getJsonString(yokelRoom1));
+        System.out.println("Actual  : " + NetUtil.getJsonString(readYokelRoom));
         Assert.assertEquals(readYokelRoom, yokelRoom1);
     }
 
@@ -726,13 +727,13 @@ public class TestGameObjects {
 
         //Test Json
         System.out.println("yokelTable: " + yokelTable.getSeats());
-        String json = Util.getJsonString(yokelTable);
+        String json = NetUtil.getJsonString(yokelTable);
         System.out.println("table json: " + json);
-        YipeeTable readYokelTable = Util.getObjectFromJsonString(YipeeTable.class, json);
+        YipeeTable readYokelTable = NetUtil.getObjectFromJsonString(YipeeTable.class, json);
         System.out.println("readYokelTable: " + readYokelTable.getSeats());
-        Assert.assertEquals(json, Util.getJsonString(yokelTable));
-        System.out.println("Expected: " + Util.getJsonString(yokelTable));
-        System.out.println("Actual  : " + Util.getJsonString(readYokelTable));
+        Assert.assertEquals(json, NetUtil.getJsonString(yokelTable));
+        System.out.println("Expected: " + NetUtil.getJsonString(yokelTable));
+        System.out.println("Actual  : " + NetUtil.getJsonString(readYokelTable));
         Assert.assertEquals(readYokelTable, yokelTable);
     }
 

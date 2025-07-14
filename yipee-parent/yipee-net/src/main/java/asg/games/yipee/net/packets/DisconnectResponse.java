@@ -15,7 +15,7 @@
  */
 package asg.games.yipee.net.packets;
 
-import asg.games.yipee.core.objects.YipeePlayer;
+import asg.games.yipee.common.net.NetYipeePlayer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -40,7 +40,7 @@ public class DisconnectResponse extends AbstractServerResponse {
      * The resolved player profile associated with this session.
      * Typically extracted from the provided JWT during handshake.
      */
-    private YipeePlayer player;
+    private NetYipeePlayer player;
 
     /**
      * Indicates whether the disconnection was processed successfully.

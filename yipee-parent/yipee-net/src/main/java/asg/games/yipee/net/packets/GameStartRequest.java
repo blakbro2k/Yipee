@@ -15,8 +15,8 @@
  */
 package asg.games.yipee.net.packets;
 
-import asg.games.yipee.core.objects.YipeePlayer;
-import asg.games.yipee.core.objects.YipeeTable;
+import asg.games.yipee.common.net.NetYipeePlayer;
+import asg.games.yipee.common.net.NetYipeeTable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -49,10 +49,10 @@ public class GameStartRequest extends AbstractClientRequest {
     /**
      * The table the player is attempting to join or mark ready in.
      */
-    private YipeeTable table;
+    private NetYipeeTable table;
 
     /**
      * The player sending the request. Typically validated server-side using JWT.
      */
-    private YipeePlayer player;
+    private NetYipeePlayer player;
 }

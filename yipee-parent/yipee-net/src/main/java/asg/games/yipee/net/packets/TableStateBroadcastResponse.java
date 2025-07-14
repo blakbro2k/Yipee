@@ -15,8 +15,8 @@
  */
 package asg.games.yipee.net.packets;
 
-import asg.games.yipee.core.objects.YipeeGameBoardState;
-import asg.games.yipee.core.objects.YipeeTable;
+import asg.games.yipee.common.game.GameBoardState;
+import asg.games.yipee.common.net.NetYipeeTable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -38,7 +38,7 @@ public class TableStateBroadcastResponse extends AbstractServerResponse {
      * The updated authoritative table state after the server processed changes.
      * Clients should use this to synchronize their local table view.
      */
-    private YipeeTable table;
+    private NetYipeeTable table;
 
     /**
      * The type of update that triggered this broadcast.
@@ -48,5 +48,5 @@ public class TableStateBroadcastResponse extends AbstractServerResponse {
     /**
      * The state of the board.
      */
-    private YipeeGameBoardState state;
+    private GameBoardState state;
 }

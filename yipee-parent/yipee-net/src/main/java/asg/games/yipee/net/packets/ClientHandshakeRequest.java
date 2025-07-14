@@ -15,8 +15,7 @@
  */
 package asg.games.yipee.net.packets;
 
-import asg.games.yipee.core.objects.YipeePlayer;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import asg.games.yipee.common.net.NetYipeePlayer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -42,12 +41,11 @@ public class ClientHandshakeRequest extends AbstractClientRequest {
      * A JWT issued by the web CMS (e.g., WordPress) for authentication.
      * The server uses this token to verify identity and extract player info.
      */
-    @JsonIgnore
     private String authToken;
 
     /**
      * Optional player profile details. If omitted, the server will extract
      * the player identity from the provided auth token.
      */
-    private YipeePlayer player;
+    private NetYipeePlayer player;
 }

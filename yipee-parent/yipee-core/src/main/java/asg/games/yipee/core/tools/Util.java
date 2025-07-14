@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,7 @@
 package asg.games.yipee.core.tools;
 
 import asg.games.yipee.core.objects.AbstractYipeeObject;
+import asg.games.yipee.core.objects.Copyable;
 import asg.games.yipee.core.objects.YipeeRoom;
 import asg.games.yipee.core.objects.YipeeTable;
 import asg.games.yipee.core.persistence.json.YipeeRoomDeserializer;
@@ -46,6 +47,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
 
@@ -64,19 +66,6 @@ public class Util {
 
     private static final String LEFT_CURLY_BRACET_HTML = "&#123;";
     private static final String RIGHTT_CURLY_BRACET_HTML = "&#125;";
-
-    private static final ObjectMapper json;
-    private static final SimpleModule module = new SimpleModule();
-
-    static {
-        module.addDeserializer(YipeeRoom.class, new YipeeRoomDeserializer());
-        json = JsonMapper.builder()
-            .enable(StreamReadFeature.STRICT_DUPLICATE_DETECTION)
-            .disable(StreamReadFeature.AUTO_CLOSE_SOURCE)
-            .enable(StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION)
-            .build();
-        json.registerModule(module);
-    }
 
     public static int getNextTableNumber(final YipeeRoom yokelRoom) {
         int tableIndex = -1;
@@ -137,7 +126,7 @@ public class Util {
         return new LinkedList<>(Arrays.asList(o));
     }
 
-    public static <T> Iterable<T> safeIterable(Iterable<T> collection) {
+    public static <T> Iterable<T> safeIterable(final Iterable<T> collection) {
         return safeIterable(collection, false);
     }
 
@@ -243,14 +232,6 @@ public class Util {
         return null;
     }
 
-    public static <T> T readValue(String jsonValue, Class<T> clazz) throws JsonProcessingException {
-        return json.readValue(jsonValue, clazz);
-    }
-
-    public static String writeValueAsString(Object object) throws JsonProcessingException {
-        return json.writeValueAsString(object);
-    }
-
 
     public static class IDGenerator {
         private IDGenerator() {
@@ -338,49 +319,9 @@ public class Util {
         return new ArrayList<>(collection);
     }
 
-    public static String getJsonString(AbstractYipeeObject o) throws JsonProcessingException {
-        return json.writeValueAsString(o);
-    }
-
-    public static <T> T getObjectFromJsonString(Class<T> type, String jsonStr) throws JsonProcessingException {
-        return json.readValue(jsonStr, type);
-    }
 
     public static String jsonToString(String str) {
         return replace(replace(str, "{", LEFT_CURLY_BRACET_HTML), "}", RIGHTT_CURLY_BRACET_HTML);
-    }
-
-    public static <T> List<T> jsonNodeToCollection(Class<T> inClass, JsonNode node) {
-        List<T> collection = new ArrayList<>();
-        if (node instanceof ArrayNode) {
-            for (JsonNode o : node) {
-                if (o != null) {
-                    String localClassName = o.get(JsonTypeInfo.Id.CLASS.getDefaultPropertyName()).asText();
-                    try {
-                        Class<?> clazz = Class.forName(localClassName);
-                        Object object = getObjectFromJsonString(clazz, o.toString());
-                        if (inClass.isInstance(object)) {
-                            collection.add(inClass.cast(object));
-                        }
-                    } catch (ClassNotFoundException | JsonProcessingException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-        return collection;
-    }
-
-    public static <T> Map<Integer, YipeeTable> jsonNodeToTableIndexMap(Class<T> inClass, JsonNode node) {
-        Map<Integer, YipeeTable> tableMap = new HashMap<>();
-        List<YipeeTable> collection = jsonNodeToCollection(YipeeTable.class, node);
-        for (YipeeTable table : collection) {
-            if (table != null) {
-                int tableNum = table.getTableNumber();
-                tableMap.put(tableNum, table);
-            }
-        }
-        return tableMap;
     }
 
     public static String stringToJson(String str) {
@@ -1019,6 +960,16 @@ public class Util {
         }
         return path;
     }
+
+    public static <T extends Copyable<T>> Queue<T> deepCopyQueue(Queue<T> original) {
+        if (original == null) return null;
+        Queue<T> copy = new LinkedList<>();
+        for (T item : original) {
+            copy.add(item.copy());
+        }
+        return copy;
+    }
+
 
     /*
     public static String readFile(File file) {

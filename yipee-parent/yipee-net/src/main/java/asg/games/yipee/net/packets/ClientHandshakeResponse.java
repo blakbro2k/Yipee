@@ -15,7 +15,7 @@
  */
 package asg.games.yipee.net.packets;
 
-import asg.games.yipee.core.objects.YipeePlayer;
+import asg.games.yipee.common.net.NetYipeePlayer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
  * Response sent by the server following a successful client handshake.
  * <p>
  * Finalizes the connection by issuing a session key and optionally includes
- * the resolved {@link YipeePlayer} identity.
+ * the resolved {@link NetYipeePlayer} identity.
  * </p>
  *
  * <p><b>Direction:</b> Server → Client</p>
@@ -40,7 +40,7 @@ public class ClientHandshakeResponse extends AbstractServerResponse {
      * The resolved player profile associated with this session.
      * Typically extracted from the provided JWT during handshake.
      */
-    private YipeePlayer player;
+    private NetYipeePlayer player;
 
     /**
      * Indicates whether the handshake was successful and the client is authenticated.

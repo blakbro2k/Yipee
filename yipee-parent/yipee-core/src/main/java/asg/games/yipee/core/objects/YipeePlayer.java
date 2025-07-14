@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,8 @@
  */
 package asg.games.yipee.core.objects;
 
+import asg.games.yipee.common.net.NetYipeePlayer;
+import asg.games.yipee.core.tools.NetUtil;
 import asg.games.yipee.core.tools.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -48,7 +50,7 @@ import java.util.Objects;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_PLAYERS")
-public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePlayer>, Disposable {
+public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePlayer>, Disposable, NetYipeePlayer {
     @Transient
     private static final Logger logger = LoggerFactory.getLogger(YipeePlayer.class);
 
@@ -118,7 +120,7 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
             synchronized (this) {
                 if (keyConfig == null) {
                     try {
-                        keyConfig = Util.readValue(serializedKeyConfig, YipeeKeyMap.class);
+                        keyConfig = NetUtil.readValue(serializedKeyConfig, YipeeKeyMap.class);
                         // If playerId was not set at creation, patch it here
                         if (keyConfig.getPlayerId() == null && getId() != null) {
                             keyConfig.setPlayerId(getId());
@@ -143,7 +145,7 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
         }
         this.keyConfig = keyConfig;
         try {
-            this.serializedKeyConfig = Util.writeValueAsString(keyConfig);
+            this.serializedKeyConfig = NetUtil.writeValueAsString(keyConfig);
             logger.debug("Serialized keyConfig: {}", serializedKeyConfig);
         } catch (JsonProcessingException e) {
             logger.error("Failed to serialize keyConfig", e);

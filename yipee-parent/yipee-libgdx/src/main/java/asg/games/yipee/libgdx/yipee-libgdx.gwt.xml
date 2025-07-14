@@ -3,7 +3,5 @@
         "-//Google Inc.//DTD Google Web Toolkit trunk//EN"
         "http://gwtproject.org/doctype/2.7.0/gwt-module.dtd">
 <module>
-    <source path="game"/>
-    <source path="objects"/>
-    <source path="tools"/>
+    <source path=""/>
 </module>

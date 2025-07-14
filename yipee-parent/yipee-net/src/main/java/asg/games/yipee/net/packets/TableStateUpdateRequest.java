@@ -15,8 +15,9 @@
  */
 package asg.games.yipee.net.packets;
 
-import asg.games.yipee.core.objects.YipeePlayer;
-import asg.games.yipee.core.objects.YipeeTable;
+
+import asg.games.yipee.common.net.NetYipeePlayer;
+import asg.games.yipee.common.net.NetYipeeTable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -25,7 +26,7 @@ import lombok.NoArgsConstructor;
  * Sent by a client (usually the table owner) to request an update to a table's state.
  * <p>
  * This packet allows the client to propose changes to table settings, player slots,
- * or other mutable fields within the {@link YipeeTable} structure.
+ * or other mutable fields within the {@link NetYipeeTable} structure.
  *
  * <p>The server will:</p>
  * <ul>
@@ -50,13 +51,13 @@ public class TableStateUpdateRequest extends AbstractClientRequest {
      * The player making the update request.
      * Should match the table owner for most types of updates.
      */
-    private YipeePlayer requestedBy;
+    private NetYipeePlayer requestedBy;
 
     /**
-     * A partial or full {@link YipeeTable} object representing the proposed changes.
+     * A partial or full {@link NetYipeeTable} object representing the proposed changes.
      * The server should apply only those fields deemed safe and allowed.
      */
-    private YipeeTable partialTableUpdate;
+    private NetYipeeTable partialTableUpdate;
 
     /**
      * Describes the kind of update being requested, such as seating changes or game start.
