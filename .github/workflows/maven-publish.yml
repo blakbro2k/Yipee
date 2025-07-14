@@ -1,3 +1,5 @@
+# This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
+
 name: Maven Package
 
 on:
