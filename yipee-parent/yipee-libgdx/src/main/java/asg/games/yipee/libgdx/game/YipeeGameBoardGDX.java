@@ -119,9 +119,9 @@ public class YipeeGameBoardGDX implements Disposable {
     private int currentBlockPointer = -1;
     private boolean fastDown;
     @Getter
-    private Queue<Integer> powers = new Queue<>();
-    private Queue<Integer> specialPieces = new Queue<>();
-    Queue<YipeeBrokenBlockGDX> brokenCells = new Queue<>();
+    private Queue<Integer> powers = LibGDXUtil.newQueue();
+    private Queue<Integer> specialPieces = LibGDXUtil.newQueue();
+    Queue<YipeeBrokenBlockGDX> brokenCells = LibGDXUtil.newQueue();
     Array<YipeeBlockMoveGDX> cellsToDrop = GdxArrays.newArray();
     private int boardNumber = -1;
 
@@ -145,7 +145,7 @@ public class YipeeGameBoardGDX implements Disposable {
         reset(seed);
     }
 
-    private void importGameState(YipeeGameBoardStateGDX state) {
+    public void importGameState(YipeeGameBoardStateGDX state) {
         if (state != null) {
             setCurrentPhase(state.getCurrentPhase());
             setBrokenBlockCount(state.getBrokenBlockCount());
@@ -171,16 +171,13 @@ public class YipeeGameBoardGDX implements Disposable {
             setBrokenCells(state.getBrokenCells());
             setSpecialPieces(state.getSpecialPieces());
             setHasGameStarted(state.isHasGameStarted());
-            setPartnerBoardState(state.getPartnerBoard());
             setBoardNumber(state.getBoardNumber());
+            if(partnerBoard != null) {
+                partnerBoard.setCells(state.getPartnerCells());
+            }
         }
     }
-
     public YipeeGameBoardStateGDX exportGameState() {
-        return exportGameState(true);
-    }
-
-    public YipeeGameBoardStateGDX exportGameState(boolean includePartner) {
         YipeeGameBoardStateGDX state = new YipeeGameBoardStateGDX();
         state.setCurrentPhase(currentPhase);
         state.setBrokenBlockCount(brokenBlockCount);
@@ -208,11 +205,8 @@ public class YipeeGameBoardGDX implements Disposable {
         state.setSpecialPieces(specialPieces);
         state.setHasGameStarted(hasGameStarted);
         state.setBoardNumber(boardNumber);
-        if (includePartner && partnerBoard != null) {
-            // Prevent recursive export
-            state.setPartnerBoard(partnerBoard.exportGameState(false));
-        } else {
-            state.setPartnerBoard(null);
+        if(partnerBoard != null) {
+            state.setPartnerCells(partnerBoard.getCells());
         }
         return state;
     }
@@ -1787,8 +1781,8 @@ public class YipeeGameBoardGDX implements Disposable {
         cells[r][c] = YipeeBlockGDX.CLEAR_BLOCK;
     }
 
-    public void update(YipeeGameBoardStateGDX state, float delta) {
-        updateState(state);
+    public void updateStateAndAll(YipeeGameBoardStateGDX state, float delta) {
+        importGameState(state);
         update(delta);
     }
 

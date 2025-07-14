@@ -15,7 +15,7 @@
  */
 package asg.games.yipee.net.packets;
 
-import asg.games.yipee.core.objects.YipeePlayer;
+import asg.games.yipee.common.net.NetYipeePlayer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -41,5 +41,5 @@ public class DisconnectRequest extends AbstractClientRequest {
      * The player associated with the current session.
      * Used for cleanup, notification, or session teardown.
      */
-    private YipeePlayer player;
+    private NetYipeePlayer player;
 }

@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -146,7 +146,7 @@ public class YipeeGameBoard implements Disposable {
         reset(seed);
     }
 
-    private void importGameState(YipeeGameBoardState state) {
+    public void importGameState(YipeeGameBoardState state) {
         if (state != null) {
             setCurrentPhase(state.getCurrentPhase());
             setBrokenBlockCount(state.getBrokenBlockCount());
@@ -172,16 +172,15 @@ public class YipeeGameBoard implements Disposable {
             setBrokenCells(state.getBrokenCells());
             setSpecialPieces(state.getSpecialPieces());
             setHasGameStarted(state.isHasGameStarted());
-            setPartnerBoardState(state.getPartnerBoard());
             setBoardNumber(state.getBoardNumber());
+
+            if(partnerBoard != null) {
+                partnerBoard.setCells(state.getPartnerCells());
+            }
         }
     }
 
     public YipeeGameBoardState exportGameState() {
-        return exportGameState(true);
-    }
-
-    public YipeeGameBoardState exportGameState(boolean includePartner) {
         YipeeGameBoardState state = new YipeeGameBoardState();
         state.setCurrentPhase(currentPhase);
         state.setBrokenBlockCount(brokenBlockCount);
@@ -209,11 +208,8 @@ public class YipeeGameBoard implements Disposable {
         state.setSpecialPieces(specialPieces);
         state.setHasGameStarted(hasGameStarted);
         state.setBoardNumber(boardNumber);
-        if (includePartner && partnerBoard != null) {
-            // Prevent recursive export
-            state.setPartnerBoard(partnerBoard.exportGameState(false));
-        } else {
-            state.setPartnerBoard(null);
+        if(partnerBoard != null) {
+            state.setPartnerCells(partnerBoard.getCells());
         }
         return state;
     }
@@ -242,7 +238,7 @@ public class YipeeGameBoard implements Disposable {
     }
 
     public void setPartnerBoardState(YipeeGameBoardState partnerB) {
-        this.partnerBoard.updateState(partnerB);
+        this.partnerBoard.importGameState(partnerB);
     }
 
     public static class TestRandomBlockArray extends RandomUtil.RandomNumberArray {
@@ -1792,13 +1788,9 @@ public class YipeeGameBoard implements Disposable {
         cells[r][c] = YipeeBlock.CLEAR_BLOCK;
     }
 
-    public void update(YipeeGameBoardState state, float delta) {
-        updateState(state);
-        update(delta);
-    }
-
-    private void updateState(YipeeGameBoardState state) {
+    public void updateStateAndAll(YipeeGameBoardState state, float delta) {
         importGameState(state);
+        update(delta);
     }
 
     public void update(float delta) {

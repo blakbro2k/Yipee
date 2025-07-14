@@ -71,7 +71,8 @@ public class TestYipeeNetworkObjects {
             ClientHandshakeRequest c = (ClientHandshakeRequest) copy;
             Assertions.assertAll("ClientHandshakeRequest",
                 () -> Assertions.assertEquals(o.getAuthToken(), c.getAuthToken(), "AuthToken mismatch"),
-                () -> Assertions.assertEquals(o.getPlayer().getName(), c.getPlayer().getName(), "Player name mismatch")
+                () -> Assertions.assertEquals(asg.games.yipee.core.tools.NetUtil.getCoreNetPlayerName(o.getPlayer()),
+                    asg.games.yipee.core.tools.NetUtil.getCoreNetPlayerName(c.getPlayer()), "Player name mismatch")
             );
         } else if (original instanceof ClientHandshakeResponse) {
             ClientHandshakeResponse o = (ClientHandshakeResponse) original;

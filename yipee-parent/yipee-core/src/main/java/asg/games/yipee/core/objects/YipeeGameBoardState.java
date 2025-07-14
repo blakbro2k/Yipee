@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,9 +16,12 @@
 package asg.games.yipee.core.objects;
 
 import asg.games.yipee.common.game.GameBoardState;
+import asg.games.yipee.common.tools.StaticArrayUtils;
 import asg.games.yipee.core.game.YipeeBlockEval;
 import asg.games.yipee.core.game.YipeeGameBoard;
 import asg.games.yipee.core.tools.RandomUtil;
+import asg.games.yipee.core.tools.Util;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -26,13 +29,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Queue;
 
 /**
  * Represents a full snapshot of the state of a single game board in Yipee,
  * including active and next pieces, board contents, timers, animation state,
- * partner information, and debug metadata.
- *
+ * partner cells, and debug metadata.
  *
  * <p>Fields such as {@code playerCells}, {@code brokenCells}, {@code pieceFallTimer},
  * and {@code currentPhase} represent the real-time progression of the match and
@@ -45,7 +48,7 @@ import java.util.Queue;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoardState {
+public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoardState, Copyable<YipeeGameBoardState> {
     private static final Logger logger = LoggerFactory.getLogger(YipeeGameBoardState.class);
 
     /**
@@ -92,11 +95,6 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
      * The main board grid of the player's partner.
      */
     private int[][] partnerCells;
-
-    /**
-     * State reference to the partner board, for symmetrical rendering or logic.
-     */
-    private YipeeGameBoardState partnerBoard;
 
     /**
      * Blocks that have just broken and are waiting for animation.
@@ -259,18 +257,11 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
         return out.toString();
     }
 
-    private int[][] getPartnerCells(YipeeGameBoardState partnerBoardState) {
-        if (partnerBoardState != null) {
-            partnerCells = partnerBoardState.getPlayerCells();
-        }
-        return partnerCells;
-    }
-
     private void printRow(StringBuilder out, int r) {
         if (isPartnerRight) {
-            printPlayerRows(playerCells, getPartnerCells(partnerBoard), r, out);
+            printPlayerRows(playerCells, partnerCells, r, out);
         } else {
-            printPlayerRows(getPartnerCells(partnerBoard), playerCells, r, out);
+            printPlayerRows(partnerCells, playerCells, r, out);
         }
     }
 
@@ -328,5 +319,89 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
 
     private int getPieceValue(int[][] cells, int c, int r) {
         return YipeeBlockEval.getCellFlag(cells[r][c]);
+    }
+
+    private static <T> Queue<T> copyQueue(Queue<T> original) {
+        if (original == null) return null;
+        return new LinkedList<>(original);
+    }
+
+    @Override
+    public YipeeGameBoardState copy() {
+        YipeeGameBoardState copy = new YipeeGameBoardState();
+
+        copyParent(copy);
+        copy.currentPhase = this.currentPhase;
+        copy.serverGameStartTime = this.serverGameStartTime;
+        copy.currentStateTimeStamp = this.currentStateTimeStamp;
+        copy.previousStateTimeStamp = this.previousStateTimeStamp;
+        copy.piece = this.piece;
+        copy.nextPiece = this.nextPiece;
+        copy.gameClock = this.gameClock;
+        copy.playerCells = this.playerCells;
+        copy.partnerCells = this.partnerCells;
+        copy.brokenCells = this.brokenCells;
+        copy.cellsToDrop = this.cellsToDrop;
+        copy.powers = this.powers;
+        copy.yahooDuration = this.yahooDuration;
+        copy.pieceFallTimer = this.pieceFallTimer;
+        copy.pieceLockTimer = this.pieceLockTimer;
+        copy.isPartnerRight = this.isPartnerRight;
+        copy.blockAnimationTimer = this.blockAnimationTimer;
+        copy.isPieceSet = this.isPieceSet;
+        copy.specialPieces = this.specialPieces;
+        copy.countOfBreaks = this.countOfBreaks;
+        copy.isDebug = this.isDebug;
+        copy.powersKeep = this.powersKeep;
+        copy.ids = this.ids;
+        copy.idIndex = this.idIndex;
+        copy.randomColumnIndices = this.randomColumnIndices;
+        copy.nextBlocks = this.nextBlocks;
+        copy.currentBlockPointer = this.currentBlockPointer;
+        copy.fastDown = this.fastDown;
+        copy.brokenBlockCount = this.brokenBlockCount;
+        copy.hasGameStarted = this.hasGameStarted;
+        copy.name = this.name;
+        copy.tick = this.tick;
+        copy.boardNumber = this.boardNumber;
+
+        return copy;
+    }
+
+    @Override
+    public YipeeGameBoardState deepCopy() {
+        YipeeGameBoardState copy = copy();
+
+        // deep object copies
+        copy.piece = (this.piece != null) ? this.piece.deepCopy() : null;
+        copy.nextPiece = (this.nextPiece != null) ? this.nextPiece.deepCopy() : null;
+        copy.playerCells = StaticArrayUtils.copyIntMatrix(this.playerCells);
+        copy.partnerCells = StaticArrayUtils.copyIntMatrix(this.partnerCells);
+
+        Queue<YipeeBrokenBlock> nuBrokenCells = new LinkedList<>();
+        for(YipeeBrokenBlock brokenCell : Util.safeIterable(this.brokenCells)) {
+            YipeeBrokenBlock nuBrokenBlock = new YipeeBrokenBlock(brokenCell.getBlock(), brokenCell.getRow(), brokenCell.getCol());
+            nuBrokenCells.add(nuBrokenBlock);
+        }
+        copy.brokenCells = nuBrokenCells;
+
+        Queue<YipeeBlockMove> nuCellsToDrop = new LinkedList<>();
+        for(YipeeBlockMove cellToDrop : Util.safeIterable(this.cellsToDrop)) {
+            YipeeBlockMove nuCellToDrop = new YipeeBlockMove(cellToDrop.getCellId(), cellToDrop.getBlock(), cellToDrop.getCol(), cellToDrop.getRow(), cellToDrop.getTargetRow());
+            nuCellsToDrop.add(nuCellToDrop);
+        }
+        copy.cellsToDrop = nuCellsToDrop;
+
+        // queues of primitives don't need deep copy
+        copy.powers = (this.powers != null) ? new LinkedList<>(this.powers) : null;
+        copy.specialPieces = (this.specialPieces != null) ? new LinkedList<>(this.specialPieces) : null;
+
+        // arrays
+        copy.countOfBreaks = (this.countOfBreaks != null) ? Arrays.copyOf(this.countOfBreaks, this.countOfBreaks.length) : null;
+        copy.powersKeep = (this.powersKeep != null) ? Arrays.copyOf(this.powersKeep, this.powersKeep.length) : null;
+        copy.ids = (this.ids != null) ? Arrays.copyOf(this.ids, this.ids.length) : null;
+        copy.randomColumnIndices = (this.randomColumnIndices != null) ? Arrays.copyOf(this.randomColumnIndices, this.randomColumnIndices.length) : null;
+
+        return copy;
     }
 }

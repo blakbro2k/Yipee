@@ -15,7 +15,7 @@
  */
 package asg.games.yipee.net.packets;
 
-import asg.games.yipee.core.objects.YipeePlayer;
+import asg.games.yipee.common.net.NetYipeePlayer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -54,5 +54,5 @@ public class SeatSelectionRequest extends AbstractClientRequest {
     /**
      * The player initiating the seat selection.
      */
-    private YipeePlayer player;
+    private NetYipeePlayer player;
 }

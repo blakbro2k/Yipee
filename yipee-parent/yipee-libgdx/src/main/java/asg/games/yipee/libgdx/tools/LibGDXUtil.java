@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
+import com.badlogic.gdx.utils.Queue;
 import com.github.czyzby.kiwi.util.common.UtilitiesClass;
 import com.github.czyzby.kiwi.util.gdx.collection.GdxArrays;
 
@@ -108,6 +109,20 @@ public class LibGDXUtil extends UtilitiesClass {
             array.add(s);
         }
         return array;
+    }
+
+    public static <Type> Queue<Type> newQueue() {
+        return new Queue();
+    }
+
+    public static <Type> Queue<Type> newQueue(Iterable<? extends Type> values) {
+        Queue<Type> queue = new Queue();
+
+        for(Type value : values) {
+            queue.addFirst(value);
+        }
+
+        return queue;
     }
 
     public static <T> Iterable<T> safeIterable(final T[] collection) {

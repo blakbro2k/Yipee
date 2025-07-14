@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.libgdx.objects;
 
+import asg.games.yipee.common.net.NetYipeeTable;
 import asg.games.yipee.libgdx.tools.LibGDXUtil;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -27,7 +28,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<YipeeTableGDX>, Disposable {
+public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<YipeeTableGDX>, Disposable, NetYipeeTable {
     public static final String ARG_TYPE = "type";
     public static final String ARG_RATED = "rated";
     public static final String ARG_SOUND = "sound";

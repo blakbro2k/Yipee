@@ -16,9 +16,11 @@
 package asg.games.yipee.libgdx.objects;
 
 import asg.games.yipee.common.game.GameBoardState;
+import asg.games.yipee.common.tools.StaticArrayUtils;
 import asg.games.yipee.libgdx.game.YipeeBlockEvalGDX;
 import asg.games.yipee.libgdx.game.YipeeGameBoardGDX;
 import asg.games.yipee.libgdx.tools.LibGDXRandomUtil;
+import asg.games.yipee.libgdx.tools.LibGDXUtil;
 import com.badlogic.gdx.utils.Queue;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -45,8 +47,9 @@ import java.util.Arrays;
 @Getter
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class YipeeGameBoardStateGDX extends AbstractYipeeObjectGDX implements GameBoardState {
+public class YipeeGameBoardStateGDX extends AbstractYipeeObjectGDX implements GameBoardState, Copyable<YipeeGameBoardStateGDX> {
     /**
+     *
      * The current game phase (e.g. SPAWN_NEXT, COLLAPSING, etc.).
      */
     private YipeeGameBoardGDX.GamePhase currentPhase;
@@ -90,11 +93,6 @@ public class YipeeGameBoardStateGDX extends AbstractYipeeObjectGDX implements Ga
      * The main board grid of the player's partner.
      */
     private int[][] partnerCells;
-
-    /**
-     * State reference to the partner board, for symmetrical rendering or logic.
-     */
-    private YipeeGameBoardStateGDX partnerBoard;
 
     /**
      * Blocks that have just broken and are waiting for animation.
@@ -267,18 +265,11 @@ public class YipeeGameBoardStateGDX extends AbstractYipeeObjectGDX implements Ga
         return out.toString();
     }
 
-    private int[][] getPartnerCells(YipeeGameBoardStateGDX partnerBoardState) {
-        if (partnerBoardState != null) {
-            partnerCells = partnerBoardState.getPlayerCells();
-        }
-        return partnerCells;
-    }
-
     private void printRow(StringBuilder out, int r) {
         if (isPartnerRight) {
-            printPlayerRows(playerCells, getPartnerCells(partnerBoard), r, out);
+            printPlayerRows(playerCells, partnerCells, r, out);
         } else {
-            printPlayerRows(getPartnerCells(partnerBoard), playerCells, r, out);
+            printPlayerRows(partnerCells, playerCells, r, out);
         }
     }
 
@@ -336,5 +327,84 @@ public class YipeeGameBoardStateGDX extends AbstractYipeeObjectGDX implements Ga
 
     private int getPieceValue(int[][] cells, int c, int r) {
         return YipeeBlockEvalGDX.getCellFlag(cells[r][c]);
+    }
+
+    @Override
+    public YipeeGameBoardStateGDX copy() {
+        YipeeGameBoardStateGDX copy = new YipeeGameBoardStateGDX();
+
+        copyParent(copy);
+        copy.currentPhase = this.currentPhase;
+        copy.serverGameStartTime = this.serverGameStartTime;
+        copy.currentStateTimeStamp = this.currentStateTimeStamp;
+        copy.previousStateTimeStamp = this.previousStateTimeStamp;
+        copy.piece = this.piece;
+        copy.nextPiece = this.nextPiece;
+        copy.gameClock = this.gameClock;
+        copy.playerCells = this.playerCells;
+        copy.partnerCells = this.partnerCells;
+        copy.brokenCells = this.brokenCells;
+        copy.cellsToDrop = this.cellsToDrop;
+        copy.powers = this.powers;
+        copy.yahooDuration = this.yahooDuration;
+        copy.pieceFallTimer = this.pieceFallTimer;
+        copy.pieceLockTimer = this.pieceLockTimer;
+        copy.isPartnerRight = this.isPartnerRight;
+        copy.blockAnimationTimer = this.blockAnimationTimer;
+        copy.isPieceSet = this.isPieceSet;
+        copy.specialPieces = this.specialPieces;
+        copy.countOfBreaks = this.countOfBreaks;
+        copy.isDebug = this.isDebug;
+        copy.powersKeep = this.powersKeep;
+        copy.ids = this.ids;
+        copy.idIndex = this.idIndex;
+        copy.randomColumnIndices = this.randomColumnIndices;
+        copy.nextBlocks = this.nextBlocks;
+        copy.currentBlockPointer = this.currentBlockPointer;
+        copy.fastDown = this.fastDown;
+        copy.brokenBlockCount = this.brokenBlockCount;
+        copy.hasGameStarted = this.hasGameStarted;
+        copy.name = this.name;
+        copy.tick = this.tick;
+        copy.boardNumber = this.boardNumber;
+
+        return copy;
+    }
+
+    @Override
+    public YipeeGameBoardStateGDX deepCopy() {
+        YipeeGameBoardStateGDX copy = copy();
+
+        // deep object copies
+        copy.piece = (this.piece != null) ? this.piece.deepCopy() : null;
+        copy.nextPiece = (this.nextPiece != null) ? this.nextPiece.deepCopy() : null;
+        copy.playerCells = StaticArrayUtils.copyIntMatrix(this.playerCells);
+        copy.partnerCells = StaticArrayUtils.copyIntMatrix(this.partnerCells);
+
+        Queue<YipeeBrokenBlockGDX> nuBrokenCells = new Queue<>();
+        for(YipeeBrokenBlockGDX brokenCell : LibGDXUtil.safeIterable(this.brokenCells)) {
+            YipeeBrokenBlockGDX nuBrokenBlock = new YipeeBrokenBlockGDX(brokenCell.getBlock(), brokenCell.getRow(), brokenCell.getCol());
+            nuBrokenCells.addFirst(nuBrokenBlock);
+        }
+        copy.brokenCells = nuBrokenCells;
+
+        Queue<YipeeBlockMoveGDX> nuCellsToDrop = new Queue<>();
+        for(YipeeBlockMoveGDX cellToDrop : LibGDXUtil.safeIterable(this.cellsToDrop)) {
+            YipeeBlockMoveGDX nuCellToDrop = new YipeeBlockMoveGDX(cellToDrop.getCellId(), cellToDrop.getBlock(), cellToDrop.getCol(), cellToDrop.getRow(), cellToDrop.getTargetRow());
+            nuCellsToDrop.addFirst(nuCellToDrop);
+        }
+        copy.cellsToDrop = nuCellsToDrop;
+
+        // queues of primitives don't need deep copy
+        copy.powers = (this.powers != null) ? LibGDXUtil.newQueue(this.powers) : null;
+        copy.specialPieces = (this.specialPieces != null) ? LibGDXUtil.newQueue(this.specialPieces) : null;
+
+        // arrays
+        copy.countOfBreaks = (this.countOfBreaks != null) ? Arrays.copyOf(this.countOfBreaks, this.countOfBreaks.length) : null;
+        copy.powersKeep = (this.powersKeep != null) ? Arrays.copyOf(this.powersKeep, this.powersKeep.length) : null;
+        copy.ids = (this.ids != null) ? Arrays.copyOf(this.ids, this.ids.length) : null;
+        copy.randomColumnIndices = (this.randomColumnIndices != null) ? Arrays.copyOf(this.randomColumnIndices, this.randomColumnIndices.length) : null;
+
+        return copy;
     }
 }
