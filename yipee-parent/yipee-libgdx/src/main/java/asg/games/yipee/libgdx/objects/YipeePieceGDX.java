@@ -15,7 +15,6 @@
  */
 package asg.games.yipee.libgdx.objects;
 
-import asg.games.yipee.core.objects.YipeePiece;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -60,7 +59,7 @@ import java.util.Arrays;
  *     piece.cycleDown();
  *
  *     // Access individual blocks
- *     int block1Value = piece.getBlock1();
+ *     int block1Value = piece.getTopBlock();
  * </pre>
  *
  * @author Blakbro2k

@@ -44,6 +44,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Represents a table in a Yipee game room, containing up to 8 seats for players and optional watchers.
+ * Tables can be rated, have sound enabled, and be marked as public, private, or protected.
+ *
+ * <p>This class supports deep copying, ORM persistence, and argument-based setup for configuration.
+ *
+ * <p>Each table is initialized with 8 seats by default, and supports various checks such as seat readiness and table start readiness.
+ *
+ * @see YipeeSeat
+ * @see YipeePlayer
+ * @see YipeeRoom
+ */
 @Getter
 @Setter
 @Entity
@@ -110,18 +122,38 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     @JsonProperty("soundOn")
     private boolean isSoundOn = true;
 
-    //Empty Constructor required for Json.Serializable
+    /**
+     * Default constructor required for JSON serialization and ORM frameworks.
+     */
     public YipeeTable() {
     }
 
+    /**
+     * Constructs a new table with the given table number, using default arguments.
+     *
+     * @param nameNumber the table's numeric identifier
+     */
     public YipeeTable(int nameNumber) {
         this(nameNumber, "");
     }
 
+    /**
+     * Constructs a new table using the provided name number and argument strings.
+     *
+     * @param nameNumber      the table's numeric identifier
+     * @param argumentStrings optional configuration flags (e.g., "rated", "sound", "type")
+     */
     public YipeeTable(int nameNumber, String... argumentStrings) {
         this(nameNumber, buildAgumentsFromStrings(argumentStrings));
     }
 
+    /**
+     * Builds a map of arguments from an array of strings.
+     * (Currently a stub — implementation needed to parse flags such as "rated", "sound", etc.)
+     *
+     * @param argumentStrings the array of argument flags
+     * @return a key-value map representing configuration arguments
+     */
     private static Map<String, Object> buildAgumentsFromStrings(String[] argumentStrings) {
         Map<String, Object> aruments = new HashMap<>();
         for (String argumentString : Util.safeIterableArray(argumentStrings)) {
@@ -132,24 +164,52 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         return aruments;
     }
 
+    /**
+     * Constructs a new table using a map of arguments.
+     *
+     * @param nameNumber the table's numeric identifier
+     * @param arguments key-value map of configuration options
+     */
     public YipeeTable(int nameNumber, Map<String, Object> arguments) {
         initialize(nameNumber, arguments);
     }
 
+    /**
+     * Initializes the table name, seats, and configuration from arguments.
+     *
+     * @param nameNumber numeric identifier
+     * @param arguments optional argument map for configuration
+     */
     private void initialize(int nameNumber, Map<String, Object> arguments) {
         setTableName(nameNumber);
         setUpSeats();
         setUpArguments(arguments);
     }
 
+    /**
+     * Sets the table's name using its ID and numeric index.
+     *
+     * @param tableNumber the table's numeric index
+     */
     public void setTableName(int tableNumber) {
         setName(getId() + ATT_TABLE_SPACER + ATT_NAME_PREPEND + tableNumber);
     }
 
+    /**
+     * Parses the table number from its name.
+     *
+     * @return the table number
+     */
     public int getTableNumber() {
         return Integer.parseInt(Util.split(getName(), ATT_NAME_PREPEND)[1]);
     }
 
+    /**
+     * Sets the table's configuration based on argument map.
+     * Accepts values like "rated", "sound", and "type".
+     *
+     * @param arguments argument map
+     */
     private void setUpArguments(Map<String, Object> arguments) {
         if (arguments != null) {
             for (String key : Util.getMapKeys(arguments)) {
@@ -164,6 +224,12 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         }
     }
 
+    /**
+     * Applies a single argument to the table configuration.
+     *
+     * @param arg argument key
+     * @param value argument value
+     */
     private void processArg(String arg, Object value) {
         if (arg != null && value != null) {
             if (Util.equalsIgnoreCase(ARG_TYPE, arg)) {
@@ -176,10 +242,20 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         }
     }
 
+    /**
+     * Sets the table's access type.
+     *
+     * @param accessType an {@link ACCESS_TYPE} value
+     */
     public void setAccessType(ACCESS_TYPE accessType) {
         this.accessType = accessType;
     }
 
+    /**
+     * Parses and sets the table's access type from a string.
+     *
+     * @param accessType string representation of access type
+     */
     public void setAccessType(String accessType) {
         if (Util.equalsIgnoreCase(ACCESS_TYPE.PRIVATE.toString(), accessType)) {
             setAccessType(ACCESS_TYPE.PRIVATE);
@@ -190,22 +266,48 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         }
     }
 
+    /**
+     * Enables or disables rated mode.
+     *
+     * @param rated true to enable rated mode
+     */
     public void setRated(boolean rated) {
         this.isRated = rated;
     }
 
+    /**
+     * Enables or disables sound for the table.
+     *
+     * @param sound true to enable sound
+     */
     public void setSound(boolean sound) {
         this.isSoundOn = sound;
     }
 
+    /**
+     * Indicates whether this table is in rated mode.
+     *
+     * @return {@code true} if the table is rated, {@code false} otherwise
+     */
     public boolean isRated() {
         return isRated;
     }
 
+    /**
+     * Indicates whether sound is enabled for this table.
+     *
+     * @return {@code true} if sound is on, {@code false} otherwise
+     */
     public boolean isSoundOn() {
         return isSoundOn;
     }
 
+    /**
+     * Checks if either seat in the specified group is ready.
+     *
+     * @param g the group index (0 to 3)
+     * @return true if at least one seat in the group is ready
+     */
     public boolean isGroupReady(int g) {
         if (g < 0 || g > 3) {
             return false;
@@ -214,6 +316,12 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         return isSeatReady(seatNumber) || isSeatReady(seatNumber + 1);
     }
 
+    /**
+     * Checks whether the given seat is ready.
+     *
+     * @param seat the seat to check
+     * @return true if the seat is marked ready
+     */
     public boolean isSeatReady(YipeeSeat seat) {
         if (seat != null) {
             return seat.isSeatReady();
@@ -221,10 +329,21 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         return false;
     }
 
+    /**
+     * Checks whether the seat at the given index is ready.
+     *
+     * @param seatNum the seat index
+     * @return true if the seat is ready
+     */
     public boolean isSeatReady(int seatNum) {
         return isSeatReady(getSeat(seatNum));
     }
 
+    /**
+     * Checks whether the table has at least two ready seat groups.
+     *
+     * @return true if table is ready to start
+     */
     public boolean isTableStartReady() {
         int readyGroups = 0;
         for (int i = 0; i < 4; i++) {
@@ -234,12 +353,19 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         return false;
     }
 
+    /**
+     * Initializes this table with the default number of seats (8).
+     * Each seat is associated with this table and assigned a unique index from 0 to 7.
+     */
     private void setUpSeats() {
         for (int i = 0; i < MAX_SEATS; i++) {
             seats.add(new YipeeSeat(this, i));
         }
     }
 
+    /**
+     * Marks all seats as not ready.
+     */
     public void makeAllTablesUnready() {
         for (YipeeSeat seat : Util.safeIterable(seats)) {
             if (seat != null) {
@@ -248,27 +374,51 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         }
     }
 
+    /**
+     * Gets the seat at the specified index.
+     *
+     * @param seatNum index of the seat (0–7)
+     * @return the seat object at that index
+     */
     public YipeeSeat getSeat(int seatNum) {
         return Util.getIndexOfSet(seats, seatNum);
     }
 
+    /**
+     * Adds a player to the list of table watchers.
+     *
+     * @param player the player to add
+     */
     public void addWatcher(YipeePlayer player) {
         if (player != null) {
             watchers.add(player);
         }
     }
 
+    /**
+     * Removes a player from the list of table watchers.
+     *
+     * @param player the player to remove
+     */
     public void removeWatcher(YipeePlayer player) {
         if (player != null) {
             watchers.remove(player);
         }
     }
 
+    /**
+     * Clears seat and watcher data for memory cleanup.
+     */
     @Override
     public void dispose() {
         Util.clearArrays(seats, watchers);
     }
 
+    /**
+     * Creates a shallow copy of this table (does not copy seats or watchers).
+     *
+     * @return a new {@code YipeeTable} with copied attributes
+     */
     @Override
     public YipeeTable copy() {
         YipeeTable copy = new YipeeTable();
@@ -279,6 +429,11 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         return copy;
     }
 
+    /**
+     * Creates a deep copy of this table, including cloned seats and watchers.
+     *
+     * @return a fully cloned {@code YipeeTable}
+     */
     @Override
     public YipeeTable deepCopy() {
         YipeeTable copy = copy();
@@ -297,9 +452,9 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     }
 
     /**
-     * Visiting method that handles saving child objects to the database.
+     * Visitor method used to persist the table and its state to the database.
      *
-     * @param adapter
+     * @param adapter the storage adapter used for saving
      */
     @Override
     public void visitSave(YipeeStorageAdapter adapter) {
@@ -313,9 +468,9 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     }
 
     /**
-     * Visiting method that handles deleting child objects from the database.
+     * Visitor method used to delete the table and its state from the database.
      *
-     * @param terminatorAdapter
+     * @param terminatorAdapter the terminator adapter used for deletion
      */
     @Override
     public void visitDelete(YipeeObjectTerminatorAdapter terminatorAdapter) {

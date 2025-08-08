@@ -24,6 +24,7 @@ import asg.games.yipee.libgdx.objects.YipeeGameBoardStateGDX;
 import asg.games.yipee.libgdx.objects.YipeePieceGDX;
 import asg.games.yipee.libgdx.tools.LibGDXRandomUtil;
 import asg.games.yipee.libgdx.tools.LibGDXUtil;
+import asg.games.yipee.libgdx.tools.YipeeGDXPrinter;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Queue;
@@ -71,6 +72,7 @@ public class YipeeGameBoardGDX implements Disposable {
     //private final YokelPiece MIDAS_PIECE = new YokelPiece(0, YokelBlock.BOT_MIDAS, YokelBlock.MID_MIDAS, YokelBlock.TOP_MIDAS);
 
     private int[][] cells;
+    private int[][] partnerCells;
     private boolean[] ids;
     @Getter
     private int idIndex;
@@ -129,7 +131,7 @@ public class YipeeGameBoardGDX implements Disposable {
     private int brokenBlockCount = 0;
     private boolean hasGameStarted = false;
 
-    private YipeeGameBoardGDX partnerBoard = null;
+    private boolean hasPartner;
     private boolean isPartnerRight = true;
     private boolean debug = false;
     private String name = null;
@@ -140,12 +142,13 @@ public class YipeeGameBoardGDX implements Disposable {
 
     public YipeeGameBoardGDX(long seed) {
         cells = new int[MAX_ROWS][MAX_COLS];
+        partnerCells = new int[MAX_ROWS][MAX_COLS];
         ids = new boolean[128];
         gameClock = new YipeeClockGDX();
         reset(seed);
     }
 
-    public void importGameState(YipeeGameBoardStateGDX state) {
+    public void importGameState(YipeeGameBoardStateGDX state, YipeeGameBoardStateGDX partnerState) {
         if (state != null) {
             setCurrentPhase(state.getCurrentPhase());
             setBrokenBlockCount(state.getBrokenBlockCount());
@@ -172,11 +175,16 @@ public class YipeeGameBoardGDX implements Disposable {
             setSpecialPieces(state.getSpecialPieces());
             setHasGameStarted(state.isHasGameStarted());
             setBoardNumber(state.getBoardNumber());
-            if(partnerBoard != null) {
-                partnerBoard.setCells(state.getPartnerCells());
+
+            if (partnerState != null) {
+                hasPartner = true;
+                setPartnerCells(partnerState.getPlayerCells());
+            } else {
+                hasPartner = false;
             }
         }
     }
+
     public YipeeGameBoardStateGDX exportGameState() {
         YipeeGameBoardStateGDX state = new YipeeGameBoardStateGDX();
         state.setCurrentPhase(currentPhase);
@@ -205,8 +213,9 @@ public class YipeeGameBoardGDX implements Disposable {
         state.setSpecialPieces(specialPieces);
         state.setHasGameStarted(hasGameStarted);
         state.setBoardNumber(boardNumber);
-        if(partnerBoard != null) {
-            state.setPartnerCells(partnerBoard.getCells());
+
+        if (hasPartner) {
+            state.setPartnerCells(partnerCells);
         }
         return state;
     }
@@ -229,13 +238,15 @@ public class YipeeGameBoardGDX implements Disposable {
         piece = null;
     }
 
-    public void setPartnerBoard(YipeeGameBoardGDX partnerB, boolean b) {
-        this.partnerBoard = partnerB;
-        this.isPartnerRight = b;
+    public void setPartnerCells(YipeeGameBoardGDX partnerB, boolean isRight) {
+        setPartnerBoardState(partnerB.exportGameState(), isRight);
     }
 
-    public void setPartnerBoardState(YipeeGameBoardStateGDX partnerB) {
-        this.partnerBoard.updateState(partnerB);
+    public void setPartnerBoardState(YipeeGameBoardStateGDX partnerBoardState, boolean isRight) {
+        if (partnerBoardState != null) {
+            this.partnerCells = partnerBoardState.getPlayerCells();
+        }
+        this.isPartnerRight = isRight;
     }
 
     public static class TestRandomBlockArray extends LibGDXRandomUtil.RandomNumberArray {
@@ -1695,78 +1706,7 @@ public class YipeeGameBoardGDX implements Disposable {
      */
 
     public String toString() {
-        StringBuilder out = new StringBuilder();
-        out.append("#################").append("\n");
-        out.append("pieceFallTimer: ").append(pieceFallTimer).append("\n")
-            .append("lockOutTimer: ").append(pieceLockTimer).append("\n")
-            .append("brokenBlockCount: ").append(brokenBlockCount).append("\n")
-            .append("Yahoo Count: ").append(yahooDuration).append("\n");
-
-        if (piece != null) {
-            out.append("player piece pos(").append(piece.column).append(",").append(piece.row).append(")").append("\n");
-        }
-
-        addPrintLine(out);
-        for (int r = MAX_ROWS - 1; r > -1; r--) {
-            printRow(out, r);
-            printRowReturn(out);
-        }
-        addPrintLine(out);
-        printRowReturn(out);
-        out.append("#################").append("\n");
-        return out.toString();
-    }
-
-    private void printRow(StringBuilder out, int r) {
-        if (isPartnerRight) {
-            printPlayerRows(this, partnerBoard, r, out);
-        } else {
-            printPlayerRows(partnerBoard, this, r, out);
-        }
-    }
-
-    private void printPlayerRows(YipeeGameBoardGDX boardLeft, YipeeGameBoardGDX boardRight, int r, StringBuilder out) {
-        for (int c = 0; c < MAX_COLS * 2; c++) {
-            int block;
-            if (c == MAX_COLS) {
-                out.append('|');
-            }
-            if (c < MAX_COLS) {
-                block = boardLeft.isPieceBlock(r, c) ? boardLeft.getPieceBlock(r) : boardLeft.getPieceValue(c, r);
-                printGameLine(out, block);
-            } else {
-                block = boardRight.isPieceBlock(r, c - MAX_COLS) ? boardRight.getPieceBlock(r) : boardRight.getPieceValue(c - MAX_COLS, r);
-                printGameLine(out, block);
-            }
-        }
-        out.append('|');
-    }
-
-    private void printGameLine(StringBuilder out, int block) {
-        if (block == YipeeBlockGDX.CLEAR_BLOCK) {
-            out.append('|').append(' ');
-        } else {
-            if (YipeeBlockEvalGDX.hasPowerBlockFlag(block)) {
-                out.append('|').append(YipeeBlockEvalGDX.getPowerLabel(block));
-            } else {
-                out.append('|').append(YipeeBlockEvalGDX.getNormalLabel(block));
-            }
-        }
-    }
-
-    private void addPrintLine(StringBuilder sb) {
-        for (int a = 0; a < MAX_COLS * 2; a++) {
-            sb.append("+");
-            if (a == MAX_COLS) {
-                sb.append("+");
-            }
-            sb.append("-");
-        }
-        sb.append('+').append('\n');
-    }
-
-    private void printRowReturn(StringBuilder out) {
-        out.append("\n");
+        return YipeeGDXPrinter.toStringYipeeBoard(this);
     }
 
     boolean isPieceBlock(int row, int col) {
@@ -1781,16 +1721,12 @@ public class YipeeGameBoardGDX implements Disposable {
         cells[r][c] = YipeeBlockGDX.CLEAR_BLOCK;
     }
 
-    public void updateStateAndAll(YipeeGameBoardStateGDX state, float delta) {
-        importGameState(state);
+    public void updateGameState(float delta, YipeeGameBoardStateGDX state, YipeeGameBoardStateGDX partnerState) {
+        importGameState(state, partnerState);
         update(delta);
     }
 
-    private void updateState(YipeeGameBoardStateGDX state) {
-        importGameState(state);
-    }
-
-    public void update(float delta) {
+    private void update(float delta) {
         if (!hasGameStarted || hasPlayerDied()) {
             currentPhase = GamePhase.GAME_OVER;
             return;
@@ -2000,11 +1936,21 @@ public class YipeeGameBoardGDX implements Disposable {
         }
     }
 
+    private YipeeGameBoardGDX getPartnerBoard() {
+        YipeeGameBoardGDX partnerBoard = null;
+        if (hasPartner) {
+            partnerBoard = new YipeeGameBoardGDX();
+            partnerBoard.setCells(partnerCells);
+        }
+        return partnerBoard;
+    }
+
     private void updateBoard() {
         //System.out.println("flagging board matches");
         flagBoardMatches();
-        if (partnerBoard != null) {
-            checkBoardForPartnerBreaks(partnerBoard, isPartnerRight);
+
+        if (hasPartner) {
+            checkBoardForPartnerBreaks(getPartnerBoard(), isPartnerRight);
         } else {
             System.out.println("Assertion Error: Partner Board is null, was it set?");
         }

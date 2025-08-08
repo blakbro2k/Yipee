@@ -15,5 +15,16 @@
  */
 package asg.games.yipee.common.net;
 
+/**
+ * Marker interface for a network-serializable Yipee player object.
+ *
+ * <p>This interface exists to unify different player representations across platforms
+ * (e.g., core, LibGDX, or GWT) without introducing tight coupling. It allows shared
+ * serialization and polymorphism in the networking layer while decoupling platform-specific
+ * implementations like `YipeePlayer` and `YipeePlayerGDX`.
+ *
+ * <p>Typically used in packet definitions and cross-platform communication.
+ */
 public interface NetYipeePlayer {
 }
+

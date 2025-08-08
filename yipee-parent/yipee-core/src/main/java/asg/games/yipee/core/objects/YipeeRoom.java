@@ -105,35 +105,76 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
     @MapKey(name = "tableNumber")
     private Map<Integer, YipeeTable> tableIndexMap = new HashMap<>();
 
-    //Empty Constructor required for Json.Serializable
+    /**
+     * Creates an empty room with default settings.
+     * Required for JSON serialization/deserialization.
+     */
     public YipeeRoom() {
     }
 
+    /**
+     * Constructs a room with the given name.
+     *
+     * @param name the name of the room
+     */
     public YipeeRoom(String name) {
         setName(name);
     }
 
+    /**
+     * Constructs a room with the given name and lounge.
+     *
+     * @param name       the name of the room
+     * @param loungeName the lounge category for the room
+     */
     public YipeeRoom(String name, String loungeName) {
         setName(name);
         setLoungeName(loungeName);
     }
 
+    /**
+     * Returns all tables currently present in this room.
+     *
+     * @return a collection of all {@link YipeeTable} instances
+     */
     public Collection<YipeeTable> getTables() {
         return Util.getMapValues(tableIndexMap);
     }
 
+    /**
+     * Returns the numeric indexes of all tables in this room.
+     *
+     * @return a collection of table indexes
+     */
     public Collection<Integer> getTableIndexes() {
         return Util.getMapKeys(tableIndexMap);
     }
 
+    /**
+     * Adds the specified player to the room.
+     * Internal method used by {@link #joinRoom(YipeePlayer)}.
+     *
+     * @param player the player to add
+     */
     private void addPlayer(YipeePlayer player) {
         players.add(player);
     }
 
+    /**
+     * Removes the specified player from the room.
+     * Internal method used by {@link #leaveRoom(YipeePlayer)}.
+     *
+     * @param player the player to remove
+     */
     private void removePlayer(YipeePlayer player) {
         players.remove(player);
     }
 
+    /**
+     * Handles player entry into the room.
+     *
+     * @param player the player joining the room
+     */
     public void joinRoom(YipeePlayer player) {
         if (player != null) {
             logger.info("Player: {}, is joining room: {}", player.getName(), this.getName());
@@ -141,6 +182,12 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
         addPlayer(player);
     }
 
+
+    /**
+     * Handles player exit from the room.
+     *
+     * @param player the player leaving the room
+     */
     public void leaveRoom(YipeePlayer player) {
         if (player != null) {
             logger.info("Player: {}, is leaving room: {}", player.getName(), this.getName());
@@ -148,16 +195,34 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
         removePlayer(player);
     }
 
+    /**
+     * Adds a new table to the room with an auto-generated table number.
+     *
+     * @return the newly added table
+     */
     public YipeeTable addTable() {
         return addTable(null);
     }
 
+    /**
+     * Adds a new table with optional configuration parameters.
+     *
+     * @param arguments optional table properties to pass to the constructor
+     * @return the newly created {@link YipeeTable}
+     */
     public YipeeTable addTable(Map<String, Object> arguments) {
         int tableNumber = Util.getNextTableNumber(this);
         logger.debug("Next table number in iteration: " + tableNumber);
         return addTable(tableNumber, arguments);
     }
 
+    /**
+     * Adds a table to the room with a specific table number.
+     *
+     * @param tableNumber the desired table number
+     * @param arguments optional table configuration
+     * @return the newly created {@link YipeeTable}
+     */
     public YipeeTable addTable(int tableNumber, Map<String, Object> arguments) {
         YipeeTable table = arguments != null
             ? new YipeeTable(tableNumber, arguments)
@@ -166,14 +231,30 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
         return table;
     }
 
+    /**
+     * Gets a reference to the table that matches the given object.
+     *
+     * @param table the table object to search for
+     * @return the table instance in this room, or null if not found
+     */
     public YipeeTable getTable(YipeeTable table) {
         return getTableAt(getTableIndexValue(table));
     }
 
+    /**
+     * Removes the specified table from the room.
+     *
+     * @param table the table to remove
+     */
     public void removeTable(YipeeTable table) {
         removeTableAt(getTableIndexValue(table));
     }
 
+    /**
+     * Removes the table at the specified index from the room.
+     *
+     * @param index the table index
+     */
     public void removeTableAt(int index) {
         if (index < 0 || index > tableIndexMap.size() + 1) {
             return;
@@ -182,6 +263,12 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
         tableIndexMap.remove(index);
     }
 
+    /**
+     * Retrieves the index associated with the given table.
+     *
+     * @param table the table to find
+     * @return the index of the table, or -1 if not found
+     */
     public int getTableIndexValue(YipeeTable table) {
         int index = -1;
         if (tableIndexMap.containsValue(table)) {
@@ -197,6 +284,13 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
         return index;
     }
 
+    /**
+     * Retrieves the table at the specified index.
+     *
+     * @param index the index of the table
+     * @return the {@link YipeeTable} at the index
+     * @throws IndexOutOfBoundsException if the index is invalid
+     */
     public YipeeTable getTableAt(int index) {
         if (index < 0 || index > tableIndexMap.size() + 1) {
             logger.error("Invalid table index: {}", index);
@@ -205,12 +299,22 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
         return tableIndexMap.get(index);
     }
 
+    /**
+     * Disposes of the room's internal state, clearing player and table data.
+     */
     @Override
     public void dispose() {
         Util.clearArrays(players);
         tableIndexMap.clear();
     }
 
+
+    /**
+     * Creates a shallow copy of this room.
+     * Players and tables are not deep-copied.
+     *
+     * @return a basic duplicate of this room
+     */
     @Override
     public YipeeRoom copy() {
         YipeeRoom copy = new YipeeRoom();
@@ -219,6 +323,11 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
         return copy;
     }
 
+    /**
+     * Creates a deep copy of the room including all players and tables.
+     *
+     * @return a deep-copied {@link YipeeRoom} with independent table/player objects
+     */
     @Override
     public YipeeRoom deepCopy() {
         YipeeRoom copy = copy();
@@ -247,9 +356,9 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
     }
 
     /**
-     * Visiting method that handles saving child objects to the database.
+     * Visitor method used for saving this room to persistent storage.
      *
-     * @param adapter
+     * @param adapter the storage adapter to apply
      */
     @Override
     public void visitSave(YipeeStorageAdapter adapter) {
@@ -263,9 +372,9 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
     }
 
     /**
-     * Visiting method that handles deleting child objects from the database.
+     * Visitor method used for deleting this room from persistent storage.
      *
-     * @param terminatorAdapter
+     * @param terminatorAdapter the termination adapter to apply
      */
     @Override
     public void visitDelete(YipeeObjectTerminatorAdapter terminatorAdapter) {
@@ -278,66 +387,3 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
         }
     }
 }
-
-/**
- * @Entity
- * @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
- * @Table(name = "YT_ROOMS")
- * public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisitor, Copyable<YipeeRoom>, Disposable {
- * @Transient private Map<YipeeTableDTO, Integer> reverseTableIndexMap = new HashMap<>();
- * @OneToMany(mappedBy = "parentRoom", cascade = CascadeType.ALL, orphanRemoval = true)
- * @MapKey(name = "tableNumber")
- * @JsonManagedReference("parentRoom") private Map<Integer, YipeeTableDTO> tableIndexMap = new HashMap<>();
- * <p>
- * // Lifecycle Methods
- * @PostLoad private void populateReverseTableIndexMap() {
- * reverseTableIndexMap.clear();
- * for (Map.Entry<Integer, YipeeTableDTO> entry : tableIndexMap.entrySet()) {
- * reverseTableIndexMap.put(entry.getValue(), entry.getKey());
- * }
- * }
- * @PrePersist
- * @PreUpdate private void syncReverseTableIndexMap() {
- * reverseTableIndexMap.clear();
- * for (Map.Entry<Integer, YipeeTableDTO> entry : tableIndexMap.entrySet()) {
- * reverseTableIndexMap.put(entry.getValue(), entry.getKey());
- * }
- * }
- * <p>
- * // Add Table
- * public YipeeTableDTO addTable(int tableNumber, Map<String, Object> arguments) {
- * YipeeTableDTO table = arguments != null
- * ? new YipeeTableDTO(this, tableNumber, arguments)
- * : new YipeeTableDTO(this, tableNumber);
- * table.setParentRoom(this);
- * tableIndexMap.put(tableNumber, table);
- * reverseTableIndexMap.put(table, tableNumber); // Update reverse map
- * return table;
- * }
- * <p>
- * // Remove Table
- * public void removeTable(YipeeTableDTO table) {
- * Integer index = reverseTableIndexMap.remove(table); // Update reverse map
- * if (index != null) {
- * tableIndexMap.remove(index);
- * table.setParentRoom(null);
- * }
- * }
- * <p>
- * // Get Table Index
- * public int getTableIndexValue(YipeeTableDTO table) {
- * return reverseTableIndexMap.getOrDefault(table, -1);
- * }
- * <p>
- * // Setter for Table Index Map
- * public void setTableIndexMap(Map<Integer, YipeeTableDTO> tableIndexMap) {
- * this.tableIndexMap = tableIndexMap;
- * reverseTableIndexMap.clear();
- * for (Map.Entry<Integer, YipeeTableDTO> entry : tableIndexMap.entrySet()) {
- * reverseTableIndexMap.put(entry.getValue(), entry.getKey());
- * }
- * }
- * <p>
- * // Other existing methods remain unchanged...
- * }
- */

@@ -23,25 +23,50 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
+/**
+ * Represents a pair of Yipee game boards — typically a player and their partner.
+ *
+ * <p>This object is commonly used to render or process a two-board view of the game,
+ * often used in client rendering, simulation, or replay scenarios.
+ *
+ * <p>The left board typically represents the primary player, and the right board represents
+ * their partner (or another player in cooperative/competitive context).
+ *
+ * <p>This class supports JSON serialization and respects specific ignored fields during that process.
+ *
+ * @author Blakbro2k
+ */
 @Getter
 @Setter
 @JsonIgnoreProperties({"brokenCells", "tableStartReady", "upArguments", "tableName"})
 public class YipeeBoardPair extends AbstractYipeeObject {
     private static final Logger logger = LoggerFactory.getLogger(YipeeBoardPair.class);
 
-    YipeeGameBoardState leftBoard;
-    YipeeGameBoardState rightBoard;
+    /**
+     * The left-side game board (usually the primary player).
+     */
+    private YipeeGameBoardState leftBoard;
+
+    /**
+     * The right-side game board (typically the partner or secondary board).
+     */
+    private YipeeGameBoardState rightBoard;
 
     /**
      * Default constructor required for JSON serialization.
-     * Initializes the block in its default state.
      */
     public YipeeBoardPair() {
     }
 
+    /**
+     * Constructs a new pair of game boards.
+     *
+     * @param left  the left-side board (usually the player's board)
+     * @param right the right-side board (partner or opponent)
+     */
     public YipeeBoardPair(YipeeGameBoardState left, YipeeGameBoardState right) {
-        setLeftBoard(left);
-        setRightBoard(right);
+        this.leftBoard = left;
+        this.rightBoard = right;
     }
 
     @Override
@@ -50,11 +75,12 @@ public class YipeeBoardPair extends AbstractYipeeObject {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         YipeeBoardPair that = (YipeeBoardPair) o;
-        return Objects.equals(getLeftBoard(), that.getLeftBoard()) && Objects.equals(getRightBoard(), that.getRightBoard());
+        return Objects.equals(leftBoard, that.leftBoard) &&
+            Objects.equals(rightBoard, that.rightBoard);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getLeftBoard(), getRightBoard());
+        return Objects.hash(super.hashCode(), leftBoard, rightBoard);
     }
 }

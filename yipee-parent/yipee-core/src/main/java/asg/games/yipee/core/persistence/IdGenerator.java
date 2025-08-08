@@ -24,11 +24,39 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 
+/**
+ * Custom ID generator for Hibernate entities that extends {@link UUIDGenerator}.
+ * <p>
+ * This generator will reuse an existing ID from a {@link YipeeObject} if present,
+ * or generate a new UUID (with dashes removed) if no ID is set.
+ * </p>
+ *
+ * <p>
+ * This is useful for preserving object identity during serialization or replication,
+ * where entities may already carry a pre-assigned UUID.
+ * </p>
+ *
+ * @author Blakbro2k
+ */
 public class IdGenerator extends UUIDGenerator {
     private static final Logger logger = LoggerFactory.getLogger(IdGenerator.class);
 
+    /**
+     * Generates a unique identifier for a Hibernate entity.
+     * <ul>
+     *     <li>If the object is an instance of {@link YipeeObject} and already has a non-null ID, it reuses it.</li>
+     *     <li>Otherwise, a new UUID is generated and formatted by removing dashes.</li>
+     * </ul>
+     *
+     * @param session the Hibernate session
+     * @param object  the entity object to generate an ID for
+     * @return the existing or newly generated UUID string (without dashes)
+     * @throws HibernateException if ID generation fails
+     */
+    @Override
     public Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
         Serializable id = null;
+
         if (object instanceof YipeeObject) {
             id = ((YipeeObject) object).getId();
         }
@@ -36,6 +64,7 @@ public class IdGenerator extends UUIDGenerator {
         if (id == null) {
             id = String.valueOf(super.generate(session, object)).replaceAll("-", "");
         }
+
         return id;
     }
 }

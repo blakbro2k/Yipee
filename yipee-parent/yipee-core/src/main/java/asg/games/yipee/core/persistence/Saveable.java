@@ -28,7 +28,6 @@ import asg.games.yipee.core.objects.YipeeObject;
  * operations with the underlying database.
  */
 public interface Saveable {
-
     /**
      * Saves a persistent object to the database.
      *
@@ -42,6 +41,7 @@ public interface Saveable {
      *
      * @param object the YipeeObject instance to be deleted
      * @param <T>    the type of the object, extending YipeeObject
+     * @return boolean returns success or failure of the delete
      */
     <T extends YipeeObject> boolean deleteObject(T object);
 

@@ -1,40 +1,38 @@
 /**
  * Copyright 2024 See AUTHORS file.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.core.tools;
+package asg.games.yipee.libgdx.tools;
 
-import asg.games.yipee.core.game.YipeeBlockEval;
-import asg.games.yipee.core.game.YipeeGameBoard;
-import asg.games.yipee.core.objects.YipeeBlock;
-import asg.games.yipee.core.objects.YipeeGameBoardState;
-import asg.games.yipee.core.objects.YipeePiece;
+import asg.games.yipee.libgdx.game.YipeeBlockEvalGDX;
+import asg.games.yipee.libgdx.game.YipeeGameBoardGDX;
+import asg.games.yipee.libgdx.objects.YipeeBlockGDX;
+import asg.games.yipee.libgdx.objects.YipeeGameBoardStateGDX;
+import asg.games.yipee.libgdx.objects.YipeePieceGDX;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
 @Getter
 @Setter
-public class YipeePrinter {
-    public static final YipeePrinter INSTANCE = new YipeePrinter();
+public class YipeeGDXPrinter {
+    public static final YipeeGDXPrinter INSTANCE = new YipeeGDXPrinter();
 
     private int logLevel = 0;
 
-    private YipeePrinter() {
+    private YipeeGDXPrinter() {
     }
 
     public boolean isLogOff() {
@@ -53,54 +51,53 @@ public class YipeePrinter {
         return logLevel >= 4;
     }
 
-
-    public static YipeePrinter getInstance() {
+    public static YipeeGDXPrinter getInstance() {
         return INSTANCE;
     }
 
-    public static void printYipeeBoard(YipeeGameBoard board) {
+    public static void printYipeeBoard(YipeeGameBoardGDX board) {
         if (board != null) {
             printYipeeBoardState(board.exportGameState());
         }
     }
 
-    public static String toStringYipeeBoard(YipeeGameBoard board) {
+    public static String toStringYipeeBoard(YipeeGameBoardGDX board) {
         String output = "";
         if (board != null) {
-            output = getYipeeBoardStateString(board.exportGameState());
+            printYipeeBoardState(board.exportGameState());
         }
         return output;
     }
 
-    public static void printYipeeBoardState(YipeeGameBoardState gameState) {
+    public static void printYipeeBoardState(YipeeGameBoardStateGDX gameState) {
         getInstance().internalPrintYipeeBoardState(gameState);
     }
 
-    public static String getYipeeBoardStateString(YipeeGameBoardState gameState) {
+    public static String getYipeeBoardStateString(YipeeGameBoardStateGDX gameState) {
         return getInstance().getYipeeBoardStateOutput(gameState);
     }
 
-    public void internalPrintYipeeBoardState(YipeeGameBoardState gameState) {
+    public void internalPrintYipeeBoardState(YipeeGameBoardStateGDX gameState) {
         System.out.println(getYipeeBoardStateOutput(gameState));
     }
 
-    public String getYipeeBoardOutput(YipeeGameBoard board) {
+    public String getYipeeBoardOutput(YipeeGameBoardGDX board) {
         if (board != null) {
             return getYipeeBoardStateOutput(board.exportGameState());
         }
         return "";
     }
 
-    public String getYipeeBoardStateOutput(YipeeGameBoardState gameState) {
+    public String getYipeeBoardStateOutput(YipeeGameBoardStateGDX gameState) {
         return stateToString(gameState);
     }
 
     // Print State
-    public String stateToString(YipeeGameBoardState gameState) {
+    public String stateToString(YipeeGameBoardStateGDX gameState) {
         return stateToString(gameState, 0);
     }
 
-    public String stateToString(YipeeGameBoardState gameState, int depth) {
+    public String stateToString(YipeeGameBoardStateGDX gameState, int depth) {
         if (gameState == null) throw new IllegalArgumentException("GameState cannot be null.");
         if (depth > 1) return "(partner omitted to prevent circular reference)";
 
@@ -147,7 +144,7 @@ public class YipeePrinter {
             }
             out.append("#################").append("\n");
             addPrintLine(out);
-            for (int r = YipeeGameBoard.MAX_ROWS - 1; r > -1; r--) {
+            for (int r = YipeeGameBoardGDX.MAX_ROWS - 1; r > -1; r--) {
                 printRow(out, r, gameState, depth);
                 printRowReturn(out);
             }
@@ -159,8 +156,8 @@ public class YipeePrinter {
         return out.toString();
     }
 
-    private int[][] getPartnerCells(YipeeGameBoardState partnerBoardState) {
-        int[][] cells = new int[YipeeGameBoard.MAX_ROWS][YipeeGameBoard.MAX_COLS];
+    private int[][] getPartnerCells(YipeeGameBoardStateGDX partnerBoardState) {
+        int[][] cells = new int[YipeeGameBoardGDX.MAX_ROWS][YipeeGameBoardGDX.MAX_COLS];
 
         if (partnerBoardState != null) {
             cells = partnerBoardState.getPlayerCells();
@@ -168,14 +165,14 @@ public class YipeePrinter {
         return cells;
     }
 
-    private int[][] getPartnerCells(YipeeGameBoardState partner, int depth) {
+    private int[][] getPartnerCells(YipeeGameBoardStateGDX partner, int depth) {
         if (partner != null && partner.getPlayerCells() != null) {
             return partner.getPlayerCells();
         }
-        return new int[YipeeGameBoard.MAX_ROWS][YipeeGameBoard.MAX_COLS];
+        return new int[YipeeGameBoardGDX.MAX_ROWS][YipeeGameBoardGDX.MAX_COLS];
     }
 
-    private void printRow(StringBuilder out, int r, @NotNull YipeeGameBoardState gameState, int depth) {
+    private void printRow(StringBuilder out, int r, YipeeGameBoardStateGDX gameState, int depth) {
         boolean isPartnerRight = gameState.isPartnerRight();
         int[][] playerCells = gameState.getPlayerCells();
         int[][] partnerCells = gameState.getPartnerCells();
@@ -187,18 +184,18 @@ public class YipeePrinter {
         }
     }
 
-    private void printPlayerRows(int[][] cellsLeft, int[][] cellsRight, int r, StringBuilder out, @NotNull YipeeGameBoardState gameState) {
+    private void printPlayerRows(int[][] cellsLeft, int[][] cellsRight, int r, StringBuilder out, YipeeGameBoardStateGDX gameState) {
         boolean isPartnerRight = gameState.isPartnerRight();
-        for (int c = 0; c < YipeeGameBoard.MAX_COLS * 2; c++) {
+        for (int c = 0; c < YipeeGameBoardGDX.MAX_COLS * 2; c++) {
             int block;
-            if (c == YipeeGameBoard.MAX_COLS) {
+            if (c == YipeeGameBoardGDX.MAX_COLS) {
                 out.append('|');
             }
-            if (c < YipeeGameBoard.MAX_COLS) {
+            if (c < YipeeGameBoardGDX.MAX_COLS) {
                 block = isPieceBlock(r, c, gameState) && isPartnerRight ? getPieceBlock(r, gameState) : getPieceValue(cellsLeft, c, r);
                 printGameLine(out, block);
             } else {
-                block = isPieceBlock(r, c - YipeeGameBoard.MAX_COLS, gameState) && !isPartnerRight ? getPieceBlock(r, gameState) : getPieceValue(cellsRight, c - YipeeGameBoard.MAX_COLS, r);
+                block = isPieceBlock(r, c - YipeeGameBoardGDX.MAX_COLS, gameState) && !isPartnerRight ? getPieceBlock(r, gameState) : getPieceValue(cellsRight, c - YipeeGameBoardGDX.MAX_COLS, r);
                 printGameLine(out, block);
             }
         }
@@ -206,21 +203,21 @@ public class YipeePrinter {
     }
 
     private void printGameLine(StringBuilder out, int block) {
-        if (block == YipeeBlock.CLEAR_BLOCK) {
+        if (block == YipeeBlockGDX.CLEAR_BLOCK) {
             out.append('|').append(' ');
         } else {
-            if (YipeeBlockEval.hasPowerBlockFlag(block)) {
-                out.append('|').append(YipeeBlockEval.getPowerLabel(block));
+            if (YipeeBlockEvalGDX.hasPowerBlockFlag(block)) {
+                out.append('|').append(YipeeBlockEvalGDX.getPowerLabel(block));
             } else {
-                out.append('|').append(YipeeBlockEval.getNormalLabel(block));
+                out.append('|').append(YipeeBlockEvalGDX.getNormalLabel(block));
             }
         }
     }
 
     private void addPrintLine(StringBuilder sb) {
-        for (int a = 0; a < YipeeGameBoard.MAX_COLS * 2; a++) {
+        for (int a = 0; a < YipeeGameBoardGDX.MAX_COLS * 2; a++) {
             sb.append("+");
-            if (a == YipeeGameBoard.MAX_COLS) {
+            if (a == YipeeGameBoardGDX.MAX_COLS) {
                 sb.append("+");
             }
             sb.append("-");
@@ -228,22 +225,21 @@ public class YipeePrinter {
         sb.append('+').append('\n');
     }
 
-    private void printRowReturn(@NotNull StringBuilder out) {
+    private void printRowReturn(StringBuilder out) {
         out.append("\n");
     }
 
-    private boolean isPieceBlock(int row, int col, @NotNull YipeeGameBoardState gameState) {
-        YipeePiece piece = gameState.getPiece();
+    private boolean isPieceBlock(int row, int col, YipeeGameBoardStateGDX gameState) {
+        YipeePieceGDX piece = gameState.getPiece();
         return piece != null && piece.column == col && (piece.row == row || piece.row + 1 == row || piece.row + 2 == row);
     }
 
-    private int getPieceBlock(int row, @NotNull YipeeGameBoardState gameState) {
-        YipeePiece piece = gameState.getPiece();
+    private int getPieceBlock(int row, YipeeGameBoardStateGDX gameState) {
+        YipeePieceGDX piece = gameState.getPiece();
         return piece.getValueAt(Math.abs(2 - (row - piece.row)));
     }
 
-    @Contract(pure = true)
-    private int getPieceValue(int[] @NotNull [] cells, int c, int r) {
-        return YipeeBlockEval.getCellFlag(cells[r][c]);
+    private int getPieceValue(int[][] cells, int c, int r) {
+        return YipeeBlockEvalGDX.getCellFlag(cells[r][c]);
     }
 }

@@ -15,5 +15,18 @@
  */
 package asg.games.yipee.common.net;
 
+/**
+ * Marker interface representing a serializable client-side key mapping configuration
+ * used for gameplay input.
+ * <p>
+ * This interface is part of the {@code common} module to enable serialization of
+ * key mapping data across both LibGDX clients (including GWT) and server-side
+ * Java environments.
+ * <p>
+ * Implementations should define player input bindings such as key-to-action mappings
+ * in a platform-agnostic format suitable for transmission over the network.
+ *
+ * @see asg.games.yipee.common.packets.PlayerAction
+ */
 public interface NetYipeeKeyMap {
 }

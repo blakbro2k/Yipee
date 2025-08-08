@@ -21,7 +21,7 @@ import asg.games.yipee.core.game.YipeeBlockEval;
 import asg.games.yipee.core.game.YipeeGameBoard;
 import asg.games.yipee.core.tools.RandomUtil;
 import asg.games.yipee.core.tools.Util;
-
+import asg.games.yipee.core.tools.YipeePrinter;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -99,17 +99,18 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
     /**
      * Blocks that have just broken and are waiting for animation.
      */
-    private Queue<YipeeBrokenBlock> brokenCells;
+    private Queue<YipeeBrokenBlock> brokenCells = new LinkedList<>();
 
     /**
      * List of blocks that need to fall downward due to breaks.
      */
-    private Queue<YipeeBlockMove> cellsToDrop;
+    private Queue<YipeeBlockMove> cellsToDrop = new LinkedList<>();
 
     /**
      * Queued power-up or attack actions available to the player.
      */
-    private Queue<Integer> powers;
+    private Queue<Integer> powers = new LinkedList<>();
+    ;
 
     /**
      * Number of rows queued for Yahoo! drop animation.
@@ -144,7 +145,7 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
     /**
      * Queue of special pieces coming up in the game.
      */
-    private Queue<Integer> specialPieces;
+    private Queue<Integer> specialPieces = new LinkedList<>();
 
     /** Number of break events by type. Used for scoring and power-ups. */
     private int[] countOfBreaks;
@@ -213,100 +214,7 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
 
     // Print State
     public String toString() {
-        StringBuilder out = new StringBuilder();
-        out.append("#################").append("\n");
-        out.append("Board Number: ").append(boardNumber).append("\n");
-        out.append("#################").append("\n");
-        out.append("Server Game Start Time: ").append(getServerGameStartTime()).append("\n");
-        out.append("Current Game Time: ").append(getCurrentStateTimeStamp()).append("\n");
-        out.append("Previous Game Time: ").append(getPreviousStateTimeStamp()).append("\n");
-        out.append("Piece Fall Out Timer: ").append(getPieceFallTimer()).append("\n");
-        out.append("Fall Animation Timer: ").append(getBlockAnimationTimer()).append("\n");
-        out.append("LockOut Timer: ").append(getPieceLockTimer()).append("\n");
-        out.append("Yahoo Drop Count: ").append(getYahooDuration()).append("\n");
-        out.append("#################").append("\n");
-        out.append("Vector of broken cells: ").append(getBrokenCells()).append("\n");
-        out.append("Cells to drop: ").append(getCellsToDrop()).append("\n");
-        out.append("#################").append("\n");
-        out.append("Current 3Piece: ").append(getPiece()).append("\n");
-        out.append("Next 3Piece: ").append(getNextPiece()).append("\n");
-        out.append("#################").append("\n");
-
-        if (isDebug()) {
-            out.append("Debug Info: ").append("\n");
-            out.append("#################").append("\n");
-            out.append("Broken Block Count [Y,A,H,O,0,!]): ").append(Arrays.toString(getCountOfBreaks())).append("\n");
-            out.append("Powers Break Count [Y,A,H,O,0,!]): ").append(Arrays.toString(getPowersKeep())).append("\n");
-            out.append("Boolean Ids: ").append(Arrays.toString(getIds())).append("\n");
-            out.append("idIndex: ").append(getIdIndex()).append("\n");
-            out.append("#################").append("\n");
-        }
-
-        if (piece != null) {
-            out.append("player piece pos(").append(piece.column).append(",").append(piece.row).append(")").append("\n");
-        }
-
-        addPrintLine(out);
-        for (int r = YipeeGameBoard.MAX_ROWS - 1; r > -1; r--) {
-            printRow(out, r);
-            printRowReturn(out);
-        }
-        addPrintLine(out);
-        printRowReturn(out);
-        out.append("#################").append("\n");
-        return out.toString();
-    }
-
-    private void printRow(StringBuilder out, int r) {
-        if (isPartnerRight) {
-            printPlayerRows(playerCells, partnerCells, r, out);
-        } else {
-            printPlayerRows(partnerCells, playerCells, r, out);
-        }
-    }
-
-    private void printPlayerRows(int[][] cellsLeft, int[][] cellsRight, int r, StringBuilder out) {
-        for (int c = 0; c < YipeeGameBoard.MAX_COLS * 2; c++) {
-            int block;
-            if (c == YipeeGameBoard.MAX_COLS) {
-                out.append('|');
-            }
-            if (c < YipeeGameBoard.MAX_COLS) {
-                block = isPieceBlock(r, c) && isPartnerRight ? getPieceBlock(r) : getPieceValue(cellsLeft, c, r);
-                printGameLine(out, block);
-            } else {
-                block = isPieceBlock(r, c - YipeeGameBoard.MAX_COLS) && !isPartnerRight ? getPieceBlock(r) : getPieceValue(cellsRight, c - YipeeGameBoard.MAX_COLS, r);
-                printGameLine(out, block);
-            }
-        }
-        out.append('|');
-    }
-
-    private void printGameLine(StringBuilder out, int block) {
-        if (block == YipeeBlock.CLEAR_BLOCK) {
-            out.append('|').append(' ');
-        } else {
-            if (YipeeBlockEval.hasPowerBlockFlag(block)) {
-                out.append('|').append(YipeeBlockEval.getPowerLabel(block));
-            } else {
-                out.append('|').append(YipeeBlockEval.getNormalLabel(block));
-            }
-        }
-    }
-
-    private void addPrintLine(StringBuilder sb) {
-        for (int a = 0; a < YipeeGameBoard.MAX_COLS * 2; a++) {
-            sb.append("+");
-            if (a == YipeeGameBoard.MAX_COLS) {
-                sb.append("+");
-            }
-            sb.append("-");
-        }
-        sb.append('+').append('\n');
-    }
-
-    private void printRowReturn(StringBuilder out) {
-        out.append("\n");
+        return YipeePrinter.getYipeeBoardStateString(this);
     }
 
     private boolean isPieceBlock(int row, int col) {

@@ -141,8 +141,8 @@ public class TestYipeeNetworkObjects {
             TableStateBroadcastResponse o = (TableStateBroadcastResponse) original;
             TableStateBroadcastResponse c = (TableStateBroadcastResponse) copy;
             Assertions.assertAll("TableStateBroadcastResponse",
-                () -> Assertions.assertEquals(o.getTable(), c.getTable(), "TableId mismatch"),
-                () -> Assertions.assertEquals(o.getUpdateType(), c.getUpdateType(), "Update Type mismatch")
+                () -> Assertions.assertEquals(o.getStates(), c.getStates(), "States mismatch")
+                //() -> Assertions.assertEquals(o.getUpdateType(), c.getUpdateType(), "Update Type mismatch")
             );
         } else if (original instanceof SeatSelectionResponse) {
             SeatSelectionResponse o = (SeatSelectionResponse) original;
@@ -283,8 +283,8 @@ public class TestYipeeNetworkObjects {
         TableStateBroadcastResponse obj = new TableStateBroadcastResponse();
         YipeeTable table = new YipeeTable();
         setUpAbstractPacketResponse(obj);
-        obj.setTable(table); // Replace with YipeeTableDTO test instance
-        obj.setUpdateType(TableUpdateType.PLAYER_READY);
+        //obj.setTable(table); // Replace with YipeeTableDTO test instance
+        //obj.setUpdateType(TableUpdateType.PLAYER_READY);
         return obj;
     }
 

@@ -21,6 +21,7 @@ import asg.games.yipee.libgdx.game.YipeeBlockEvalGDX;
 import asg.games.yipee.libgdx.game.YipeeGameBoardGDX;
 import asg.games.yipee.libgdx.tools.LibGDXRandomUtil;
 import asg.games.yipee.libgdx.tools.LibGDXUtil;
+import asg.games.yipee.libgdx.tools.YipeeGDXPrinter;
 import com.badlogic.gdx.utils.Queue;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -97,17 +98,17 @@ public class YipeeGameBoardStateGDX extends AbstractYipeeObjectGDX implements Ga
     /**
      * Blocks that have just broken and are waiting for animation.
      */
-    private Queue<YipeeBrokenBlockGDX> brokenCells;
+    private Queue<YipeeBrokenBlockGDX> brokenCells = LibGDXUtil.newQueue();
 
     /**
      * List of blocks that need to fall downward due to breaks.
      */
-    private Queue<YipeeBlockMoveGDX> cellsToDrop;
+    private Queue<YipeeBlockMoveGDX> cellsToDrop = LibGDXUtil.newQueue();
 
     /**
      * Queued power-up or attack actions available to the player.
      */
-    private Queue<Integer> powers;
+    private Queue<Integer> powers = LibGDXUtil.newQueue();
 
     /**
      * Number of rows queued for Yahoo! drop animation.
@@ -142,7 +143,7 @@ public class YipeeGameBoardStateGDX extends AbstractYipeeObjectGDX implements Ga
     /**
      * Queue of special pieces coming up in the game.
      */
-    private Queue<Integer> specialPieces;
+    private Queue<Integer> specialPieces = LibGDXUtil.newQueue();
 
     /**
      * Number of break events by type. Used for scoring and power-ups.
@@ -221,100 +222,7 @@ public class YipeeGameBoardStateGDX extends AbstractYipeeObjectGDX implements Ga
 
     // Print State
     public String toString() {
-        StringBuilder out = new StringBuilder();
-        out.append("#################").append("\n");
-        out.append("Board Number: ").append(boardNumber).append("\n");
-        out.append("#################").append("\n");
-        out.append("Server Game Start Time: ").append(getServerGameStartTime()).append("\n");
-        out.append("Current Game Time: ").append(getCurrentStateTimeStamp()).append("\n");
-        out.append("Previous Game Time: ").append(getPreviousStateTimeStamp()).append("\n");
-        out.append("Piece Fall Out Timer: ").append(getPieceFallTimer()).append("\n");
-        out.append("Fall Animation Timer: ").append(getBlockAnimationTimer()).append("\n");
-        out.append("LockOut Timer: ").append(getPieceLockTimer()).append("\n");
-        out.append("Yahoo Drop Count: ").append(getYahooDuration()).append("\n");
-        out.append("#################").append("\n");
-        out.append("Vector of broken cells: ").append(getBrokenCells()).append("\n");
-        out.append("Cells to drop: ").append(getCellsToDrop()).append("\n");
-        out.append("#################").append("\n");
-        out.append("Current 3Piece: ").append(getPiece()).append("\n");
-        out.append("Next 3Piece: ").append(getNextPiece()).append("\n");
-        out.append("#################").append("\n");
-
-        if (isDebug()) {
-            out.append("Debug Info: ").append("\n");
-            out.append("#################").append("\n");
-            out.append("Broken Block Count [Y,A,H,O,0,!]): ").append(Arrays.toString(getCountOfBreaks())).append("\n");
-            out.append("Powers Break Count [Y,A,H,O,0,!]): ").append(Arrays.toString(getPowersKeep())).append("\n");
-            out.append("Boolean Ids: ").append(Arrays.toString(getIds())).append("\n");
-            out.append("idIndex: ").append(getIdIndex()).append("\n");
-            out.append("#################").append("\n");
-        }
-
-        if (piece != null) {
-            out.append("player piece pos(").append(piece.column).append(",").append(piece.row).append(")").append("\n");
-        }
-
-        addPrintLine(out);
-        for (int r = YipeeGameBoardGDX.MAX_ROWS - 1; r > -1; r--) {
-            printRow(out, r);
-            printRowReturn(out);
-        }
-        addPrintLine(out);
-        printRowReturn(out);
-        out.append("#################").append("\n");
-        return out.toString();
-    }
-
-    private void printRow(StringBuilder out, int r) {
-        if (isPartnerRight) {
-            printPlayerRows(playerCells, partnerCells, r, out);
-        } else {
-            printPlayerRows(partnerCells, playerCells, r, out);
-        }
-    }
-
-    private void printPlayerRows(int[][] cellsLeft, int[][] cellsRight, int r, StringBuilder out) {
-        for (int c = 0; c < YipeeGameBoardGDX.MAX_COLS * 2; c++) {
-            int block;
-            if (c == YipeeGameBoardGDX.MAX_COLS) {
-                out.append('|');
-            }
-            if (c < YipeeGameBoardGDX.MAX_COLS) {
-                block = isPieceBlock(r, c) && isPartnerRight ? getPieceBlock(r) : getPieceValue(cellsLeft, c, r);
-                printGameLine(out, block);
-            } else {
-                block = isPieceBlock(r, c - YipeeGameBoardGDX.MAX_COLS) && !isPartnerRight ? getPieceBlock(r) : getPieceValue(cellsRight, c - YipeeGameBoardGDX.MAX_COLS, r);
-                printGameLine(out, block);
-            }
-        }
-        out.append('|');
-    }
-
-    private void printGameLine(StringBuilder out, int block) {
-        if (block == YipeeBlockGDX.CLEAR_BLOCK) {
-            out.append('|').append(' ');
-        } else {
-            if (YipeeBlockEvalGDX.hasPowerBlockFlag(block)) {
-                out.append('|').append(YipeeBlockEvalGDX.getPowerLabel(block));
-            } else {
-                out.append('|').append(YipeeBlockEvalGDX.getNormalLabel(block));
-            }
-        }
-    }
-
-    private void addPrintLine(StringBuilder sb) {
-        for (int a = 0; a < YipeeGameBoardGDX.MAX_COLS * 2; a++) {
-            sb.append("+");
-            if (a == YipeeGameBoardGDX.MAX_COLS) {
-                sb.append("+");
-            }
-            sb.append("-");
-        }
-        sb.append('+').append('\n');
-    }
-
-    private void printRowReturn(StringBuilder out) {
-        out.append("\n");
+        return YipeeGDXPrinter.getYipeeBoardStateString(this);
     }
 
     private boolean isPieceBlock(int row, int col) {

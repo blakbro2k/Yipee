@@ -26,6 +26,7 @@ import asg.games.yipee.core.objects.YipeePiece;
 import asg.games.yipee.core.tools.RandomUtil;
 import asg.games.yipee.core.tools.TimeUtils;
 import asg.games.yipee.core.tools.Util;
+import asg.games.yipee.core.tools.YipeePrinter;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -45,6 +46,7 @@ import java.util.Vector;
 @Getter
 @Setter
 public class YipeeGameBoard implements Disposable {
+
     public enum GamePhase {
         SPAWN_NEXT,
         FALLING,
@@ -72,6 +74,7 @@ public class YipeeGameBoard implements Disposable {
     //private final YokelPiece MIDAS_PIECE = new YokelPiece(0, YokelBlock.BOT_MIDAS, YokelBlock.MID_MIDAS, YokelBlock.TOP_MIDAS);
 
     private int[][] cells;
+    private int[][] partnerCells;
     private boolean[] ids;
     private int idIndex;
     private final int[] randomColumnIndices = new int[MAX_COLS];
@@ -128,7 +131,7 @@ public class YipeeGameBoard implements Disposable {
     private int brokenBlockCount = 0;
     private boolean hasGameStarted = false;
 
-    private YipeeGameBoard partnerBoard = null;
+    private boolean hasPartner;
     private boolean isPartnerRight = true;
     private boolean debug = false;
     private String name = null;
@@ -139,14 +142,13 @@ public class YipeeGameBoard implements Disposable {
 
     public YipeeGameBoard(long seed) {
         cells = new int[MAX_ROWS][MAX_COLS];
+        partnerCells = new int[MAX_ROWS][MAX_COLS];
         ids = new boolean[128];
-        powers = new LinkedList<>();
-        specialPieces = new LinkedList<>();
         gameClock = new YipeeClock();
         reset(seed);
     }
 
-    public void importGameState(YipeeGameBoardState state) {
+    public void importGameState(YipeeGameBoardState state, YipeeGameBoardState partnerState) {
         if (state != null) {
             setCurrentPhase(state.getCurrentPhase());
             setBrokenBlockCount(state.getBrokenBlockCount());
@@ -174,8 +176,11 @@ public class YipeeGameBoard implements Disposable {
             setHasGameStarted(state.isHasGameStarted());
             setBoardNumber(state.getBoardNumber());
 
-            if(partnerBoard != null) {
-                partnerBoard.setCells(state.getPartnerCells());
+            if (partnerState != null) {
+                hasPartner = true;
+                setPartnerCells(partnerState.getPlayerCells());
+            } else {
+                hasPartner = false;
             }
         }
     }
@@ -208,8 +213,9 @@ public class YipeeGameBoard implements Disposable {
         state.setSpecialPieces(specialPieces);
         state.setHasGameStarted(hasGameStarted);
         state.setBoardNumber(boardNumber);
-        if(partnerBoard != null) {
-            state.setPartnerCells(partnerBoard.getCells());
+
+        if (hasPartner) {
+            state.setPartnerCells(partnerCells);
         }
         return state;
     }
@@ -232,13 +238,15 @@ public class YipeeGameBoard implements Disposable {
         piece = null;
     }
 
-    public void setPartnerBoard(YipeeGameBoard partnerB, boolean b) {
-        this.partnerBoard = partnerB;
-        this.isPartnerRight = b;
+    public void setPartnerCells(YipeeGameBoard partnerB, boolean isRight) {
+        setPartnerBoardState(partnerB.exportGameState(), isRight);
     }
 
-    public void setPartnerBoardState(YipeeGameBoardState partnerB) {
-        this.partnerBoard.importGameState(partnerB);
+    public void setPartnerBoardState(YipeeGameBoardState partnerBoardState, boolean isRight) {
+        if (partnerBoardState != null) {
+            this.partnerCells = partnerBoardState.getPlayerCells();
+        }
+        this.isPartnerRight = isRight;
     }
 
     public static class TestRandomBlockArray extends RandomUtil.RandomNumberArray {
@@ -773,7 +781,7 @@ public class YipeeGameBoard implements Disposable {
         }
     }
 
-    public void handlePower(int i) {
+    void handlePower(int i) {
         if (YipeeBlockEval.getPowerFlag(i) == 0) {
             switch (i) {
                 case YipeeBlock.SPECIAL_BLOCK_1:
@@ -844,7 +852,7 @@ public class YipeeGameBoard implements Disposable {
     void removePowersFromQueue() {
         Stack<Integer> powers = new Stack<>();
         Queue<Integer> queue = getPowers();
-        int count = queue.size() / 2;
+        int count = Util.size(queue) / 2;
 
         Iterator<Integer> iterator = queue.iterator();
         while (iterator.hasNext() && count-- > 0) {
@@ -855,12 +863,12 @@ public class YipeeGameBoard implements Disposable {
         addRemovedPowersToBoard(powers);
     }
 
-    public void addRemovedPowersToBoard(Stack<Integer> powers) {
+    void addRemovedPowersToBoard(Stack<Integer> powers) {
         shuffleColumnIndices();
 
         int count = 0;
 
-        while (powers.size() > 0) {
+        while (Util.size(powers) > 0) {
             int value = powers.pop();
             //powers.removeAt(0);
 
@@ -1517,7 +1525,7 @@ public class YipeeGameBoard implements Disposable {
     public void flagBrokenCells(Stack<Integer> stack) {
         int index = 0;
 
-        while (index < stack.size()) {
+        while (index < Util.size(stack)) {
             int count = 0;
 
             for (int row = 0; row < MAX_ROWS; row++) {
@@ -1543,7 +1551,7 @@ public class YipeeGameBoard implements Disposable {
             }
         }
 
-        for (int i = 0; i < stack.size(); i++) {
+        for (int i = 0; i < Util.size(stack); i++) {
             for (int row = 0; row < MAX_ROWS; row++) {
                 for (int col = 0; col < MAX_COLS; col++) {
                     if (YipeeBlockEval.getCellFlag(cells[row][col]) < MAX_COLS
@@ -1702,78 +1710,7 @@ public class YipeeGameBoard implements Disposable {
      */
 
     public String toString() {
-        StringBuilder out = new StringBuilder();
-        out.append("#################").append("\n");
-        out.append("pieceFallTimer: ").append(pieceFallTimer).append("\n")
-            .append("lockOutTimer: ").append(pieceLockTimer).append("\n")
-            .append("brokenBlockCount: ").append(brokenBlockCount).append("\n")
-            .append("Yahoo Count: ").append(yahooDuration).append("\n");
-
-        if (piece != null) {
-            out.append("player piece pos(").append(piece.column).append(",").append(piece.row).append(")").append("\n");
-        }
-
-        addPrintLine(out);
-        for (int r = MAX_ROWS - 1; r > -1; r--) {
-            printRow(out, r);
-            printRowReturn(out);
-        }
-        addPrintLine(out);
-        printRowReturn(out);
-        out.append("#################").append("\n");
-        return out.toString();
-    }
-
-    private void printRow(StringBuilder out, int r) {
-        if (isPartnerRight) {
-            printPlayerRows(this, partnerBoard, r, out);
-        } else {
-            printPlayerRows(partnerBoard, this, r, out);
-        }
-    }
-
-    private void printPlayerRows(YipeeGameBoard boardLeft, YipeeGameBoard boardRight, int r, StringBuilder out) {
-        for (int c = 0; c < MAX_COLS * 2; c++) {
-            int block;
-            if (c == MAX_COLS) {
-                out.append('|');
-            }
-            if (c < MAX_COLS) {
-                block = boardLeft.isPieceBlock(r, c) ? boardLeft.getPieceBlock(r) : boardLeft.getPieceValue(c, r);
-                printGameLine(out, block);
-            } else {
-                block = boardRight.isPieceBlock(r, c - MAX_COLS) ? boardRight.getPieceBlock(r) : boardRight.getPieceValue(c - MAX_COLS, r);
-                printGameLine(out, block);
-            }
-        }
-        out.append('|');
-    }
-
-    private void printGameLine(StringBuilder out, int block) {
-        if (block == YipeeBlock.CLEAR_BLOCK) {
-            out.append('|').append(' ');
-        } else {
-            if (YipeeBlockEval.hasPowerBlockFlag(block)) {
-                out.append('|').append(YipeeBlockEval.getPowerLabel(block));
-            } else {
-                out.append('|').append(YipeeBlockEval.getNormalLabel(block));
-            }
-        }
-    }
-
-    private void addPrintLine(StringBuilder sb) {
-        for (int a = 0; a < MAX_COLS * 2; a++) {
-            sb.append("+");
-            if (a == MAX_COLS) {
-                sb.append("+");
-            }
-            sb.append("-");
-        }
-        sb.append('+').append('\n');
-    }
-
-    private void printRowReturn(StringBuilder out) {
-        out.append("\n");
+        return YipeePrinter.toStringYipeeBoard(this);
     }
 
     boolean isPieceBlock(int row, int col) {
@@ -1788,12 +1725,12 @@ public class YipeeGameBoard implements Disposable {
         cells[r][c] = YipeeBlock.CLEAR_BLOCK;
     }
 
-    public void updateStateAndAll(YipeeGameBoardState state, float delta) {
-        importGameState(state);
+    public void updateGameState(float delta, YipeeGameBoardState state, YipeeGameBoardState partnerState) {
+        importGameState(state, partnerState);
         update(delta);
     }
 
-    public void update(float delta) {
+    private void update(float delta) {
         if (!hasGameStarted || hasPlayerDied()) {
             currentPhase = GamePhase.GAME_OVER;
             return;
@@ -1983,7 +1920,7 @@ public class YipeeGameBoard implements Disposable {
     private void dropCellRows(Vector<YipeeBlockMove> cellsToDrop) {
         //Remove matches
 
-        if (cellsToDrop.size() > 0) {
+        if (Util.size(cellsToDrop) > 0) {
             System.out.println("Time to do some row dropping");
 
             for (YipeeBlockMove blockMove : cellsToDrop) {
@@ -2003,11 +1940,21 @@ public class YipeeGameBoard implements Disposable {
         }
     }
 
+    private YipeeGameBoard getPartnerBoard() {
+        YipeeGameBoard partnerBoard = null;
+        if (hasPartner) {
+            partnerBoard = new YipeeGameBoard();
+            partnerBoard.setCells(partnerCells);
+        }
+        return partnerBoard;
+    }
+
     private void updateBoard() {
         //System.out.println("flagging board matches");
         flagBoardMatches();
-        if (partnerBoard != null) {
-            checkBoardForPartnerBreaks(partnerBoard, isPartnerRight);
+
+        if (hasPartner) {
+            checkBoardForPartnerBreaks(getPartnerBoard(), isPartnerRight);
         } else {
             System.out.println("Assertion Error: Partner Board is null, was it set?");
         }
@@ -2078,16 +2025,16 @@ public class YipeeGameBoard implements Disposable {
 
     public void setNextPiece() {
         if (piece != null) {
-            int block = YipeeBlockEval.getCellFlag(piece.getBlock1());
+            int block = YipeeBlockEval.getCellFlag(piece.getTopBlock());
 
             if (block == YipeeBlock.MEDUSA) {
-                piece.setBlock1(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Oy_BLOCK, 3)));
-                piece.setBlock2(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Oy_BLOCK, 3)));
-                piece.setBlock3(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Oy_BLOCK, 3)));
+                piece.setTopBlock(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Oy_BLOCK, 3)));
+                piece.setMidBlock(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Oy_BLOCK, 3)));
+                piece.setBottomBlock(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Oy_BLOCK, 3)));
             } else if (block == YipeeBlock.TOP_MIDAS || block == YipeeBlock.MID_MIDAS || block == YipeeBlock.BOT_MIDAS) {
-                piece.setBlock1(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Oy_BLOCK, 2)));
-                piece.setBlock2(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Oy_BLOCK, 2)));
-                piece.setBlock3(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Oy_BLOCK, 2)));
+                piece.setTopBlock(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Oy_BLOCK, 2)));
+                piece.setMidBlock(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Oy_BLOCK, 2)));
+                piece.setBottomBlock(YipeeBlockEval.addPowerBlockFlag(YipeeBlockEval.setPowerFlag(YipeeBlock.Oy_BLOCK, 2)));
             }
 
             //Place piece
@@ -2096,7 +2043,7 @@ public class YipeeGameBoard implements Disposable {
 
             //Handle special O then remove powers from placed block so they can be marked broken
             if (block == YipeeBlock.MEDUSA || block == YipeeBlock.TOP_MIDAS || block == YipeeBlock.MID_MIDAS || block == YipeeBlock.BOT_MIDAS) {
-                handlePlacedPowerBlock(piece.getBlock1());
+                handlePlacedPowerBlock(piece.getTopBlock());
                 cells[piece.row][piece.column] = YipeeBlockEval.setIDFlag(YipeeBlock.Oy_BLOCK, YipeeBlockEval.getID(cells[piece.row][piece.column]));
                 cells[piece.row + 1][piece.column] = YipeeBlockEval.setIDFlag(YipeeBlock.Oy_BLOCK, YipeeBlockEval.getID(cells[piece.row + 1][piece.column]));
                 cells[piece.row + 2][piece.column] = YipeeBlockEval.setIDFlag(YipeeBlock.Oy_BLOCK, YipeeBlockEval.getID(cells[piece.row + 2][piece.column]));

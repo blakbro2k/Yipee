@@ -16,10 +16,23 @@
 package asg.games.yipee.core.persistence;
 
 /**
- * Visitor Class to save complex child YipeeObjects
+ * A visitor interface for saving complex, nested {@link asg.games.yipee.core.objects.YipeeObject} structures.
+ * <p>
+ * Implementing classes should define how to handle the persistence of child or related entities
+ * through the provided {@link YipeeStorageAdapter}. This enables fine-grained control over save operations
+ * and allows objects to coordinate the persistence of their internal structure.
+ * </p>
+ *
+ * <p>Follows the Visitor design pattern to decouple save logic from the entity structure.</p>
  *
  * @author Blakbro2k
  */
 public interface YipeeObjectJPAVisitor {
+
+    /**
+     * Accepts a {@link YipeeStorageAdapter} to perform domain-specific save operations.
+     *
+     * @param adapter the storage adapter responsible for saving child or related objects
+     */
     void visitSave(YipeeStorageAdapter adapter);
 }

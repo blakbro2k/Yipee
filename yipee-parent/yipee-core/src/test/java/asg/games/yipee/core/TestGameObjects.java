@@ -361,22 +361,22 @@ public class TestGameObjects {
         Assert.assertEquals(yokelPiece.getValueAt(0), expected[0]);
 
         Assert.assertEquals(yokelPiece.getIndex(), expectedIndex);
-        Assert.assertEquals(yokelPiece.getBlock1(), expected[2]);
-        Assert.assertEquals(yokelPiece.getBlock2(), expected[1]);
-        Assert.assertEquals(yokelPiece.getBlock3(), expected[0]);
+        Assert.assertEquals(yokelPiece.getTopBlock(), expected[2]);
+        Assert.assertEquals(yokelPiece.getMidBlock(), expected[1]);
+        Assert.assertEquals(yokelPiece.getBottomBlock(), expected[0]);
         Assert.assertEquals(Arrays.toString(yokelPiece.getCells()), Arrays.toString(expected));
 
         //Cycle Down
         yokelPiece.cycleDown();
-        Assert.assertEquals(yokelPiece.getBlock1(), expected[0]);
-        Assert.assertEquals(yokelPiece.getBlock2(), expected[2]);
-        Assert.assertEquals(yokelPiece.getBlock3(), expected[1]);
+        Assert.assertEquals(yokelPiece.getTopBlock(), expected[0]);
+        Assert.assertEquals(yokelPiece.getMidBlock(), expected[2]);
+        Assert.assertEquals(yokelPiece.getBottomBlock(), expected[1]);
 
         //Cycle Down
         yokelPiece.cycleUp();
-        Assert.assertEquals(yokelPiece.getBlock1(), expected[2]);
-        Assert.assertEquals(yokelPiece.getBlock2(), expected[1]);
-        Assert.assertEquals(yokelPiece.getBlock3(), expected[0]);
+        Assert.assertEquals(yokelPiece.getTopBlock(), expected[2]);
+        Assert.assertEquals(yokelPiece.getMidBlock(), expected[1]);
+        Assert.assertEquals(yokelPiece.getBottomBlock(), expected[0]);
 
         //Test Json
         String json = NetUtil.getJsonString(yokelPiece);

@@ -22,24 +22,55 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
+/**
+ * Represents a block that has been broken (e.g., matched or destroyed) on a game board.
+ *
+ * <p>This object stores the block type along with its position on the board grid.
+ * It is typically used during animations or cleanup phases to track visual effects
+ * and scoring.
+ *
+ * <p>This class supports JSON serialization and extends {@link AbstractYipeeObject}.
+ *
+ * @author Blakbro2k
+ */
 @Getter
 @Setter
 public class YipeeBrokenBlock extends AbstractYipeeObject {
     private static final Logger logger = LoggerFactory.getLogger(YipeeBrokenBlock.class);
 
-    private int block, row, col;
+    /**
+     * The type identifier of the broken block (color, power, etc).
+     */
+    private int block;
+
+    /**
+     * The row where the block was located before breaking.
+     */
+    private int row;
+
+    /**
+     * The column where the block was located before breaking.
+     */
+    private int col;
 
     /**
      * Default constructor required for JSON serialization.
-     * Initializes the block in its default state.
+     * Initializes the broken block with default values.
      */
     public YipeeBrokenBlock() {
     }
 
+    /**
+     * Constructs a broken block with the given block type and location.
+     *
+     * @param block the block ID or type
+     * @param row   the row index of the block
+     * @param col   the column index of the block
+     */
     public YipeeBrokenBlock(int block, int row, int col) {
-        setBlock(block);
-        setRow(row);
-        setCol(col);
+        this.block = block;
+        this.row = row;
+        this.col = col;
     }
 
     @Override

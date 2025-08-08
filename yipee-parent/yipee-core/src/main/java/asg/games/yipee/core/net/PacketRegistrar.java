@@ -314,7 +314,7 @@ public class PacketRegistrar {
     /**
      * Returns explicitClassIds
      *
-     * @return
+     * @return an unmodifiable Map of class Ids
      */
     public static Map<String, Integer> getExplicitMappings() {
         return Collections.unmodifiableMap(explicitClassIds);

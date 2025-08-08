@@ -18,62 +18,72 @@ package asg.games.yipee.common.net;
 import asg.games.yipee.common.packets.YipeeSerializable;
 
 /**
- * A game object
+ * Represents a basic network-serializable Yipee object with metadata fields such as ID, name,
+ * creation timestamp, and modification timestamp.
+ *
+ * <p>This interface is intended to be implemented by all game-related data objects
+ * that are transmitted across the network, ensuring consistent serialization and
+ * lifecycle tracking across platforms (e.g., server, LibGDX, GWT).
+ *
+ * <p>Extends {@link YipeeSerializable} to mark it as part of the shared packet contract.
  *
  * @author Blakbro2k
  */
 public interface NetYipeeObject extends YipeeSerializable {
+
     /**
-     * Sets the Object ID
+     * Sets the unique identifier for this object.
      *
-     * @param id String
+     * @param id the string ID to assign
      */
     void setId(String id);
 
     /**
-     * @return Id String
+     * Returns the unique identifier of this object.
+     *
+     * @return the string ID
      */
     String getId();
 
     /**
-     * Sets the Object Name
+     * Sets the display or logical name of this object.
      *
-     * @param name String
+     * @param name the name to assign
      */
     void setName(String name);
 
     /**
-     * Returns the Object Name
+     * Returns the name of this object.
      *
-     * @return name String
+     * @return the name string
      */
     String getName();
 
     /**
-     * Sets the Object created date
+     * Sets the timestamp when this object was created.
      *
-     * @param dateTime long string
+     * @param dateTime the epoch millisecond timestamp of creation
      */
     void setCreated(long dateTime);
 
     /**
-     * Returns the Object created date
+     * Returns the creation timestamp of this object.
      *
-     * @return date created long
+     * @return the epoch millisecond timestamp of creation
      */
     long getCreated();
 
     /**
-     * Sets the Object modified date
+     * Sets the timestamp when this object was last modified.
      *
-     * @param dateTime long string
+     * @param dateTime the epoch millisecond timestamp of modification
      */
     void setModified(long dateTime);
 
     /**
-     * Returns the Object modified date
+     * Returns the last modification timestamp of this object.
      *
-     * @return date modified long string
+     * @return the epoch millisecond timestamp of last modification
      */
     long getModified();
 }

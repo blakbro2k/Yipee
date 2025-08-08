@@ -17,8 +17,17 @@ package asg.games.yipee.common.tools;
 
 import java.util.Arrays;
 
+/**
+ * Utility class for performing static operations on arrays and matrices.
+ */
 public class StaticArrayUtils {
 
+    /**
+     * Creates a deep copy of a 2D integer matrix.
+     *
+     * @param original the original matrix to copy
+     * @return a new matrix with the same values
+     */
     public static int[][] copyIntMatrix(int[][] original) {
         if (original == null) return null;
         int[][] copy = new int[original.length][];
@@ -27,5 +36,4 @@ public class StaticArrayUtils {
         }
         return copy;
     }
-
 }

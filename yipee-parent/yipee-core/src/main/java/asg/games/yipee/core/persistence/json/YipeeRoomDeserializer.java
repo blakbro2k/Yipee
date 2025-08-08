@@ -34,23 +34,44 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Custom JSON Deserializer for YipeeRoom Game Object
- * implements StdDeserializer interface
+ * Custom JSON deserializer for {@link YipeeRoom} objects.
+ * <p>
+ * This class extends {@link StdDeserializer} and provides logic to manually deserialize
+ * {@code YipeeRoom} JSON structures into full Java objects, including nested players
+ * and tables.
+ *
+ * <p>Used when automatic Jackson deserialization fails to handle custom data structures properly.
  *
  * @author Blakbro2k
  */
-
 public class YipeeRoomDeserializer extends StdDeserializer<YipeeRoom> {
     private final Logger logger = LoggerFactory.getLogger(YipeeRoomDeserializer.class);
 
+    /**
+     * Default constructor required for Jackson module registration.
+     */
     public YipeeRoomDeserializer() {
         this(null);
     }
 
+    /**
+     * Constructor that passes the handled type to the superclass.
+     *
+     * @param vc the class type handled by this deserializer
+     */
     public YipeeRoomDeserializer(Class<?> vc) {
         super(vc);
     }
 
+    /**
+     * Performs custom deserialization of a {@link YipeeRoom} from a JSON structure.
+     * This includes reading room metadata, deserializing players, and parsing the tableIndexMap.
+     *
+     * @param jp  the JSON parser
+     * @param ctx the deserialization context
+     * @return a fully constructed {@code YipeeRoom} instance
+     * @throws IOException if deserialization fails
+     */
     @Override
     public YipeeRoom deserialize(JsonParser jp, DeserializationContext ctx) throws IOException, JsonProcessingException {
         JsonNode node = jp.getCodec().readTree(jp);
@@ -91,6 +112,7 @@ public class YipeeRoomDeserializer extends StdDeserializer<YipeeRoom> {
             room.setPlayers(allPlayers);
         }
 
+        // Deserialize table map
         if (node.has("tableIndexMap") && !node.get("tableIndexMap").isNull()) {
             Map<Integer, YipeeTable> map = new HashMap<>();
             JsonNode mapNode = node.get("tableIndexMap");
@@ -112,4 +134,3 @@ public class YipeeRoomDeserializer extends StdDeserializer<YipeeRoom> {
         return room;
     }
 }
-

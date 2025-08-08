@@ -62,7 +62,7 @@ import java.util.Objects;
  *     piece.cycleDown();
  *
  *     // Access individual blocks
- *     int block1Value = piece.getBlock1();
+ *     int block1Value = piece.getTopBlock();
  * </pre>
  *
  * @author Blakbro2k
@@ -87,46 +87,104 @@ public class YipeePiece extends AbstractYipeeObject implements Copyable<YipeePie
     @JsonIgnore
     public static final int MIDAS_GAME_PIECE = 2;
 
+    /**
+     * Internal array of 3 integers representing the block values of the piece.
+     * Index 2 is the top block, index 1 is the middle block, and index 0 is the bottom block.
+     */
     private final int[] cells = new int[3];
+
+    /**
+     * Optional index to identify or classify the piece (e.g. for debugging or piece type).
+     */
     private int index;
+
+    /**
+     * The row position of the piece on the game board.
+     */
     public int row;
+
+    /**
+     * The column position of the piece on the game board.
+     */
     public int column;
 
-    //Empty Constructor required for Json.Serializable
+
+    /**
+     * Default constructor required for JSON serialization.
+     */
     public YipeePiece() {
     }
 
-    public YipeePiece(int index, int block1, int block2, int block3) {
+    /**
+     * Constructs a new YipeePiece with specified index and block values.
+     *
+     * @param index       the identifier for the piece
+     * @param topBlock    the value of the top block
+     * @param midBlock    the value of the middle block
+     * @param bottomBlock the value of the bottom block
+     */
+    public YipeePiece(int index, int topBlock, int midBlock, int bottomBlock) {
         setIndex(index);
-        setBlock1(block1);
-        setBlock2(block2);
-        setBlock3(block3);
+        setTopBlock(topBlock);
+        setMidBlock(midBlock);
+        setBottomBlock(bottomBlock);
     }
 
-    public int getBlock1() {
+    /**
+     * @return the value of the top block (index 2)
+     */
+    public int getTopBlock() {
         return cells[2];
     }
 
-    public void setBlock1(int block) {
+    /**
+     * Sets the value of the top block.
+     *
+     * @param block the value to assign
+     */
+    public void setTopBlock(int block) {
         cells[2] = block;
     }
 
-    public int getBlock2() {
+    /**
+     * @return the value of the middle block (index 1)
+     */
+    public int getMidBlock() {
         return cells[1];
     }
 
-    public void setBlock2(int block) {
+    /**
+     * Sets the value of the middle block.
+     *
+     * @param block the value to assign
+     */
+    public void setMidBlock(int block) {
         cells[1] = block;
     }
 
-    public int getBlock3() {
+    /**
+     * @return the value of the bottom block (index 0)
+     */
+    public int getBottomBlock() {
         return cells[0];
     }
 
-    public void setBlock3(int block) {
+    /**
+     * Sets the value of the bottom block.
+     *
+     * @param block the value to assign
+     */
+    public void setBottomBlock(int block) {
         cells[0] = block;
     }
 
+    /**
+     * Sets the row and column position of the piece.
+     *
+     * @param r the row index (must be ≥ 0)
+     * @param c the column index (must be ≥ 0)
+     * @throws RuntimeException if either coordinate is negative
+     */
     public void setPosition(int r, int c) {
         if (r < 0) {
             logger.error("Row value cannot be less than zero!");
@@ -140,24 +198,39 @@ public class YipeePiece extends AbstractYipeeObject implements Copyable<YipeePie
         this.column = c;
     }
 
+    /**
+     * Rotates the piece's blocks downward:
+     * top → middle, middle → bottom, bottom → top.
+     */
     public void cycleDown() {
-        int tempBlock1 = getBlock1();
-        int tempBlock2 = getBlock2();
-        int tempBlock3 = getBlock3();
-        setBlock1(tempBlock3);
-        setBlock2(tempBlock1);
-        setBlock3(tempBlock2);
+        int tempBlock1 = getTopBlock();
+        int tempBlock2 = getMidBlock();
+        int tempBlock3 = getBottomBlock();
+        setTopBlock(tempBlock3);
+        setMidBlock(tempBlock1);
+        setBottomBlock(tempBlock2);
     }
 
+    /**
+     * Rotates the piece's blocks upward:
+     * top → bottom, middle → top, bottom → middle.
+     */
     public void cycleUp() {
-        int tempBlock1 = getBlock1();
-        int tempBlock2 = getBlock2();
-        int tempBlock3 = getBlock3();
-        setBlock1(tempBlock2);
-        setBlock2(tempBlock3);
-        setBlock3(tempBlock1);
+        int tempBlock1 = getTopBlock();
+        int tempBlock2 = getMidBlock();
+        int tempBlock3 = getBottomBlock();
+        setTopBlock(tempBlock2);
+        setMidBlock(tempBlock3);
+        setBottomBlock(tempBlock1);
     }
 
+    /**
+     * Returns the value of the block at the specified internal index.
+     *
+     * @param i the index in the cells array (0 to 2)
+     * @return the block value
+     * @throws IllegalArgumentException if the index is out of bounds
+     */
     public int getValueAt(int i) {
         if (i < 0 || i >= cells.length) {
             logger.error("Invalid index for getValueAt: {}", i);
@@ -187,6 +260,11 @@ public class YipeePiece extends AbstractYipeeObject implements Copyable<YipeePie
         return super.toString() + "[row=" + row + ", column=" + column + ", cells=" + Arrays.toString(cells) + "]";
     }
 
+    /**
+     * Creates a shallow copy of this piece, duplicating its state and block values.
+     *
+     * @return a new {@code YipeePiece} with identical values
+     */
     @Override
     public YipeePiece copy() {
         YipeePiece copy = new YipeePiece();
@@ -197,6 +275,12 @@ public class YipeePiece extends AbstractYipeeObject implements Copyable<YipeePie
         return copy;
     }
 
+    /**
+     * Creates a deep copy of this piece.
+     * Since only primitive data is used, this is equivalent to {@link #copy()}.
+     *
+     * @return a fully independent copy of this piece
+     */
     @Override
     public YipeePiece deepCopy() {
         // identical here, since cells is the only mutable content needing true duplication
