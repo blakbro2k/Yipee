@@ -15,5 +15,18 @@
  */
 package asg.games.yipee.common.game;
 
+/**
+ * Represents a generic game board state.
+ * <p>
+ * This interface serves as a common type for game board state objects used in the Yipee game.
+ * Implementations of this interface should encapsulate the full state of a game board at a
+ * specific point in time, including all relevant game data needed for rendering, simulation,
+ * and network synchronization.
+ * </p>
+ *
+ * <p>
+ * It is typically used for both authoritative server state and predicted client state handling.
+ * </p>
+ */
 public interface GameBoardState {
 }

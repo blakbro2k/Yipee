@@ -31,6 +31,7 @@ import lombok.Setter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Maps game actions to user-defined input keys for one specific player.
@@ -107,11 +108,11 @@ public class YipeeKeyMap implements Copyable<YipeeKeyMap>, Disposable, YipeeSeri
     /**
      * Remaps a specific action to a different keycode.
      *
-     * @param newAction the action to rebind
+     * @param actionType the action to rebind
      * @param keycode   the new key
      */
-    public void rebind(PlayerAction.ActionType newAction, int keycode) {
-        actionToKeycode.put(newAction, keycode);
+    public void rebind(PlayerAction.ActionType actionType, int keycode) {
+        actionToKeycode.put(actionType, keycode);
     }
 
     /**
@@ -139,114 +140,227 @@ public class YipeeKeyMap implements Copyable<YipeeKeyMap>, Disposable, YipeeSeri
 
     // -- Strictly typed individual accessors ensure only known actions are bound --
 
+    /**
+     * Returns the code bound to the Right Arrow Key
+     *
+     * @return {@code PlayerAction.ActionType code}
+     */
     public int getRightKey() {
         return actionToKeycode.get(PlayerAction.ActionType.P_MOVE_RIGHT);
     }
 
+    /**
+     * Sets the code bound to the Right Arrow Key
+     */
     public void setRightKey(int keycode) {
         rebind(PlayerAction.ActionType.P_MOVE_RIGHT, keycode);
     }
 
+    /**
+     * Returns the code bound to the Left Arrow Key
+     *
+     * @return {@code PlayerAction.ActionType code}
+     */
     public int getLeftKey() {
         return actionToKeycode.get(PlayerAction.ActionType.P_MOVE_LEFT);
     }
 
+    /**
+     * Sets the code bound to the Left Arrow Key
+     */
     public void setLeftKey(int keycode) {
         rebind(PlayerAction.ActionType.P_MOVE_LEFT, keycode);
     }
 
+    /**
+     * Returns the code bound to the 'Cycle Down' Arrow Key
+     *
+     * @return {@code PlayerAction.ActionType code}
+     */
     public int getCycleDownKey() {
         return actionToKeycode.get(PlayerAction.ActionType.P_CYCLE_DOWN);
     }
 
+    /**
+     * Sets the code bound to the 'Cycle Down' Arrow Key
+     */
     public void setCycleDownKey(int keycode) {
         rebind(PlayerAction.ActionType.P_CYCLE_DOWN, keycode);
     }
 
+    /**
+     * Returns the code bound to the Down Arrow Key
+     *
+     * @return {@code PlayerAction.ActionType code}
+     */
     public int getDownKey() {
         return actionToKeycode.get(PlayerAction.ActionType.P_MOVE_DOWN_START);
     }
 
+    /**
+     * Sets the code bound to the Down Arrow Key
+     */
     public void setDownKey(int keycode) {
         rebind(PlayerAction.ActionType.P_MOVE_DOWN_START, keycode);
     }
 
+    /**
+     * Returns the code bound to the 'Cycle Up' Arrow Key
+     *
+     * @return {@code PlayerAction.ActionType code}
+     */
     public int getCycleUpKey() {
         return actionToKeycode.get(PlayerAction.ActionType.P_CYCLE_UP);
     }
 
+    /**
+     * Sets the code bound to the 'Cycle Up' Arrow Key
+     */
     public void setCycleUpKey(int keycode) {
         rebind(PlayerAction.ActionType.P_CYCLE_UP, keycode);
     }
 
+    /**
+     * Returns the code bound to the Target 1 Arrow Key
+     *
+     * @return {@code PlayerAction.ActionType code}
+     */
     public int getTarget1() {
         return actionToKeycode.get(PlayerAction.ActionType.P_ATTACK_TARGET1);
     }
 
+    /**
+     * Sets the code bound to the Target 1 Key
+     */
     public void setTarget1(int keycode) {
         rebind(PlayerAction.ActionType.P_ATTACK_TARGET1, keycode);
     }
 
+    /**
+     * Returns the code bound to the Target 2 Key
+     *
+     * @return {@code PlayerAction.ActionType code}
+     */
     public int getTarget2() {
         return actionToKeycode.get(PlayerAction.ActionType.P_ATTACK_TARGET2);
     }
 
+    /**
+     * Sets the code bound to the Target 2 Key
+     */
     public void setTarget2(int keycode) {
         rebind(PlayerAction.ActionType.P_ATTACK_TARGET2, keycode);
     }
 
+    /**
+     * Returns the code bound to the Target 3 Key
+     *
+     * @return {@code PlayerAction.ActionType code}
+     */
     public int getTarget3() {
         return actionToKeycode.get(PlayerAction.ActionType.P_ATTACK_TARGET3);
     }
 
+    /**
+     * Sets the code bound to the Target 3 Key
+     */
     public void setTarget3(int keycode) {
         rebind(PlayerAction.ActionType.P_ATTACK_TARGET3, keycode);
     }
 
+    /**
+     * Returns the code bound to the Target 4 Key
+     *
+     * @return {@code PlayerAction.ActionType code}
+     */
     public int getTarget4() {
         return actionToKeycode.get(PlayerAction.ActionType.P_ATTACK_TARGET4);
     }
 
+    /**
+     * Sets the code bound to the Target 4 Key
+     */
     public void setTarget4(int keycode) {
         rebind(PlayerAction.ActionType.P_ATTACK_TARGET4, keycode);
     }
 
+    /**
+     * Returns the code bound to the Target 5 Key
+     *
+     * @return {@code PlayerAction.ActionType code}
+     */
     public int getTarget5() {
         return actionToKeycode.get(PlayerAction.ActionType.P_ATTACK_TARGET5);
     }
 
+    /**
+     * Sets the code bound to the Target 5 Key
+     */
     public void setTarget5(int keycode) {
         rebind(PlayerAction.ActionType.P_ATTACK_TARGET5, keycode);
     }
 
+    /**
+     * Returns the code bound to the Target 6 Key
+     *
+     * @return {@code PlayerAction.ActionType code}
+     */
     public int getTarget6() {
         return actionToKeycode.get(PlayerAction.ActionType.P_ATTACK_TARGET6);
     }
 
+    /**
+     * Sets the code bound to the Target 6 Key
+     */
     public void setTarget6(int keycode) {
         rebind(PlayerAction.ActionType.P_ATTACK_TARGET6, keycode);
     }
 
+    /**
+     * Returns the code bound to the Target 7 Key
+     *
+     * @return {@code PlayerAction.ActionType code}
+     */
     public int getTarget7() {
         return actionToKeycode.get(PlayerAction.ActionType.P_ATTACK_TARGET7);
     }
 
+    /**
+     * Sets the code bound to the Target 7 Key
+     */
     public void setTarget7(int keycode) {
         rebind(PlayerAction.ActionType.P_ATTACK_TARGET7, keycode);
     }
 
+    /**
+     * Returns the code bound to the Target 8 Key
+     *
+     * @return {@code PlayerAction.ActionType code}
+     */
     public int getTarget8() {
         return actionToKeycode.get(PlayerAction.ActionType.P_ATTACK_TARGET8);
     }
 
+    /**
+     * Sets the code bound to the Target 8 Key
+     */
     public void setTarget8(int keycode) {
         rebind(PlayerAction.ActionType.P_ATTACK_TARGET8, keycode);
     }
 
+    /**
+     * Returns the code bound to the Random Target Key
+     *
+     * @return {@code PlayerAction.ActionType code}
+     */
     public int getRandomAttackKey() {
         return actionToKeycode.get(PlayerAction.ActionType.P_ATTACK_RANDOM);
     }
 
+    /**
+     * Sets the code bound to the Random Target
+     * Key
+     */
     public void setRandomAttackKey(int keycode) {
         rebind(PlayerAction.ActionType.P_ATTACK_RANDOM, keycode);
     }
@@ -257,12 +371,12 @@ public class YipeeKeyMap implements Copyable<YipeeKeyMap>, Disposable, YipeeSeri
      * @param keycode a raw key input
      * @return the corresponding game action, or null if unbound
      */
-    public PlayerAction.ActionType getActionForKey(int keycode) {
-        if (actionToKeycode.isEmpty()) return null;
-        for (Map.Entry<PlayerAction.ActionType, Integer> entry : actionToKeycode.entrySet()) {
-            if (entry.getValue() == keycode) return entry.getKey();
-        }
-        return null;
+    public Optional<PlayerAction.ActionType> getActionForKey(int keycode) {
+        return actionToKeycode.entrySet()
+            .stream()
+            .filter(entry -> entry.getValue() == keycode)
+            .map(Map.Entry::getKey)
+            .findFirst();
     }
 
     /**

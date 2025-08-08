@@ -19,28 +19,71 @@ import asg.games.yipee.core.objects.YipeePlayer;
 
 import java.util.Collection;
 
+/**
+ * Defines methods for managing the association between client IDs and {@link YipeePlayer} instances.
+ * <p>
+ * Used to track connected players, register/unregister them, and query their association across sessions.
+ * </p>
+ *
+ * <p>Implementations should ensure proper cleanup of players from tables, seats, games, and rooms upon unregistration.</p>
+ */
 public interface ClientPlayerController {
-    /** Player Controls
-     *  Methods control the flow of a player and client */
-    /** Must link clientID to Player ID to Player Object. */
+
+    /**
+     * Registers a player to a given client ID.
+     * This creates an association between the client's network connection and a specific {@link YipeePlayer}.
+     *
+     * @param clientId the ID of the client connection
+     * @param player   the player to register
+     * @throws Exception if registration fails or is invalid
+     */
     void registerPlayer(String clientId, YipeePlayer player) throws Exception;
 
-    /** Remove Registered Player. */
-    /** Should remove the from all tables, seats, games and rooms **/
+    /**
+     * Unregisters a player associated with the given client ID.
+     * <p>This should also remove the player from all game-related associations such as tables, seats, games, and rooms.</p>
+     *
+     * @param clientID the ID of the client to unregister
+     * @throws Exception if unregistration fails
+     */
     void unRegisterPlayer(String clientID) throws Exception;
 
-    /** Get Registered Player given Yokel Id. */
+    /**
+     * Retrieves a registered player by their player ID.
+     *
+     * @param playerId the unique ID of the player
+     * @return the registered {@link YipeePlayer} or {@code null} if not found
+     */
     YipeePlayer getRegisteredPlayerGivenId(String playerId);
 
-    /** Get Registered Player given YokelObject. */
+    /**
+     * Retrieves the canonical registered player instance for the given player object.
+     *
+     * @param player the player object to look up
+     * @return the registered {@link YipeePlayer}, or {@code null} if not found
+     */
     YipeePlayer getRegisteredPlayer(YipeePlayer player);
 
-    /** Gets all registered players. */
+    /**
+     * Returns a collection of all currently registered players.
+     *
+     * @return a collection of {@link YipeePlayer} instances
+     */
     Collection<YipeePlayer> getAllRegisteredPlayers();
 
-    /** Check if client id is registered **/
+    /**
+     * Checks whether the specified client ID has a registered player.
+     *
+     * @param clientId the ID of the client
+     * @return {@code true} if registered, otherwise {@code false}
+     */
     boolean isClientRegistered(String clientId);
 
-    /** Check if player id is registered **/
+    /**
+     * Checks whether a player ID is currently registered.
+     *
+     * @param playerId the ID of the player
+     * @return {@code true} if the player is registered, otherwise {@code false}
+     */
     boolean isPlayerRegistered(String playerId);
 }

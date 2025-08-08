@@ -16,10 +16,23 @@
 package asg.games.yipee.core.persistence;
 
 /**
- * Visitor Class to delete complex child YipeeObjects
+ * A visitor interface for deleting complex, nested {@link asg.games.yipee.core.objects.YipeeObject} structures.
+ * <p>
+ * Implementing classes should define how to handle deletion of child or related entities through
+ * the provided {@link YipeeObjectTerminatorAdapter}. This is typically used in persistence layers
+ * to cascade deletes in a controlled, domain-aware manner rather than relying entirely on JPA cascade options.
+ * </p>
+ *
+ * <p>Follows the Visitor design pattern to decouple deletion logic from the entity structure.</p>
  *
  * @author Blakbro2k
  */
 public interface TerminatorJPAVisitor {
+
+    /**
+     * Accepts a {@link YipeeObjectTerminatorAdapter} to perform domain-specific delete operations.
+     *
+     * @param terminatorAdapter the adapter responsible for managing child deletion logic
+     */
     void visitDelete(YipeeObjectTerminatorAdapter terminatorAdapter);
 }

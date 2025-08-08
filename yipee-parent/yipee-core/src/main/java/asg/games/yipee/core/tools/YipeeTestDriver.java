@@ -34,14 +34,14 @@ public class YipeeTestDriver {
         long seed = 1;//System.currentTimeMillis();
         YipeeGameBoard player = new YipeeGameBoard(seed);
         YipeeGameBoard partner = new YipeeGameBoard(seed);
-        player.setPartnerBoard(partner, true);
-        partner.setPartnerBoard(player, false);
+        //player.setPartnerBoard(partner, true);
+        //partner.setPartnerBoard(player, false);
         player.begin();
 
         boolean running = true;
 
         while (running) {
-            player.update(1 / 60f); // simulate frame
+            player.updateGameState(1 / 60f, player.exportGameState(), null); // simulate frame
             clearScreen();
             YipeePrinter.printYipeeBoard(player);
 

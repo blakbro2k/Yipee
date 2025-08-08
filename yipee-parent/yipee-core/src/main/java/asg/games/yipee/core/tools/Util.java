@@ -15,19 +15,8 @@
  */
 package asg.games.yipee.core.tools;
 
-import asg.games.yipee.core.objects.AbstractYipeeObject;
 import asg.games.yipee.core.objects.Copyable;
 import asg.games.yipee.core.objects.YipeeRoom;
-import asg.games.yipee.core.objects.YipeeTable;
-import asg.games.yipee.core.persistence.json.YipeeRoomDeserializer;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.StreamReadFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -41,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -63,7 +51,6 @@ public class Util {
      * @since 2.1
      */
     public static final int INDEX_NOT_FOUND = -1;
-
     private static final String LEFT_CURLY_BRACET_HTML = "&#123;";
     private static final String RIGHTT_CURLY_BRACET_HTML = "&#125;";
 
@@ -168,7 +155,6 @@ public class Util {
         }
     }
 
-
     public static <T> void flushIterator(Class<T> clazz, Iterator<T> iterator) {
         while (iterator != null && iterator.hasNext()) {
             iterator.remove();
@@ -231,7 +217,6 @@ public class Util {
         }
         return null;
     }
-
 
     public static class IDGenerator {
         private IDGenerator() {
@@ -307,9 +292,8 @@ public class Util {
     /**
      * Creates a new Iterable Array object.
      *
-     * @param //array
-     * @param //<T>
-     * @return
+     * @param collection a collection to iterate through
+     * @return an {@link Iterable} of a collection
      */
     //@NotNull
     public static <T> Iterable<T> toIterable(Collection<T> collection) {

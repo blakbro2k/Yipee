@@ -110,4 +110,11 @@ public interface GameManager {
      * @return true if the game loop is active
      */
     boolean isRunning();
+
+    /**
+     * Returns all Game Board States from the last tick.
+     *
+     * @return an {@code Iterable} that contains GameboardStates
+     */
+    Iterable<GameBoardState> getAllBoardStates();
 }

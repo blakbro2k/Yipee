@@ -25,6 +25,26 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Represents a table within a Yipee room where up to 8 players can be seated and grouped for gameplay.
+ * Each table consists of a fixed number of {@link YipeeSeatGDX} instances and supports:
+ * <ul>
+ *   <li>Configurable access type (PUBLIC, PRIVATE, PROTECTED).</li>
+ *   <li>Rated/unrated gameplay mode.</li>
+ *   <li>Sound toggle.</li>
+ *   <li>Player watchers (spectators).</li>
+ *   <li>Ready-check logic to determine if enough seats are filled to begin the game.</li>
+ * </ul>
+ * <p>
+ * Tables are uniquely named using the {@code tableNumber} and a naming pattern that includes their parent room ID.
+ *
+ * <p>
+ * Created by Blakbro2k on 1/28/2018.
+ *
+ * @see YipeeSeatGDX
+ * @see YipeePlayerGDX
+ * @see YipeeRoomGDX
+ */
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
@@ -39,6 +59,14 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
     public static final String ATT_TABLE_SPACER = "_room_tbl";
     public static final int MAX_SEATS = 8;
 
+    /**
+     * Access visibility types for the table:
+     * <ul>
+     *   <li>PRIVATE – Only invited players may join.</li>
+     *   <li>PUBLIC – Open to any player.</li>
+     *   <li>PROTECTED – Joinable with specific constraints.</li>
+     * </ul>
+     */
     public enum ACCESS_TYPE {
         PRIVATE(ENUM_VALUE_PRIVATE), PUBLIC(ENUM_VALUE_PUBLIC), PROTECTED(ENUM_VALUE_PROTECTED);
         private final String accessType;
@@ -52,40 +80,76 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
         }
     }
 
+    /**
+     * Access control type for this table (e.g., PUBLIC, PRIVATE, PROTECTED).
+     */
     private ACCESS_TYPE accessType = ACCESS_TYPE.PUBLIC;
 
+    /** Set of all 8 player seats available at the table. */
     private ObjectSet<YipeeSeatGDX> seats = GdxSets.newSet();
 
+    /** Players who are watching (spectating) the table. */
     private ObjectSet<YipeePlayerGDX> watchers = GdxSets.newSet();
 
+    /** Numeric identifier for the table, used in naming. */
     private Integer tableNumber;
 
+    /** Whether this game is rated (affects ranking/score). */
     private boolean isRated = false;
 
+    /** Whether game sounds are enabled for this table. */
     private boolean isSoundOn = true;
 
-    //Empty Constructor required for Json.Serializable
+    /**
+     * Creates an empty table for serialization purposes.
+     */
     public YipeeTableGDX() {
     }
 
+    /**
+     * Creates a new table with the specified table number.
+     * @param nameNumber The numeric identifier used in naming.
+     */
     public YipeeTableGDX(int nameNumber) {
         this(nameNumber, null);
     }
 
+    /**
+     * Creates a new table with a table number and configuration arguments.
+     * @param nameNumber Table number used in naming.
+     * @param arguments Optional configuration map (type, rated, sound).
+     */
     public YipeeTableGDX(int nameNumber, ObjectMap<String, Object> arguments) {
         initialize(nameNumber, arguments);
     }
 
+    /**
+     * Initializes the table name, seats, and optional arguments.
+     * @param nameNumber The numeric ID for naming.
+     * @param arguments Optional configuration map.
+     */
     private void initialize(int nameNumber, ObjectMap<String, Object> arguments) {
         setTableName(nameNumber);
         setUpSeats();
         setUpArguments(arguments);
     }
 
+    /**
+     * Constructs and sets the table name using the internal ID and the specified table number.
+     * Format: {id}_room_tbl#{tableNumber}
+     *
+     * @param tableNumber the numeric table index used to distinguish this table.
+     */
     public void setTableName(int tableNumber) {
         setName(getId() + ATT_TABLE_SPACER + ATT_NAME_PREPEND + tableNumber);
     }
 
+    /**
+     * Extracts and returns the table number from the current table name.
+     * Assumes table name follows the pattern set in {@link #setTableName(int)}.
+     *
+     * @return the numeric table identifier parsed from the name.
+     */
     public int getTableNumber() {
         return Integer.parseInt(LibGDXUtil.split(getName(), ATT_NAME_PREPEND)[1]);
     }
@@ -104,6 +168,11 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
         }
     }
 
+    /**
+     * Processes a single configuration argument and applies it to the table.
+     * @param arg The argument key.
+     * @param value The associated value.
+     */
     private void processArg(String arg, Object value) {
         if (arg != null && value != null) {
             if (LibGDXUtil.equalsIgnoreCase(ARG_TYPE, arg)) {
@@ -120,6 +189,13 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
         this.accessType = accessType;
     }
 
+    /**
+     * Sets the access type using a case-insensitive string.
+     * Accepts "PRIVATE", "PUBLIC", or "PROTECTED".
+     * Defaults to PUBLIC if invalid or null.
+     *
+     * @param accessType The string representation of access type.
+     */
     public void setAccessType(String accessType) {
         if (LibGDXUtil.equalsIgnoreCase(ACCESS_TYPE.PRIVATE.toString(), accessType)) {
             setAccessType(ACCESS_TYPE.PRIVATE);
@@ -130,22 +206,50 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
         }
     }
 
+    /**
+     * Sets whether the table's games are rated (affecting score/ranking).
+     *
+     * @param rated true if the table should use rated gameplay.
+     */
     public void setRated(boolean rated) {
         this.isRated = rated;
     }
 
+    /**
+     * Enables or disables sound for this table's game session.
+     *
+     * @param sound true to enable game sound; false to disable.
+     */
     public void setSound(boolean sound) {
         this.isSoundOn = sound;
     }
 
+    /**
+     * Indicates whether the table is configured for rated gameplay.
+     * Rated games may affect player ranking, stats, or match history.
+     *
+     * @return true if the game is rated; false otherwise.
+     */
     public boolean isRated() {
         return isRated;
     }
 
+    /**
+     * Indicates whether sound effects are enabled for the game on this table.
+     *
+     * @return true if sound is enabled; false if muted.
+     */
     public boolean isSoundOn() {
         return isSoundOn;
     }
 
+    /**
+     * Determines whether a given group of 2 seats is ready.
+     * There are 4 groups (0–3), each corresponding to 2 adjacent seats.
+     *
+     * @param g the group index (0 to 3).
+     * @return true if either seat in the group is marked ready.
+     */
     public boolean isGroupReady(int g) {
         if (g < 0 || g > 3) {
             return false;
@@ -154,6 +258,12 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
         return isSeatReady(seatNumber) || isSeatReady(seatNumber + 1);
     }
 
+    /**
+     * Checks whether a specific seat is occupied and marked ready.
+     *
+     * @param seat the {@link YipeeSeatGDX} instance to check.
+     * @return true if the seat is ready; false otherwise.
+     */
     public boolean isSeatReady(YipeeSeatGDX seat) {
         if (seat != null) {
             return seat.isSeatReady();
@@ -161,10 +271,22 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
         return false;
     }
 
+    /**
+     * Checks if the seat at the given index is ready.
+     *
+     * @param seatNum the seat number (0–7).
+     * @return true if the seat is ready; false otherwise.
+     */
     public boolean isSeatReady(int seatNum) {
         return isSeatReady(getSeat(seatNum));
     }
 
+    /**
+     * Determines if the table is ready to start the game.
+     * A game is considered start-ready if at least two groups are marked ready.
+     *
+     * @return true if at least two groups of players are ready to play.
+     */
     public boolean isTableStartReady() {
         int readyGroups = 0;
         for (int i = 0; i < 4; i++) {
@@ -174,12 +296,20 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
         return false;
     }
 
+
+    /**
+     * Initializes all 8 seats for the table.
+     */
     private void setUpSeats() {
         for (int i = 0; i < MAX_SEATS; i++) {
             seats.add(new YipeeSeatGDX(this, i));
         }
     }
 
+    /**
+     * Resets all seats in the table to unready state.
+     * Typically called before a game restart or match setup.
+     */
     public void makeAllTablesUnready() {
         for (YipeeSeatGDX seat : LibGDXUtil.safeIterable(seats)) {
             if (seat != null) {
@@ -188,23 +318,42 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
         }
     }
 
+    /**
+     * Retrieves a seat by index from the internal seat set.
+     *
+     * @param seatNum the seat index (0–7).
+     * @return the {@link YipeeSeatGDX} instance, or null if invalid.
+     */
     public YipeeSeatGDX getSeat(int seatNum) {
         return LibGDXUtil.getIndexOfSet(seats, seatNum);
     }
 
+    /**
+     * Adds a player to the set of watchers (spectators) for this table.
+     *
+     * @param player the {@link YipeePlayerGDX} to add as a watcher.
+     */
     public void addWatcher(YipeePlayerGDX player) {
         if (player != null) {
             watchers.add(player);
         }
     }
 
+    /**
+     * Removes a player from the set of watchers (spectators) for this table.
+     *
+     * @param player the {@link YipeePlayerGDX} to remove from watching.
+     */
     public void removeWatcher(YipeePlayerGDX player) {
         if (player != null) {
             watchers.remove(player);
         }
     }
 
-
+    /**
+     * Disposes of the table by clearing all seats and watcher references.
+     * This is used for cleanup in lifecycle-managed environments.
+     */
     @Override
     public void dispose() {
         //LibGDXUtil.clearArrays(seats, watchers);
@@ -212,6 +361,11 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
         watchers.clear();
     }
 
+    /**
+     * Creates a shallow copy of the table with shared seat and watcher sets.
+     * Used when deep duplication is not needed.
+     * @return A new {@link YipeeTableGDX} instance with basic fields copied.
+     */
     @Override
     public YipeeTableGDX copy() {
         YipeeTableGDX copy = new YipeeTableGDX();
@@ -222,6 +376,11 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
         return copy;
     }
 
+    /**
+     * Creates a deep copy of the table with duplicated seat and watcher sets.
+     * Useful for simulation or rollback where shared references are not allowed.
+     * @return A fully cloned {@link YipeeTableGDX} instance.
+     */
     @Override
     public YipeeTableGDX deepCopy() {
         YipeeTableGDX copy = copy();

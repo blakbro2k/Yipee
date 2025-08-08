@@ -23,26 +23,55 @@ import org.slf4j.LoggerFactory;
 import java.util.Objects;
 
 /**
+ * Represents a single block movement action within a Yipee game board.
  *
+ * <p>This object is used to track and animate the movement of a block from its current
+ * position to a target row. It encapsulates positional data such as column, current row,
+ * and destination row, as well as a unique cell ID and the block type.
+ *
+ * <p>Instances of this class are typically created during collapse or gravity phases
+ * where blocks fall down due to matches or row clears.
+ *
+ * <p>Implements equals/hashCode for proper comparison and supports JSON serialization.
  */
 @Getter
 @Setter
 public class YipeeBlockMove extends AbstractYipeeObject {
     private static final Logger logger = LoggerFactory.getLogger(YipeeBlockMove.class);
 
+    /**
+     * The type or value of the block being moved (e.g., color index or power ID).
+     */
     private int block;
+
+    /** The internal identifier of the block’s cell on the board. */
     private int cellId;
+
+    /** The column where the block is currently located. */
     private int col;
+
+    /** The row where the block is currently located. */
     private int row;
+
+    /** The row the block is moving toward. */
     private int targetRow;
 
     /**
-     * Default constructor required for JSON serialization.
-     * Initializes the block in its default state.
+     * Default constructor required for JSON or Kryo serialization.
+     * Initializes the object with default values.
      */
     public YipeeBlockMove() {
     }
 
+    /**
+     * Constructs a fully-initialized YipeeBlockMove with specific location data.
+     *
+     * @param cellID    the unique cell ID of the block
+     * @param block     the block value (e.g., color or power type)
+     * @param col       the column position
+     * @param row       the current row position
+     * @param targetRow the row the block is falling or animating toward
+     */
     public YipeeBlockMove(int cellID, int block, int col, int row, int targetRow) {
         setBlock(block);
         setCellId(cellID);

@@ -18,8 +18,31 @@ package asg.games.yipee.core.persistence;
 import asg.games.yipee.core.objects.YipeeRoom;
 import asg.games.yipee.core.objects.YipeeTable;
 
+/**
+ * Defines termination logic for complex {@link asg.games.yipee.core.objects.YipeeObject} types.
+ * <p>
+ * This adapter is used by {@link TerminatorJPAVisitor} implementations to decouple deletion logic
+ * from the core object structure. Each method provides a hook to perform any cleanup or cascading
+ * deletion required for a specific object type.
+ * </p>
+ *
+ * @author Blakbro2k
+ */
 public interface YipeeObjectTerminatorAdapter {
+
+    /**
+     * Terminates and cleans up resources associated with the given {@link YipeeRoom}.
+     * This may involve deleting related tables, players, and internal state.
+     *
+     * @param room the {@link YipeeRoom} to terminate
+     */
     void visitTerminateYipeeRoom(YipeeRoom room);
 
+    /**
+     * Terminates and cleans up resources associated with the given {@link YipeeTable}.
+     * This may involve deleting related seats, watchers, and any associated state.
+     *
+     * @param table the {@link YipeeTable} to terminate
+     */
     void visitTerminateYipeeTable(YipeeTable table);
 }

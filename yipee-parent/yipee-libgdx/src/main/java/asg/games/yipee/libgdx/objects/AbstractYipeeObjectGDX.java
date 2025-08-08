@@ -21,20 +21,20 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
+ * <p>
  * Abstract base class for all Yipee game objects. This class implements the {@link YipeeObjectGDX} interface
  * and provides common properties and methods shared by all game objects in the Yipee system.
- * </br>
+ * </p>
+ * <p>
  * It includes an {@code id}, {@code name}, and timestamps for creation and modification. Subclasses will inherit
  * these properties and may extend them with specific game logic.
- * </br>
- * </br>
+ * </p>
  * This class is mapped to a database table as a superclass for other entities in the Yipee game system, such as
  * {@link YipeeBlockGDX}, {@link YipeePlayerGDX}, and others.
- * </br>
  *
  * @author Blakbro2k
  * @version 1.0
- * </br>
+ *
  * @see YipeeObjectGDX
  * @see YipeeBlockGDX
  * @see YipeeBlockMoveGDX

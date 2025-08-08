@@ -34,9 +34,16 @@ import org.slf4j.LoggerFactory;
 import java.util.Objects;
 
 /**
- * Created by Blakbro2k on 1/28/2018.
+ * Represents a seat at a {@link YipeeTable} in the Yipee game.
+ * Each seat may be assigned a {@link YipeePlayer} and has a numeric index (0–7).
+ *
+ * <p>Supports sitting, standing, and tracking readiness for the player occupying it.</p>
+ *
+ * <p>This class is a persistent entity mapped to the {@code YT_SEATS} database table.</p>
+ *
+ * @author Blakbro2k
+ * @version 1.0
  */
-
 @Getter
 @Setter
 @Entity
@@ -60,10 +67,19 @@ public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat
 
     private String parentTableId;
 
-    //Empty Constructor required for Json.Serializable
+    /**
+     * Default constructor for JSON deserialization and ORM.
+     */
     public YipeeSeat() {
     }
 
+    /**
+     * Constructs a new seat with the given table ID and seat number.
+     *
+     * @param tableId    the ID of the parent table
+     * @param seatNumber the seat's number (must be between 0 and 7)
+     * @throws IllegalArgumentException if the seat number is out of bounds
+     */
     public YipeeSeat(String tableId, int seatNumber) {
         if (seatNumber < 0 || seatNumber > 7) throw new IllegalArgumentException("Seat number must be between 0 - 7.");
         setParentTableId(tableId);
@@ -71,6 +87,13 @@ public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat
         setSeatName();
     }
 
+    /**
+     * Constructs a new seat using the given table object and seat number.
+     *
+     * @param table the parent {@link YipeeTable}
+     * @param seatNumber the seat's number (must be between 0 and 7)
+     * @throws IllegalArgumentException if the seat number is out of bounds
+     */
     public YipeeSeat(YipeeTable table, int seatNumber) {
         if (seatNumber < 0 || seatNumber > 7) throw new IllegalArgumentException("Seat number must be between 0 - 7.");
         setParentTable(table);
@@ -78,15 +101,31 @@ public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat
         setSeatName();
     }
 
+    /**
+     * Sets the seat's internal name based on the parent table ID and seat number.
+     * Typically called automatically in constructors or when setting the parent.
+     */
     public void setSeatName() {
         setName(getSeatName() + seatNumber);
     }
 
+    /**
+     * Generates the base name of the seat using the parent table ID and a separator.
+     *
+     * @return the prefix portion of the seat name
+     */
     private String getSeatName() {
         logger.debug("seatname={}", getParentTableId() + ATTR_SEAT_NUM_SEPARATOR);
         return getParentTableId() + ATTR_SEAT_NUM_SEPARATOR;
     }
 
+    /**
+     * Attempts to seat a player in this seat.
+     *
+     * @param player the {@link YipeePlayer} attempting to sit down
+     * @return {@code true} if successful, {@code false} if the seat is already occupied
+     * @throws IllegalArgumentException if the player is null
+     */
     public boolean sitDown(YipeePlayer player) {
         if (player == null) {
             throw new IllegalArgumentException("Player cannot be null.");
@@ -99,6 +138,11 @@ public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat
         return true;
     }
 
+    /**
+     * Removes the currently seated player from this seat.
+     *
+     * @return the player who was seated, or {@code null} if none
+     */
     public YipeePlayer standUp() {
         YipeePlayer player = seatedPlayer;
         setSeatedPlayer(null);
@@ -106,6 +150,11 @@ public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat
         return player;
     }
 
+    /**
+     * Sets the parent table for this seat and updates the internal seat name accordingly.
+     *
+     * @param parentTable the parent {@link YipeeTable}
+     */
     public void setParentTable(YipeeTable parentTable) {
         if (parentTable != null) {
             parentTableId = parentTable.getId();
@@ -113,14 +162,27 @@ public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat
         }
     }
 
+    /**
+     * Returns whether the seat currently has a player.
+     *
+     * @return {@code true} if occupied, otherwise {@code false}
+     */
     public boolean isOccupied() {
         return seatedPlayer != null;
     }
 
+    /**
+     * Returns whether the seat is both occupied and marked as ready.
+     *
+     * @return {@code true} if the seated player is ready, otherwise {@code false}
+     */
     public boolean isSeatReady() {
         return isOccupied() && isSeatReady;
     }
 
+    /**
+     * Removes the player from this seat if occupied and resets readiness.
+     */
     @Override
     public void dispose() {
         if (isOccupied()) {
@@ -141,6 +203,11 @@ public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat
         return Objects.hash(super.hashCode(), isSeatReady, seatedPlayer, seatNumber, parentTableId);
     }
 
+    /**
+     * Creates a shallow copy of this seat (does not copy player).
+     *
+     * @return a new {@code YipeeSeat} instance with copied attributes
+     */
     @Override
     public YipeeSeat copy() {
         YipeeSeat copy = new YipeeSeat();
@@ -151,6 +218,11 @@ public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat
         return copy;
     }
 
+    /**
+     * Creates a deep copy of this seat, including a deep copy of the seated player.
+     *
+     * @return a new {@code YipeeSeat} instance with duplicated state
+     */
     @Override
     public YipeeSeat deepCopy() {
         YipeeSeat deep = copy();

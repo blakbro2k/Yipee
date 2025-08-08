@@ -24,6 +24,11 @@ import java.io.Serializable;
  * @author Blakbro2k
  */
 public interface YipeeSerializable extends Serializable {
+    /**
+     * Returns the type identifier of the packet.
+     *
+     * @return a string representing the packet's type
+     */
     default String getPacketType() {
         return this.getClass().getSimpleName();
     }

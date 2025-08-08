@@ -50,14 +50,14 @@
                 </executions>
                 <configuration>
                     <strictCheck>true</strictCheck>
-                    <header>yipee-core/src/main/resources/license-header.txt</header>
+                    <header>resources/license-header.txt</header>
                     <includes>
                         <include>**/*.java</include>
                     </includes>
                 </configuration>
             </plugin>
 
-            <!-- Build javadocs
+            <!-- Build javadocs -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -70,7 +70,27 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
+
+            <!-- prevent jar generation -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-install-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+
+                    <!-- prevent deploy plugin from uploading parent jar -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <version>3.0.0-M1</version>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
         </plugins>
     </build>
 </project>

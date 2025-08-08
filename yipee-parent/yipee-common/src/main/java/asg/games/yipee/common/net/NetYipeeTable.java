@@ -15,5 +15,15 @@
  */
 package asg.games.yipee.common.net;
 
+/**
+ * Marker interface for a network-serializable representation of a Yipee game table.
+ *
+ * <p>This interface enables polymorphic serialization of platform-specific table implementations
+ * (e.g., core or LibGDX) within the networking layer, without introducing cross-platform
+ * dependencies or GWT-incompatible types.
+ *
+ * <p>Primarily used in multiplayer synchronization, matchmaking, and table-state exchange
+ * between server and client.
+ */
 public interface NetYipeeTable {
 }

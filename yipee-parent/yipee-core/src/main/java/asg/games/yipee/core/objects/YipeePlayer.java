@@ -17,7 +17,6 @@ package asg.games.yipee.core.objects;
 
 import asg.games.yipee.common.net.NetYipeePlayer;
 import asg.games.yipee.core.tools.NetUtil;
-import asg.games.yipee.core.tools.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.persistence.Column;
@@ -80,29 +79,30 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
     }
 
     /**
-     * Creates a new YipeePlayer with default rating and defaut icon
-     * @param name
+     * Creates a new {@code YipeePlayer} with the specified name, default rating, and default icon.
+     *
+     * @param name the player's name
      */
     public YipeePlayer(String name) {
         this(name, DEFAULT_RATING_NUMBER, DEFAULT_ICON_NUMBER);
     }
 
     /**
-     * Creates a new @{link YipeePlayer} given a starting rating
+     * Creates a new {@code YipeePlayer} with the specified name and rating, using the default icon.
      *
-     * @param name
-     * @param rating
+     * @param name the player's name
+     * @param rating the player's rating
      */
     public YipeePlayer(String name, int rating) {
         this(name, rating, DEFAULT_ICON_NUMBER);
     }
 
     /**
-     * Creates a new @{link YipeePlayer} given a starting rating and icon
+     * Creates a new {@code YipeePlayer} with the specified name, rating, and icon.
      *
-     * @param name
-     * @param rating
-     * @param icon
+     * @param name the player's name
+     * @param rating the initial skill rating
+     * @param icon the player's avatar icon ID
      */
     public YipeePlayer(String name, int rating, int icon) {
         this();
@@ -208,6 +208,10 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
         return Objects.hash(super.hashCode(), rating, icon, keyConfig);
     }
 
+    /**
+     * Disposes of internal resources such as the key configuration.
+     * Called when this player instance is no longer needed.
+     */
     @Override
     public void dispose() {
         keyConfig.dispose();

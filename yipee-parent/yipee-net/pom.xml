@@ -57,7 +57,7 @@
     <build>
         <resources>
             <resource>
-                <directory>src/main/resources</directory>
+                <directory>../yipee-core/src/main/resources</directory>
                 <includes>
                     <include>**/*.gwt.xml</include>
                 </includes>
