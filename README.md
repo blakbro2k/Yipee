@@ -83,6 +83,7 @@ Contents:
 ### **yipee-libgdx**
 The **Java/LibGDX platform-specific representation** of `yipee-core`.  
 This adapts core logic into LibGDX-compatible types (e.g., `YipeeGameBoard` → `YipeeGameBoardGDX`) so the client can render the game and handle input while maintaining full compatibility with the server.
+The idea is since Webservices will be used to transport packets, a native package based off of core can be used to translate JSON to the native objects
 
 Contents:
 - **Rendering & UI** (LibGDX Scene2D, textures, animations).
