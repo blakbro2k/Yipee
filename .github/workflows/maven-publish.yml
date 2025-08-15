@@ -54,7 +54,7 @@ jobs:
         working-directory: ./yipee-parent
 
       - name: Publish to GitHub Packages Apache Maven
-        run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+        run: mvn -B -e -Drevision=${{ steps.tag.outputs.tag }} clean deploy -s $GITHUB_WORKSPACE/settings.xml
         working-directory: ./yipee-parent
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
