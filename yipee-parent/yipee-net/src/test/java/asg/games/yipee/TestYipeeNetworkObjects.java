@@ -1,4 +1,4 @@
-package asg.games.yipee; /**
+/**
  * Copyright 2024 See AUTHORS file.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,9 +13,9 @@ package asg.games.yipee; /**
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package asg.games.yipee;
 
 import asg.games.yipee.common.packets.PlayerAction;
-import asg.games.yipee.core.objects.YipeeKeyMap;
 import asg.games.yipee.core.objects.YipeePlayer;
 import asg.games.yipee.core.objects.YipeeTable;
 import asg.games.yipee.net.packets.AbstractClientRequest;
@@ -247,7 +247,7 @@ public class TestYipeeNetworkObjects {
 
     public static MappedKeyUpdateRequest getMappedKeyUpdateRequestObject() {
         MappedKeyUpdateRequest request = new MappedKeyUpdateRequest();
-        YipeeKeyMap map = new YipeeKeyMap("2");
+        //YipeeKeyMap map = new YipeeKeyMap("2");
         setUpAbstractPacketRequest(request);
         request.setKeyConfig(player.getKeyConfig());
         return request;
@@ -263,7 +263,7 @@ public class TestYipeeNetworkObjects {
 
     public static PlayerActionResponse getPlayerActionResponseObject() {
         PlayerActionResponse response = new PlayerActionResponse();
-        PlayerAction action = new PlayerAction(1, PlayerAction.ActionType.A_CLUMP, 2, 3, null);
+        PlayerAction action = new PlayerAction(1, PlayerAction.ActionType.A_CLUMP, 2, null);
         setUpAbstractPacketResponse(response);
         response.setAccepted(true);
         response.setPlayerAction(action);
@@ -273,7 +273,7 @@ public class TestYipeeNetworkObjects {
 
     public static PlayerActionRequest getPlayerActionRequestObject() {
         PlayerActionRequest request = new PlayerActionRequest();
-        PlayerAction action = new PlayerAction(1, PlayerAction.ActionType.A_CLUMP, 3, 3, null);
+        PlayerAction action = new PlayerAction(1, PlayerAction.ActionType.A_CLUMP, 3, null);
         setUpAbstractPacketRequest(request);
         request.setPlayerAction(action); // Replace with actual PlayerAction if needed
         return request;
@@ -281,7 +281,7 @@ public class TestYipeeNetworkObjects {
 
     public static TableStateBroadcastResponse getTableStateBroadcastResponseObject() {
         TableStateBroadcastResponse obj = new TableStateBroadcastResponse();
-        YipeeTable table = new YipeeTable();
+        //YipeeTable table = new YipeeTable();
         setUpAbstractPacketResponse(obj);
         //obj.setTable(table); // Replace with YipeeTableDTO test instance
         //obj.setUpdateType(TableUpdateType.PLAYER_READY);
