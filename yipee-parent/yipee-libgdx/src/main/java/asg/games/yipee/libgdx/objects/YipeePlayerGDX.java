@@ -39,7 +39,6 @@ import lombok.Setter;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 public class YipeePlayerGDX extends AbstractYipeeObjectGDX implements Copyable<YipeePlayerGDX>, Disposable, NetYipeePlayer {
-
     /**
      * Default player rating value (Elo-style)
      */

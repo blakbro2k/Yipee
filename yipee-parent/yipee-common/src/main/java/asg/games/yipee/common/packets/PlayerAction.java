@@ -31,9 +31,8 @@ import lombok.Setter;
  * <ul>
  *   <li>The board initiating the action</li>
  *   <li>The action type being performed</li>
- *   <li>The target board affected (may be the same as the initiator)</li>
+ *   <li>The target board affected (can be the same as the initiator)</li>
  *   <li>Optional payload data (e.g., block color or power info)</li>
- *   <li>The tick and timestamp of execution</li>
  * </ul>
  *
  * <p>Compatible with KryoNet and GWT-safe serialization, making it suitable for real-time
@@ -154,17 +153,11 @@ public class PlayerAction implements YipeeSerializable {
     /** Optional action payload (e.g., block type, color, index). */
     private Object actionData;
 
-    /** The game loop tick this action was created on. */
-    private int tick;
-
-    /** Millisecond timestamp for this action (used for animation sync or lag compensation). */
-    private long timestamp;
-
     /**
      * Creates a default no-op PlayerAction.
      */
     public PlayerAction() {
-        this(-1, null, -2, 1, null);
+        this(-1, null, -2, null);
     }
 
     /**
@@ -173,16 +166,13 @@ public class PlayerAction implements YipeeSerializable {
      * @param initiatingBoardId the ID of the player/board that initiated the action
      * @param actionType        the type of action
      * @param targetBoardId     the ID of the board being targeted
-     * @param tick              the game loop tick this occurred on
      * @param actionData        any extra payload needed for execution
      */
-    public PlayerAction(int initiatingBoardId, ActionType actionType, int targetBoardId, int tick, Object actionData) {
+    public PlayerAction(int initiatingBoardId, ActionType actionType, int targetBoardId, Object actionData) {
         this.initiatingBoardId = initiatingBoardId;
         this.actionType = actionType;
         this.targetBoardId = targetBoardId;
         this.actionData = actionData;
-        this.tick = tick;
-        this.timestamp = System.currentTimeMillis();
     }
 
     @Override
@@ -192,8 +182,6 @@ public class PlayerAction implements YipeeSerializable {
             ", actionType=" + actionType +
             ", targetBoardId=" + targetBoardId +
             ", actionData=" + actionData +
-            ", tick=" + tick +
-            ", timestamp=" + timestamp +
             '}';
     }
 }
