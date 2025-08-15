@@ -112,7 +112,8 @@ Any future platform-specific layer (e.g., Python, .NET, web) can complement `yip
    ```bash
    mvn clean install
    ```
-3. **Run the core game** (headless server or integrated with a LibGDX client).
+3. **Run the core game** (YipeeTestDriver is a CLI version of running the minimal game).
+   **It is incommplete at the momment**
 
 ---
 
