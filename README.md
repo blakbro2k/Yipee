@@ -83,6 +83,7 @@ Contents:
 ### **yipee-libgdx**
 The **Java/LibGDX platform-specific representation** of `yipee-core`.  
 This adapts core logic into LibGDX-compatible types (e.g., `YipeeGameBoard` → `YipeeGameBoardGDX`) so the client can render the game and handle input while maintaining full compatibility with the server.
+The idea is since Webservices will be used to transport packets, a native package based off of core can be used to translate JSON to the native objects
 
 Contents:
 - **Rendering & UI** (LibGDX Scene2D, textures, animations).
@@ -112,7 +113,8 @@ Any future platform-specific layer (e.g., Python, .NET, web) can complement `yip
    ```bash
    mvn clean install
    ```
-3. **Run the core game** (headless server or integrated with a LibGDX client).
+3. **Run the core game** (YipeeTestDriver is a CLI version of running the minimal game).
+   **It is incommplete at the momment**
 
 ---
 
