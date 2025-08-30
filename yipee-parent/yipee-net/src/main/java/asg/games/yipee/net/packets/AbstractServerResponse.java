@@ -25,9 +25,14 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 public class AbstractServerResponse implements YipeeSerializable {
     /**
-     * A unique identifier for the client instance (may be generated or assigned).
+     * A unique identifier for the server instance (may be generated or assigned).
      */
     private String serverId;
+
+    /**
+     * A unique identifier for the ServerGameManager instance (may be generated or assigned).
+     */
+    private String gameId;
 
     /**
      * A JWT token issued by the Web CMS (e.g., WordPress) for authentication.
