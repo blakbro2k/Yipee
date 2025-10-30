@@ -107,7 +107,6 @@ public class Util {
         return missingValue;
     }
 
-
     public static <T> List<T> arrayToList(T[] o) {
         //int size = o.length;
         return new LinkedList<>(Arrays.asList(o));
@@ -303,6 +302,18 @@ public class Util {
         return new ArrayList<>(collection);
     }
 
+    public static <T> Queue<T> iterableToLinkeListQueue(Iterable<T> iterable) {
+        return iterableToQueue(iterable, new LinkedList<>());
+    }
+
+    public static <T, Q extends Queue<T>> Q iterableToQueue(Iterable<T> iterable, Q targetQueue) {
+        if (iterable != null) {
+            for (T item : iterable) {
+                targetQueue.add(item);
+            }
+        }
+        return targetQueue;
+    }
 
     public static String jsonToString(String str) {
         return replace(replace(str, "{", LEFT_CURLY_BRACET_HTML), "}", RIGHTT_CURLY_BRACET_HTML);
@@ -325,7 +336,6 @@ public class Util {
         }
         return false;
     }
-
 
     public static boolean otob(Object o) {
         if (o != null) {
@@ -900,11 +910,11 @@ public class Util {
                 try {
                     fileOutputStream.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("General Error attempting to writing file: " + name, e);
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("General Error attempting to writing file: " + name, e);
         }
     }
 

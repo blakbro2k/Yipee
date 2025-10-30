@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.libgdx.tools;
 
+import asg.games.yipee.common.game.CommonRandomNumberArray;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import java.io.DataInputStream;
@@ -166,7 +167,7 @@ public class LibGDXRandomUtil {
      * Pre-generates an array of random numbers using a shared seed and max value.
      * Useful for deterministic block spawning or event scheduling.
      */
-    public static class RandomNumberArray implements Serializable {
+    public static class RandomNumberArray implements CommonRandomNumberArray, Serializable {
         int[] randomNumbers;
 
         /**

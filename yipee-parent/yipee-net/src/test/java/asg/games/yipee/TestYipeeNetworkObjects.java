@@ -51,7 +51,7 @@ public class TestYipeeNetworkObjects {
                 () -> Assertions.assertEquals(o.getClientId(), c.getClientId(), "ClientId mismatch"),
                 () -> Assertions.assertEquals(o.getSessionKey(), c.getSessionKey(), "SessionKey mismatch"),
                 () -> Assertions.assertEquals(o.getPacketType(), c.getPacketType(), "PacketType name mismatch"),
-                () -> Assertions.assertEquals(o.getTick(), c.getTick(), "Tick mismatch"),
+                () -> Assertions.assertEquals(o.getClientTick(), c.getClientTick(), "Tick mismatch"),
                 () -> Assertions.assertEquals(o.getTimestamp(), c.getTimestamp(), "Timestamp mismatch")
             );
         } else if (original instanceof AbstractServerResponse) {
@@ -62,7 +62,7 @@ public class TestYipeeNetworkObjects {
                 () -> Assertions.assertEquals(o.getSessionKey(), c.getSessionKey(), "SessionKey mismatch"),
                 () -> Assertions.assertEquals(o.getPacketType(), c.getPacketType(), "PacketType name mismatch"),
                 () -> Assertions.assertEquals(o.getServerTick(), c.getServerTick(), "Player name mismatch"),
-                () -> Assertions.assertEquals(o.getTimestamp(), c.getTimestamp(), "Timestamp mismatch")
+                () -> Assertions.assertEquals(o.getServerTimestamp(), c.getServerTimestamp(), "Timestamp mismatch")
             );
         }
 
@@ -170,7 +170,7 @@ public class TestYipeeNetworkObjects {
     private static void setUpAbstractPacketRequest(AbstractClientRequest request) {
         if (request != null) {
             request.setClientId("client-abc");
-            request.setTick(15);
+            request.setClientTick(15);
             request.setTimestamp(System.currentTimeMillis());
             request.setSessionKey("testing-session-123");
         }
@@ -180,7 +180,7 @@ public class TestYipeeNetworkObjects {
         if (response != null) {
             response.setServerId("server-abc");
             response.setServerTick(15);
-            response.setTimestamp(System.currentTimeMillis());
+            response.setServerTimestamp(System.currentTimeMillis());
             response.setSessionKey("testing-session-123");
         }
     }

@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.core.tools;
 
+import asg.games.yipee.common.game.CommonRandomNumberArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,7 +107,7 @@ public class RandomUtil {
         }
     }
 
-    public static class RandomNumberArray implements Serializable {
+    public static class RandomNumberArray implements CommonRandomNumberArray, Serializable {
         int[] randomNumbers;
 
         public RandomNumberArray(int byteLength, long seed, int maxValue) {

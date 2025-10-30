@@ -13,22 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.net.game;
+package asg.games.yipee.common.packets;
 
-import asg.games.yipee.common.packets.PlayerAction;
-import asg.games.yipee.net.packets.AbstractServerResponse;
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
-public class GameSeatActionPair extends AbstractServerResponse {
+@Data
+public class TickedPlayerActionData {
+    /** The board ID that originated this action. */
+    private int initiatingBoardId;
 
-    private final int seat;
-    private final int tick;
-    private final PlayerAction action;
+    /** The type of action to execute. */
+    private PlayerAction.ActionType actionType;
 
-    public GameSeatActionPair(int seat, PlayerAction action, int tick) {
-        this.seat = seat;
-        this.action = action;
-        this.tick = tick;
-    }
+    /** The target board ID affected by this action (may match initiator for self-effects). */
+    private int targetBoardId;
+
+    /** The tick which this action was taken **/
+    private int tick;
+
+    /** The timestamp which this action was taken **/
+    private long timestamp;
 }

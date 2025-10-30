@@ -24,10 +24,8 @@ import com.badlogic.gdx.utils.Queue;
 import com.github.czyzby.kiwi.util.common.UtilitiesClass;
 import com.github.czyzby.kiwi.util.gdx.collection.GdxArrays;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.stream.StreamSupport;
 
 public class LibGDXUtil extends UtilitiesClass {
@@ -112,11 +110,11 @@ public class LibGDXUtil extends UtilitiesClass {
     }
 
     public static <Type> Queue<Type> newQueue() {
-        return new Queue();
+        return new Queue<>();
     }
 
     public static <Type> Queue<Type> newQueue(Iterable<? extends Type> values) {
-        Queue<Type> queue = new Queue();
+        Queue<Type> queue = new Queue<>();
 
         for(Type value : values) {
             queue.addFirst(value);
@@ -140,17 +138,6 @@ public class LibGDXUtil extends UtilitiesClass {
             return GdxArrays.newArray();
         }
     }
-
-    public static <T> Array<T> iterableToArray(final Iterable<T> iterable) {
-        Array<T> returnList = new Array<>();
-        if (iterable != null) {
-            for (T o : iterable) {
-                returnList.add(o);
-            }
-        }
-        return returnList;
-    }
-
 
     public static float maxFloat(Float... floats) {
         float max = 0;
@@ -203,6 +190,14 @@ public class LibGDXUtil extends UtilitiesClass {
                 iterator.remove();
             }
         }
+    }
+
+    public static <T> Queue<T> iterableToQueue(Iterable<T> iterable) {
+        return newQueue(iterable);
+    }
+
+    public static <T> Array<T> iterableToArray(Iterable<T> iterable) {
+        return GdxArrays.newArray(iterable);
     }
 
     public static boolean otob(Object o) {
@@ -295,7 +290,7 @@ public class LibGDXUtil extends UtilitiesClass {
         if (len == 0) {
             return EMPTY_STRING_ARRAY;
         }
-        final List<String> list = new ArrayList<>();
+        final Array<String> list = GdxArrays.newArray();
         int sizePlus1 = 1;
         int i = 0;
         int start = 0;
@@ -366,7 +361,7 @@ public class LibGDXUtil extends UtilitiesClass {
         if (match || preserveAllTokens && lastMatch) {
             list.add(str.substring(start, i));
         }
-        return list.toArray(EMPTY_STRING_ARRAY);
+        return list.toArray();
     }
 
     /**

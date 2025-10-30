@@ -15,6 +15,9 @@
  */
 package asg.games.yipee.core.game;
 
+import asg.games.yipee.common.game.CommonRandomNumberArray;
+import asg.games.yipee.common.game.GameBoardState;
+import asg.games.yipee.common.game.GamePhase;
 import asg.games.yipee.common.packets.PlayerAction;
 import asg.games.yipee.core.objects.Disposable;
 import asg.games.yipee.core.objects.YipeeBlock;
@@ -23,10 +26,12 @@ import asg.games.yipee.core.objects.YipeeBrokenBlock;
 import asg.games.yipee.core.objects.YipeeClock;
 import asg.games.yipee.core.objects.YipeeGameBoardState;
 import asg.games.yipee.core.objects.YipeePiece;
+import asg.games.yipee.core.tools.NetUtil;
 import asg.games.yipee.core.tools.RandomUtil;
 import asg.games.yipee.core.tools.TimeUtils;
 import asg.games.yipee.core.tools.Util;
 import asg.games.yipee.core.tools.YipeePrinter;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -47,16 +52,6 @@ import java.util.Vector;
 @Setter
 public class YipeeGameBoard implements Disposable {
 
-    public enum GamePhase {
-        SPAWN_NEXT,
-        FALLING,
-        LOCKING,
-        BREAKING,
-        COLLAPSING,
-        CASCADE_CHECK,
-        GAME_OVER
-    }
-
     public static final int MAX_RANDOM_BLOCK_NUMBER = 2048;
     public static final int MAX_COLS = 6;
     public static final int MAX_ROWS = 16;
@@ -69,6 +64,8 @@ public class YipeeGameBoard implements Disposable {
     private static final int MAX_FALL_VALUE = 1;
     private static final int CONST_ROW_ADD = 1;
     private GamePhase currentPhase = GamePhase.SPAWN_NEXT;
+    private final YipeeGameBoard partnerBoard = new YipeeGameBoard();
+
 
     //private final YokelPiece MEDUSA_PIECE = new YokelPiece(0, YokelBlock.MEDUSA, YokelBlock.MEDUSA, YokelBlock.MEDUSA);
     //private final YokelPiece MIDAS_PIECE = new YokelPiece(0, YokelBlock.BOT_MIDAS, YokelBlock.MID_MIDAS, YokelBlock.TOP_MIDAS);
@@ -118,7 +115,7 @@ public class YipeeGameBoard implements Disposable {
     private float pieceFallTimer;
     private float pieceLockTimer;
     private float blockAnimationTimer;
-    private RandomUtil.RandomNumberArray nextBlocks;
+    private CommonRandomNumberArray nextBlocks;
     private int currentBlockPointer = -1;
     private boolean fastDown;
     private Queue<Integer> powers = new LinkedList<>();
@@ -148,7 +145,7 @@ public class YipeeGameBoard implements Disposable {
         reset(seed);
     }
 
-    public void importGameState(YipeeGameBoardState state, YipeeGameBoardState partnerState) {
+    public void importGameState(GameBoardState state, GameBoardState partnerState) throws JsonProcessingException {
         if (state != null) {
             setCurrentPhase(state.getCurrentPhase());
             setBrokenBlockCount(state.getBrokenBlockCount());
@@ -157,22 +154,22 @@ public class YipeeGameBoard implements Disposable {
             setNextBlocks(state.getNextBlocks());
             setCountOfBreaks(state.getCountOfBreaks());
             setPowersKeep(state.getPowersKeep());
-            setGameClock(state.getGameClock());
+            setGameClock(NetUtil.getObjectFromJsonString(YipeeClock.class, state.getGameClock()));
             setIds(state.getIds());
             setIdIndex(state.getIdIndex());
             setDebug(state.isDebug());
             setName(state.getName());
-            setPiece(state.getPiece());
-            setNextPiece(state.getNextPiece());
+            setPiece(NetUtil.getObjectFromJsonString(YipeePiece.class, state.getPiece()));
+            setNextPiece(NetUtil.getObjectFromJsonString(YipeePiece.class, state.getNextPiece()));
             setCells(state.getPlayerCells());
             setPieceFallTimer(state.getPieceFallTimer());
             setPieceLockTimer(state.getPieceLockTimer());
             setBlockAnimationTimer(state.getBlockAnimationTimer());
             setYahooDuration(state.getYahooDuration());
             setPartnerRight(state.isPartnerRight());
-            setPowers(state.getPowers());
-            setBrokenCells(state.getBrokenCells());
-            setSpecialPieces(state.getSpecialPieces());
+            setPowers(Util.iterableToLinkeListQueue(state.getPowers()));
+            //setBrokenCells(state.getBrokenCells());
+            setSpecialPieces(Util.iterableToLinkeListQueue(state.getSpecialPieces()));
             setHasGameStarted(state.isHasGameStarted());
             setBoardNumber(state.getBoardNumber());
 
@@ -185,8 +182,8 @@ public class YipeeGameBoard implements Disposable {
         }
     }
 
-    public YipeeGameBoardState exportGameState() {
-        YipeeGameBoardState state = new YipeeGameBoardState();
+    public GameBoardState exportGameState() throws JsonProcessingException {
+        GameBoardState state = new YipeeGameBoardState();
         state.setCurrentPhase(currentPhase);
         state.setBrokenBlockCount(brokenBlockCount);
         state.setFastDown(fastDown);
@@ -194,14 +191,14 @@ public class YipeeGameBoard implements Disposable {
         state.setNextBlocks(nextBlocks);
         state.setCountOfBreaks(countOfBreaks);
         state.setPowersKeep(powersKeep);
-        state.setGameClock(gameClock);
+        state.setGameClock(NetUtil.writeValueAsString(gameClock));
         state.setIds(ids);
         state.setIdIndex(idIndex);
         state.setDebug(debug);
         state.setName(name);
         state.setCurrentStateTimeStamp(TimeUtils.nanoTime());
-        state.setPiece(piece);
-        state.setNextPiece(nextPiece);
+        state.setPiece(NetUtil.writeValueAsString(piece));
+        state.setNextPiece(NetUtil.writeValueAsString(nextPiece));
         state.setPlayerCells(cells);
         state.setPieceFallTimer(pieceFallTimer);
         state.setPieceLockTimer(pieceLockTimer);
@@ -209,7 +206,7 @@ public class YipeeGameBoard implements Disposable {
         state.setYahooDuration(yahooDuration);
         state.setPartnerRight(isPartnerRight);
         state.setPowers(powers);
-        state.setBrokenCells(brokenCells);
+        state.setBrokenCells(NetUtil.writeValueAsString(brokenCells));
         state.setSpecialPieces(specialPieces);
         state.setHasGameStarted(hasGameStarted);
         state.setBoardNumber(boardNumber);
@@ -238,8 +235,8 @@ public class YipeeGameBoard implements Disposable {
         piece = null;
     }
 
-    public void setPartnerCells(YipeeGameBoard partnerB, boolean isRight) {
-        setPartnerBoardState(partnerB.exportGameState(), isRight);
+    public void setPartnerCells(YipeeGameBoard partnerB, boolean isRight) throws JsonProcessingException {
+        setPartnerBoardState((YipeeGameBoardState) partnerB.exportGameState(), isRight);
     }
 
     public void setPartnerBoardState(YipeeGameBoardState partnerBoardState, boolean isRight) {
@@ -1583,7 +1580,6 @@ public class YipeeGameBoard implements Disposable {
                 }
             }
         }
-        //state.setCellsToDrop(cellsToDrop);
     }
 
     public void checkBoardForPartnerBreaks(YipeeGameBoard partner, boolean isPartnerOnRight) {
@@ -1710,7 +1706,11 @@ public class YipeeGameBoard implements Disposable {
      */
 
     public String toString() {
-        return YipeePrinter.toStringYipeeBoard(this);
+        try {
+            return YipeePrinter.toStringYipeeBoard(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     boolean isPieceBlock(int row, int col) {
@@ -1725,7 +1725,7 @@ public class YipeeGameBoard implements Disposable {
         cells[r][c] = YipeeBlock.CLEAR_BLOCK;
     }
 
-    public void updateGameState(float delta, YipeeGameBoardState state, YipeeGameBoardState partnerState) {
+    public void updateGameState(float delta, GameBoardState state, GameBoardState partnerState) throws JsonProcessingException {
         importGameState(state, partnerState);
         update(delta);
     }
@@ -1941,9 +1941,7 @@ public class YipeeGameBoard implements Disposable {
     }
 
     private YipeeGameBoard getPartnerBoard() {
-        YipeeGameBoard partnerBoard = null;
         if (hasPartner) {
-            partnerBoard = new YipeeGameBoard();
             partnerBoard.setCells(partnerCells);
         }
         return partnerBoard;
@@ -2124,10 +2122,6 @@ public class YipeeGameBoard implements Disposable {
             block = getBlockPower(block, powersKeep[block]);
         }
         return block;
-    }
-
-    public Queue<Integer> getPowers() {
-        return powers;
     }
 
     private int getBlockPower(int block, int intensity) {

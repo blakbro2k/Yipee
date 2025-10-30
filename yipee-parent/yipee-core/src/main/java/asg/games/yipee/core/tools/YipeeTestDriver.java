@@ -16,6 +16,7 @@
 package asg.games.yipee.core.tools;
 
 import asg.games.yipee.core.game.YipeeGameBoard;
+import asg.games.yipee.core.objects.YipeeGameBoardState;
 
 import java.util.Scanner;
 import java.util.concurrent.Callable;
@@ -41,7 +42,7 @@ public class YipeeTestDriver {
         boolean running = true;
 
         while (running) {
-            player.updateGameState(1 / 60f, player.exportGameState(), null); // simulate frame
+            player.updateGameState(1 / 60f, (YipeeGameBoardState) player.exportGameState(), null); // simulate frame
             clearScreen();
             YipeePrinter.printYipeeBoard(player);
 

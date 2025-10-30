@@ -50,7 +50,7 @@ public class AbstractServerResponse implements YipeeSerializable {
      * The local system time in milliseconds when this request was sent.
      * Used for latency diagnostics (not for game logic).
      */
-    private long timestamp;
+    private long serverTimestamp;
 
     /**
      * The local tick rate set on the server
@@ -61,6 +61,6 @@ public class AbstractServerResponse implements YipeeSerializable {
 
     @Override
     public String toString() {
-        return "ServerRequest[" + serverId + ", serverTick=" + serverTick + ", ts=" + timestamp + "]";
+        return "ServerRequest[" + serverId + ", serverTick=" + serverTick + ", serverTimestamp=" + serverTimestamp + "]";
     }
 }
