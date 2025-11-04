@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.net.packets;
+package asg.games.yipee.common.enums;
 
 /**
  * Enum representing the type of update that occurred at the table.

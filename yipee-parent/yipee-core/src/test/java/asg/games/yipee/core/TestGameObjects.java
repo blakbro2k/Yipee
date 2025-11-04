@@ -15,6 +15,8 @@
  */
 package asg.games.yipee.core;
 
+import asg.games.yipee.common.enums.ACCESS_TYPE;
+import asg.games.yipee.common.enums.Constants;
 import asg.games.yipee.core.game.YipeeGameBoard;
 import asg.games.yipee.core.objects.AbstractYipeeObject;
 import asg.games.yipee.core.objects.Copyable;
@@ -576,13 +578,13 @@ public class TestGameObjects {
         System.out.println("table1: " + table1);
 
         Map<String, Object> arguments = new HashMap<>();
-        arguments.put(YipeeTable.ARG_TYPE, YipeeTable.ENUM_VALUE_PRIVATE);
+        arguments.put(YipeeTable.ARG_TYPE, Constants.ENUM_VALUE_PRIVATE);
         arguments.put(YipeeTable.ARG_RATED, true);
         YipeeTable table2 = yokelRoom1.addTable(arguments);
         System.out.println("table2: " + table2);
 
         Map<String, Object> arguments2 = new HashMap<>();
-        arguments2.put(YipeeTable.ARG_TYPE, YipeeTable.ENUM_VALUE_PROTECTED);
+        arguments2.put(YipeeTable.ARG_TYPE, Constants.ENUM_VALUE_PROTECTED);
         arguments2.put(YipeeTable.ARG_RATED, false);
         YipeeTable table3 = yokelRoom1.addTable(arguments2);
         System.out.println("table3: " + table3);
@@ -696,7 +698,7 @@ public class TestGameObjects {
 
         Map<String, Object> arguments = new HashMap<>();
         arguments.put(YipeeTable.ARG_RATED, true);
-        arguments.put(YipeeTable.ARG_TYPE, YipeeTable.ENUM_VALUE_PRIVATE);
+        arguments.put(YipeeTable.ARG_TYPE, Constants.ENUM_VALUE_PRIVATE);
         YipeeTable yokelTable3 = new YipeeTable(1, arguments);
         setIdAndName(yokelTable, yokelTable2, yokelTable3, yokelPlayer, yokelPlayer2);
         yokelTable.setName("sim:room1");
@@ -706,10 +708,10 @@ public class TestGameObjects {
         yokelTable3.setName("sim:room3");
         yokelTable3.setTableName(1);
 
-        yokelTable2.setAccessType(YipeeTable.ACCESS_TYPE.PROTECTED);
-        Assert.assertEquals(yokelTable.getAccessType(), YipeeTable.ACCESS_TYPE.PUBLIC);
-        Assert.assertEquals(yokelTable2.getAccessType().getValue(), YipeeTable.ACCESS_TYPE.PROTECTED.toString());
-        Assert.assertEquals(yokelTable3.getAccessType(), YipeeTable.ACCESS_TYPE.PRIVATE);
+        yokelTable2.setAccessType(ACCESS_TYPE.PROTECTED);
+        Assert.assertEquals(yokelTable.getAccessType(), ACCESS_TYPE.PUBLIC);
+        Assert.assertEquals(yokelTable2.getAccessType().getValue(), ACCESS_TYPE.PROTECTED.toString());
+        Assert.assertEquals(yokelTable3.getAccessType(), ACCESS_TYPE.PRIVATE);
 
         Assert.assertEquals(yokelTable.getTableNumber(), 1);
         Assert.assertEquals(yokelTable2.getTableNumber(), 2);

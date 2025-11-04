@@ -63,10 +63,8 @@ Holds all rules, mechanics, and authoritative state updates.
 
 Contents:
 - **Game loop & mechanics** — piece movement, attacks, scoring.
-- **Core net registrar** — network packet registration.
 - **Game objects** — boards, tables, players.
 - **Persistence API** — database interfaces for saving/loading.
-- **Net package** — packet definitions for server-client sync.
 
 ---
 
@@ -77,6 +75,8 @@ Contents:
 - **Transport utilities** (KryoNet, etc.).
 - **Client-server communication handling**.
 - **Protocol definitions**.
+- **Net registrar** — network packet registration.
+- **Net package** — packet definitions for server-client sync.
 
 ---
 

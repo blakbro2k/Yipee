@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = false, exclude = {"timestamp"})
 public abstract class AbstractClientRequest implements YipeeSerializable {
     /**
      * A unique identifier for the client instance (may be generated or assigned).
@@ -30,10 +30,10 @@ public abstract class AbstractClientRequest implements YipeeSerializable {
     private String clientId;
 
     /**
-     * A JWT token issued by the Web CMS (e.g., WordPress) for authentication.
-     * It should include the player object as well.
+     * A JWT issued by the web CMS (e.g., WordPress) for authentication.
+     * The server uses this token to verify identity and extract player info.
      */
-    private String sessionKey;
+    private String authToken;
 
     /**
      * The game tick at which this request was issued.

@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * Custom ID generator for Hibernate entities that extends {@link UUIDGenerator}.
@@ -55,16 +56,41 @@ public class IdGenerator extends UUIDGenerator {
      */
     @Override
     public Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
-        Serializable id = null;
+        String id = null;
 
         if (object instanceof YipeeObject) {
             id = ((YipeeObject) object).getId();
         }
 
-        if (id == null) {
-            id = String.valueOf(super.generate(session, object)).replaceAll("-", "");
+        if (id != null) {
+            String normalized = normalize(id);
+            if (!normalized.equals(id)) {
+                logger.debug("Normalizing incoming id from '{}' to '{}'", id, normalized);
+            }
+            return normalized;
         }
 
-        return id;
+        // Fresh 32-char UUID (no hyphens)
+        return UUID.randomUUID().toString().replace("-", "");
+        // Alternatively, if you want to keep using super():
+        // return String.valueOf(super.generate(session, object)).replace("-", "");
+    }
+
+    /**
+     * Normalize to 32 lowercase hex characters (strip hyphens if present).
+     * Logs if the input looks suspicious (wrong length after normalization).
+     */
+    private static String normalize(String id) {
+        String n = id.replace("-", "");
+        // Optionally lower-case to keep a single canonical form:
+        n = n.toLowerCase();
+
+        if (n.length() != 32) {
+            // Not throwing to avoid surprising callers; just warn.
+            // Consider throwing IllegalArgumentException if you prefer hard failure.
+            LoggerFactory.getLogger(IdGenerator.class)
+                .warn("ID '{}' normalized to '{}' but length={} (expected 32).", id, n, n.length());
+        }
+        return n;
     }
 }

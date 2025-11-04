@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.libgdx.objects;
 
+import asg.games.yipee.common.enums.ACCESS_TYPE;
 import asg.games.yipee.common.net.NetYipeeTable;
 import asg.games.yipee.libgdx.tools.LibGDXUtil;
 import com.badlogic.gdx.utils.Disposable;
@@ -52,33 +53,11 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
     public static final String ARG_TYPE = "type";
     public static final String ARG_RATED = "rated";
     public static final String ARG_SOUND = "sound";
-    public static final String ENUM_VALUE_PRIVATE = "PRIVATE";
-    public static final String ENUM_VALUE_PUBLIC = "PUBLIC";
-    public static final String ENUM_VALUE_PROTECTED = "PROTECTED";
+
     public static final String ATT_NAME_PREPEND = "#";
     public static final String ATT_TABLE_SPACER = "_room_tbl";
     public static final int MAX_SEATS = 8;
 
-    /**
-     * Access visibility types for the table:
-     * <ul>
-     *   <li>PRIVATE – Only invited players may join.</li>
-     *   <li>PUBLIC – Open to any player.</li>
-     *   <li>PROTECTED – Joinable with specific constraints.</li>
-     * </ul>
-     */
-    public enum ACCESS_TYPE {
-        PRIVATE(ENUM_VALUE_PRIVATE), PUBLIC(ENUM_VALUE_PUBLIC), PROTECTED(ENUM_VALUE_PROTECTED);
-        private final String accessType;
-
-        ACCESS_TYPE(String accessType) {
-            this.accessType = accessType;
-        }
-
-        public String getValue() {
-            return accessType;
-        }
-    }
 
     /**
      * Access control type for this table (e.g., PUBLIC, PRIVATE, PROTECTED).
@@ -92,7 +71,7 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
     private ObjectSet<YipeePlayerGDX> watchers = GdxSets.newSet();
 
     /** Numeric identifier for the table, used in naming. */
-    private Integer tableNumber;
+    private int tableNumber;
 
     /** Whether this game is rated (affects ranking/score). */
     private boolean isRated = false;
@@ -143,6 +122,16 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
     public void setTableName(int tableNumber) {
         setName(getId() + ATT_TABLE_SPACER + ATT_NAME_PREPEND + tableNumber);
     }
+
+    /*@Override
+    public <T> void setSeats(Iterable<T> seats) {
+        this.seats = LibGDXUtil.buildYipeeSeatGDXSets(seats);
+    }
+
+    @Override
+    public <T> void setWatchers(Iterable<T> watchers) {
+        this.watchers = LibGDXUtil.buildYipeePlayerGDXSets(watchers);
+    }*/
 
     /**
      * Extracts and returns the table number from the current table name.

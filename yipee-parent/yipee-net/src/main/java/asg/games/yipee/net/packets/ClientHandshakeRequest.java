@@ -34,15 +34,8 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = {"player"})
 public class ClientHandshakeRequest extends AbstractClientRequest {
-
-    /**
-     * A JWT issued by the web CMS (e.g., WordPress) for authentication.
-     * The server uses this token to verify identity and extract player info.
-     */
-    private String authToken;
-
     /**
      * Optional player profile details. If omitted, the server will extract
      * the player identity from the provided auth token.

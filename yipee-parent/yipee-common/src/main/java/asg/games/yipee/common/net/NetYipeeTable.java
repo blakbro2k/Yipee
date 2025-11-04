@@ -15,6 +15,8 @@
  */
 package asg.games.yipee.common.net;
 
+import asg.games.yipee.common.enums.ACCESS_TYPE;
+
 /**
  * Marker interface for a network-serializable representation of a Yipee game table.
  *
@@ -26,4 +28,6 @@ package asg.games.yipee.common.net;
  * between server and client.
  */
 public interface NetYipeeTable {
+
+    ACCESS_TYPE getAccessType();
 }

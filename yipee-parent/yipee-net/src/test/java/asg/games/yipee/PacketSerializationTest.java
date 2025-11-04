@@ -15,7 +15,6 @@
  */
 package asg.games.yipee;
 
-import asg.games.yipee.core.net.PacketRegistrar;
 import asg.games.yipee.net.packets.ClientHandshakeRequest;
 import asg.games.yipee.net.packets.ClientHandshakeResponse;
 import asg.games.yipee.net.packets.DisconnectRequest;
@@ -29,6 +28,7 @@ import asg.games.yipee.net.packets.SeatSelectionRequest;
 import asg.games.yipee.net.packets.SeatSelectionResponse;
 import asg.games.yipee.net.packets.TableStateBroadcastResponse;
 import asg.games.yipee.net.packets.TableStateUpdateRequest;
+import asg.games.yipee.net.tools.PacketRegistrar;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
@@ -77,8 +77,6 @@ public class PacketSerializationTest {
 
         T copy = serializeAndDeserialize(kryo, original, clazz);
 
-        System.out.println("o: " + original);
-        System.out.println("c: " + copy);
         Assertions.assertNotNull(copy, "Deserialized object is null");
         Assertions.assertNotNull(original, "Original object is null");
         Assertions.assertEquals(original, copy, "Objects not equal");

@@ -41,7 +41,15 @@ public class NetUtil {
 
     public static YipeePlayerGDX getLibGDXNetPlayer(NetYipeePlayer netYipeePlayer) {
         if(netYipeePlayer instanceof YipeePlayerGDX) {
-            return (YipeePlayerGDX) netYipeePlayer;
+            YipeePlayerGDX player = (YipeePlayerGDX) netYipeePlayer;
+            YipeePlayerGDX retPlayer = new YipeePlayerGDX();
+            retPlayer.setId(player.getId());
+            retPlayer.setName(player.getName());
+            retPlayer.setCreated(player.getCreated());
+            retPlayer.setModified(player.getModified());
+            retPlayer.setIcon(player.getIcon());
+            retPlayer.setRating(player.getRating());
+            return retPlayer;
         }
         return null;
     }

@@ -15,26 +15,13 @@
  */
 package asg.games.yipee.core.objects;
 
+
 /**
- * Represents an object with a unique identifier and a human-readable name.
+ * Interface that allows objects to accept the Vistor Pattern.
  *
- * <p>This interface is typically implemented by domain objects that need to be
- * uniquely identified (e.g., for persistence, logging, or lookup) and labeled
- * in a UI or logs.</p>
+ * Typically used for persistence, caching, or audit logging.
  */
-public interface Identifiable {
-
-    /**
-     * Returns the unique identifier of the object.
-     *
-     * @return a non-null unique ID (e.g., UUID, database key, etc.)
-     */
-    String getId();
-
-    /**
-     * Returns the display name or label of the object.
-     *
-     * @return a human-readable name, may be null or empty if unnamed
-     */
-    String getName();
+public interface Visitable<T extends YipeeVisitor> {
+    /** Returns the creation timestamp in milliseconds since epoch. */
+    void accept(T visitor);
 }

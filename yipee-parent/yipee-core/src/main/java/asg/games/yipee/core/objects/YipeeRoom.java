@@ -15,10 +15,6 @@
  */
 package asg.games.yipee.core.objects;
 
-import asg.games.yipee.core.persistence.TerminatorJPAVisitor;
-import asg.games.yipee.core.persistence.YipeeObjectJPAVisitor;
-import asg.games.yipee.core.persistence.YipeeObjectTerminatorAdapter;
-import asg.games.yipee.core.persistence.YipeeStorageAdapter;
 import asg.games.yipee.core.tools.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -74,10 +70,9 @@ import java.util.stream.Collectors;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_ROOMS")
-public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisitor, TerminatorJPAVisitor, Copyable<YipeeRoom>, Disposable {
+public class YipeeRoom extends AbstractYipeeObject implements Copyable<YipeeRoom>, Disposable {
     @Transient
     private static final Logger logger = LoggerFactory.getLogger(YipeeRoom.class);
-
     @JsonIgnore
     public static final String SOCIAL_LOUNGE = "Social";
     @JsonIgnore
@@ -353,37 +348,5 @@ public class YipeeRoom extends AbstractYipeeObject implements YipeeObjectJPAVisi
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), loungeName, players, tableIndexMap);
-    }
-
-    /**
-     * Visitor method used for saving this room to persistent storage.
-     *
-     * @param adapter the storage adapter to apply
-     */
-    @Override
-    public void visitSave(YipeeStorageAdapter adapter) {
-        try {
-            if (adapter != null) {
-                adapter.visitSaveYipeeRoom(this);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Issue visiting save for " + this.getClass().getSimpleName(), e);
-        }
-    }
-
-    /**
-     * Visitor method used for deleting this room from persistent storage.
-     *
-     * @param terminatorAdapter the termination adapter to apply
-     */
-    @Override
-    public void visitDelete(YipeeObjectTerminatorAdapter terminatorAdapter) {
-        try {
-            if (terminatorAdapter != null) {
-                terminatorAdapter.visitTerminateYipeeRoom(this);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Issue visiting termination for " + this.getClass().getSimpleName(), e);
-        }
     }
 }
