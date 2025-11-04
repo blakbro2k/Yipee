@@ -16,6 +16,31 @@
         </repository>
     </distributionManagement>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>asg.games</groupId>
+        <artifactId>yipee-common</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>asg.games</groupId>
+        <artifactId>yipee-core</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>asg.games</groupId>
+        <artifactId>yipee-net</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>asg.games</groupId>
+        <artifactId>yipee-libgdx</artifactId>
+        <version>${revision}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
 <modules>
      <module>yipee-common</module>
      <module>yipee-core</module>
@@ -30,7 +55,7 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <maven.license.version>1.9.0</maven.license.version>
-    <revision>2.0.0</revision>
+    <revision>0.9.1</revision>
 </properties>
 
     <build>

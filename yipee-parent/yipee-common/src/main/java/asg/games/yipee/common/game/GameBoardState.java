@@ -29,4 +29,117 @@ package asg.games.yipee.common.game;
  * </p>
  */
 public interface GameBoardState {
+    void setCurrentStateTimeStamp(long l);
+
+    GamePhase getCurrentPhase();
+
+    void setCurrentPhase(GamePhase currentPhase);
+
+    int getBrokenBlockCount();
+
+    void setBrokenBlockCount(int brokenBlockCount);
+
+    boolean isFastDown();
+
+    void setFastDown(boolean fastDown);
+
+    int getCurrentBlockPointer();
+
+    void setCurrentBlockPointer(int currentBlockPointer);
+
+    CommonRandomNumberArray getNextBlocks();
+
+    void setNextBlocks(CommonRandomNumberArray nextBlocks);
+
+    int[] getCountOfBreaks();
+
+    void setCountOfBreaks(int[] countOfBreaks);
+
+    int[] getPowersKeep();
+
+    void setPowersKeep(int[] powersKeep);
+
+    String getGameClock();
+
+    void setGameClock(String gameClock);
+
+    boolean[] getIds();
+
+    void setIds(boolean[] ids);
+
+    int getIdIndex();
+
+    void setIdIndex(int idIndex);
+
+    boolean isDebug();
+
+    void setDebug(boolean debug);
+
+    String getName();
+
+    void setName(String name);
+
+    String getPiece();
+
+    void setPiece(String piece);
+
+    String getNextPiece();
+
+    void setNextPiece(String yipeePiece);
+
+    int[][] getPlayerCells();
+
+    void setPlayerCells(int[][] cells);
+
+    float getPieceFallTimer();
+
+    void setPieceFallTimer(float pieceFallTimer);
+
+    float getPieceLockTimer();
+
+    void setPieceLockTimer(float pieceLockTimer);
+
+    float getBlockAnimationTimer();
+
+    void setBlockAnimationTimer(float blockAnimationTimer);
+
+    int getYahooDuration();
+
+    void setYahooDuration(int yahooDuration);
+
+    boolean isPartnerRight();
+
+    void setPartnerRight(boolean isPartnerRight);
+
+    Iterable<Integer> getPowers();
+
+    void setPowers(Iterable<Integer> powers);
+
+    Object getBrokenCells();
+
+    void setBrokenCells(Object brokenCells);
+
+    Iterable<Integer> getSpecialPieces();
+
+    void setSpecialPieces(Iterable<Integer> specialPieces);
+
+    boolean isHasGameStarted();
+
+    void setHasGameStarted(boolean hasGameStarted);
+
+    int getBoardNumber();
+
+    void setBoardNumber(int boardNumber);
+
+    void setPartnerCells(int[][] partnerCells);
+
+    long getCurrentStateTimeStamp();
+
+    long getServerGameStartTime();
+
+    long getPreviousStateTimeStamp();
+
+    Iterable<Object> getCellsToDrop();
+
+    int[][] getPartnerCells();
 }

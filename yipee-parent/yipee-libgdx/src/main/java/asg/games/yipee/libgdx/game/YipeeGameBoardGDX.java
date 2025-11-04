@@ -15,6 +15,9 @@
  */
 package asg.games.yipee.libgdx.game;
 
+import asg.games.yipee.common.game.CommonRandomNumberArray;
+import asg.games.yipee.common.game.GameBoardState;
+import asg.games.yipee.common.game.GamePhase;
 import asg.games.yipee.common.packets.PlayerAction;
 import asg.games.yipee.libgdx.objects.YipeeBlockGDX;
 import asg.games.yipee.libgdx.objects.YipeeBlockMoveGDX;
@@ -24,6 +27,7 @@ import asg.games.yipee.libgdx.objects.YipeeGameBoardStateGDX;
 import asg.games.yipee.libgdx.objects.YipeePieceGDX;
 import asg.games.yipee.libgdx.tools.LibGDXRandomUtil;
 import asg.games.yipee.libgdx.tools.LibGDXUtil;
+import asg.games.yipee.libgdx.tools.NetUtil;
 import asg.games.yipee.libgdx.tools.YipeeGDXPrinter;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
@@ -45,16 +49,6 @@ import java.util.Iterator;
 @Getter
 @Setter
 public class YipeeGameBoardGDX implements Disposable {
-    public enum GamePhase {
-        SPAWN_NEXT,
-        FALLING,
-        LOCKING,
-        BREAKING,
-        COLLAPSING,
-        CASCADE_CHECK,
-        GAME_OVER
-    }
-
     public static final int MAX_RANDOM_BLOCK_NUMBER = 2048;
     public static final int MAX_COLS = 6;
     public static final int MAX_ROWS = 16;
@@ -117,9 +111,10 @@ public class YipeeGameBoardGDX implements Disposable {
     private float pieceFallTimer;
     private float pieceLockTimer;
     private float blockAnimationTimer;
-    private LibGDXRandomUtil.RandomNumberArray nextBlocks;
+    private CommonRandomNumberArray nextBlocks;
     private int currentBlockPointer = -1;
     private boolean fastDown;
+
     @Getter
     private Queue<Integer> powers = LibGDXUtil.newQueue();
     private Queue<Integer> specialPieces = LibGDXUtil.newQueue();
@@ -148,7 +143,7 @@ public class YipeeGameBoardGDX implements Disposable {
         reset(seed);
     }
 
-    public void importGameState(YipeeGameBoardStateGDX state, YipeeGameBoardStateGDX partnerState) {
+    public void importGameState(GameBoardState state, GameBoardState partnerState) {
         if (state != null) {
             setCurrentPhase(state.getCurrentPhase());
             setBrokenBlockCount(state.getBrokenBlockCount());
@@ -157,22 +152,22 @@ public class YipeeGameBoardGDX implements Disposable {
             setNextBlocks(state.getNextBlocks());
             setCountOfBreaks(state.getCountOfBreaks());
             setPowersKeep(state.getPowersKeep());
-            setGameClock(state.getGameClock());
+            setGameClock(NetUtil.fromJsonClient(state.getGameClock(), YipeeClockGDX.class));
             setIds(state.getIds());
             setIdIndex(state.getIdIndex());
             setDebug(state.isDebug());
             setName(state.getName());
-            setPiece(state.getPiece());
-            setNextPiece(state.getNextPiece());
+            setPiece(NetUtil.fromJsonClient(state.getPiece(), YipeePieceGDX.class));
+            setNextPiece(NetUtil.fromJsonClient(state.getNextPiece(), YipeePieceGDX.class));
             setCells(state.getPlayerCells());
             setPieceFallTimer(state.getPieceFallTimer());
             setPieceLockTimer(state.getPieceLockTimer());
             setBlockAnimationTimer(state.getBlockAnimationTimer());
             setYahooDuration(state.getYahooDuration());
             setPartnerRight(state.isPartnerRight());
-            setPowers(state.getPowers());
-            setBrokenCells(state.getBrokenCells());
-            setSpecialPieces(state.getSpecialPieces());
+            setPowers(LibGDXUtil.iterableToQueue(state.getPowers()));
+            //setBrokenCells(state.getBrokenCells());
+            setSpecialPieces(LibGDXUtil.iterableToQueue(state.getSpecialPieces()));
             setHasGameStarted(state.isHasGameStarted());
             setBoardNumber(state.getBoardNumber());
 
@@ -185,8 +180,8 @@ public class YipeeGameBoardGDX implements Disposable {
         }
     }
 
-    public YipeeGameBoardStateGDX exportGameState() {
-        YipeeGameBoardStateGDX state = new YipeeGameBoardStateGDX();
+    public GameBoardState exportGameState() {
+        GameBoardState state = new YipeeGameBoardStateGDX();
         state.setCurrentPhase(currentPhase);
         state.setBrokenBlockCount(brokenBlockCount);
         state.setFastDown(fastDown);
@@ -194,14 +189,14 @@ public class YipeeGameBoardGDX implements Disposable {
         state.setNextBlocks(nextBlocks);
         state.setCountOfBreaks(countOfBreaks);
         state.setPowersKeep(powersKeep);
-        state.setGameClock(gameClock);
+        state.setGameClock(NetUtil.toJsonClient(gameClock));
         state.setIds(ids);
         state.setIdIndex(idIndex);
         state.setDebug(debug);
         state.setName(name);
         state.setCurrentStateTimeStamp(TimeUtils.nanoTime());
-        state.setPiece(piece);
-        state.setNextPiece(nextPiece);
+        state.setPiece(NetUtil.toJsonClient(piece));
+        state.setNextPiece(NetUtil.toJsonClient(nextPiece));
         state.setPlayerCells(cells);
         state.setPieceFallTimer(pieceFallTimer);
         state.setPieceLockTimer(pieceLockTimer);
@@ -242,7 +237,7 @@ public class YipeeGameBoardGDX implements Disposable {
         setPartnerBoardState(partnerB.exportGameState(), isRight);
     }
 
-    public void setPartnerBoardState(YipeeGameBoardStateGDX partnerBoardState, boolean isRight) {
+    public void setPartnerBoardState(GameBoardState partnerBoardState, boolean isRight) {
         if (partnerBoardState != null) {
             this.partnerCells = partnerBoardState.getPlayerCells();
         }

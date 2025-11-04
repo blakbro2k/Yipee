@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.libgdx.tools;
 
+import asg.games.yipee.common.game.GameBoardState;
 import asg.games.yipee.libgdx.game.YipeeBlockEvalGDX;
 import asg.games.yipee.libgdx.game.YipeeGameBoardGDX;
 import asg.games.yipee.libgdx.objects.YipeeBlockGDX;
@@ -22,6 +23,7 @@ import asg.games.yipee.libgdx.objects.YipeeGameBoardStateGDX;
 import asg.games.yipee.libgdx.objects.YipeePieceGDX;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -69,15 +71,15 @@ public class YipeeGDXPrinter {
         return output;
     }
 
-    public static void printYipeeBoardState(YipeeGameBoardStateGDX gameState) {
+    public static void printYipeeBoardState(GameBoardState gameState) {
         getInstance().internalPrintYipeeBoardState(gameState);
     }
 
-    public static String getYipeeBoardStateString(YipeeGameBoardStateGDX gameState) {
+    public static String getYipeeBoardStateString(GameBoardState gameState) {
         return getInstance().getYipeeBoardStateOutput(gameState);
     }
 
-    public void internalPrintYipeeBoardState(YipeeGameBoardStateGDX gameState) {
+    public void internalPrintYipeeBoardState(GameBoardState gameState) {
         System.out.println(getYipeeBoardStateOutput(gameState));
     }
 
@@ -88,18 +90,20 @@ public class YipeeGDXPrinter {
         return "";
     }
 
-    public String getYipeeBoardStateOutput(YipeeGameBoardStateGDX gameState) {
+    public String getYipeeBoardStateOutput(GameBoardState gameState) {
         return stateToString(gameState);
     }
 
     // Print State
-    public String stateToString(YipeeGameBoardStateGDX gameState) {
+    public String stateToString(GameBoardState gameState) {
         return stateToString(gameState, 0);
     }
 
-    public String stateToString(YipeeGameBoardStateGDX gameState, int depth) {
-        if (gameState == null) throw new IllegalArgumentException("GameState cannot be null.");
+    public String stateToString(GameBoardState inState, int depth) {
+        if (inState == null) throw new IllegalArgumentException("GameState cannot be null.");
         if (depth > 1) return "(partner omitted to prevent circular reference)";
+
+        YipeeGameBoardStateGDX gameState = (YipeeGameBoardStateGDX) inState;
 
         StringBuilder out = new StringBuilder();
         if (isLogInfo()) {
@@ -139,8 +143,9 @@ public class YipeeGDXPrinter {
 
         if (isLogWarn()) {
             out.append("#################").append("\n");
-            if (gameState.getPiece() != null) {
-                out.append("player piece pos(").append(gameState.getPiece().column).append(",").append(gameState.getPiece().row).append(")").append("\n");
+            YipeePieceGDX piece = NetUtil.fromJsonClient(gameState.getPiece(), YipeePieceGDX.class);
+            if (piece != null) {
+                out.append("player piece pos(").append(piece.column).append(",").append(piece.row).append(")").append("\n");
             }
             out.append("#################").append("\n");
             addPrintLine(out);
@@ -172,7 +177,7 @@ public class YipeeGDXPrinter {
         return new int[YipeeGameBoardGDX.MAX_ROWS][YipeeGameBoardGDX.MAX_COLS];
     }
 
-    private void printRow(StringBuilder out, int r, YipeeGameBoardStateGDX gameState, int depth) {
+    private void printRow(StringBuilder out, int r, @NotNull YipeeGameBoardStateGDX gameState, int depth) {
         boolean isPartnerRight = gameState.isPartnerRight();
         int[][] playerCells = gameState.getPlayerCells();
         int[][] partnerCells = gameState.getPartnerCells();
@@ -184,7 +189,7 @@ public class YipeeGDXPrinter {
         }
     }
 
-    private void printPlayerRows(int[][] cellsLeft, int[][] cellsRight, int r, StringBuilder out, YipeeGameBoardStateGDX gameState) {
+    private void printPlayerRows(int[][] cellsLeft, int[][] cellsRight, int r, StringBuilder out, @NotNull YipeeGameBoardStateGDX gameState) {
         boolean isPartnerRight = gameState.isPartnerRight();
         for (int c = 0; c < YipeeGameBoardGDX.MAX_COLS * 2; c++) {
             int block;
@@ -230,12 +235,12 @@ public class YipeeGDXPrinter {
     }
 
     private boolean isPieceBlock(int row, int col, YipeeGameBoardStateGDX gameState) {
-        YipeePieceGDX piece = gameState.getPiece();
+        YipeePieceGDX piece = NetUtil.fromJsonClient(gameState.getPiece(), YipeePieceGDX.class);
         return piece != null && piece.column == col && (piece.row == row || piece.row + 1 == row || piece.row + 2 == row);
     }
 
     private int getPieceBlock(int row, YipeeGameBoardStateGDX gameState) {
-        YipeePieceGDX piece = gameState.getPiece();
+        YipeePieceGDX piece = NetUtil.fromJsonClient(gameState.getPiece(), YipeePieceGDX.class);
         return piece.getValueAt(Math.abs(2 - (row - piece.row)));
     }
 

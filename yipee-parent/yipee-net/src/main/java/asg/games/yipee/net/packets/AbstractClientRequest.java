@@ -39,7 +39,7 @@ public abstract class AbstractClientRequest implements YipeeSerializable {
      * The game tick at which this request was issued.
      * Used for synchronizing actions in the server's authoritative game loop.
      */
-    private int tick;
+    private int clientTick;
 
     /**
      * The local system time in milliseconds when this request was sent.
@@ -49,6 +49,6 @@ public abstract class AbstractClientRequest implements YipeeSerializable {
 
     @Override
     public String toString() {
-        return "ClientRequest[" + clientId + ", tick=" + tick + ", ts=" + timestamp + "]";
+        return "ClientRequest[" + clientId + ", clientTick=" + clientTick + ", ts=" + timestamp + "]";
     }
 }

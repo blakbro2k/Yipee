@@ -268,6 +268,7 @@ public class YipeePiece extends AbstractYipeeObject implements Copyable<YipeePie
     @Override
     public YipeePiece copy() {
         YipeePiece copy = new YipeePiece();
+        copyParent(copy);
         copy.index = this.index;
         copy.row = this.row;
         copy.column = this.column;

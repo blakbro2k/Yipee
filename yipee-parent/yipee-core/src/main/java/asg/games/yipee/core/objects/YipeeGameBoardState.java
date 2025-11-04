@@ -15,16 +15,19 @@
  */
 package asg.games.yipee.core.objects;
 
+import asg.games.yipee.common.game.CommonRandomNumberArray;
 import asg.games.yipee.common.game.GameBoardState;
+import asg.games.yipee.common.game.GamePhase;
 import asg.games.yipee.common.tools.StaticArrayUtils;
 import asg.games.yipee.core.game.YipeeBlockEval;
 import asg.games.yipee.core.game.YipeeGameBoard;
-import asg.games.yipee.core.tools.RandomUtil;
 import asg.games.yipee.core.tools.Util;
 import asg.games.yipee.core.tools.YipeePrinter;
-import lombok.Data;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +48,8 @@ import java.util.Queue;
  * @see YipeeBlockEval
  */
 // NOTE: This class must remain Kryo-serializable for network synchronization
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoardState, Copyable<YipeeGameBoardState> {
@@ -54,7 +58,7 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
     /**
      * The current game phase (e.g. SPAWN_NEXT, COLLAPSING, etc.).
      */
-    private YipeeGameBoard.GamePhase currentPhase;
+    private GamePhase currentPhase;
 
     /**
      * The server-side timestamp when the game began for this board.
@@ -74,17 +78,17 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
     /**
      * The currently falling piece controlled by the player.
      */
-    private YipeePiece piece;
+    private String piece;
 
     /**
      * The next piece to be spawned after the current piece locks.
      */
-    private YipeePiece nextPiece;
+    private String nextPiece;
 
     /**
      * Clock object that tracks total elapsed time and pauses.
      */
-    private YipeeClock gameClock;
+    private String gameClock;
 
     /**
      * The main board grid of the current player.
@@ -110,7 +114,6 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
      * Queued power-up or attack actions available to the player.
      */
     private Queue<Integer> powers = new LinkedList<>();
-    ;
 
     /**
      * Number of rows queued for Yahoo! drop animation.
@@ -174,7 +177,7 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
     /**
      * Pre-generated list of upcoming piece values for this board.
      */
-    private RandomUtil.RandomNumberArray nextBlocks;
+    private CommonRandomNumberArray nextBlocks;
 
     /**
      * Pointer to the current index in {@code nextBlocks}.
@@ -212,26 +215,33 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
         this.currentStateTimeStamp = currentStateTimeStamp;
     }
 
+    @Override
+    public void setPowers(Iterable<Integer> powers) {
+        this.powers = Util.iterableToLinkeListQueue(powers);
+    }
+
+    @Override
+    public void setBrokenCells(Object brokenCells) {
+
+    }
+
+    @Override
+    public void setSpecialPieces(Iterable<Integer> specialPieces) {
+        this.specialPieces = Util.iterableToLinkeListQueue(specialPieces);
+    }
+
+    public Iterable<Object> getCellsToDrop() {
+        return null;
+    }
+
+
     // Print State
     public String toString() {
-        return YipeePrinter.getYipeeBoardStateString(this);
-    }
-
-    private boolean isPieceBlock(int row, int col) {
-        return piece != null && piece.column == col && (piece.row == row || piece.row + 1 == row || piece.row + 2 == row);
-    }
-
-    private int getPieceBlock(int row) {
-        return piece.getValueAt(Math.abs(2 - (row - piece.row)));
-    }
-
-    private int getPieceValue(int[][] cells, int c, int r) {
-        return YipeeBlockEval.getCellFlag(cells[r][c]);
-    }
-
-    private static <T> Queue<T> copyQueue(Queue<T> original) {
-        if (original == null) return null;
-        return new LinkedList<>(original);
+        try {
+            return YipeePrinter.getYipeeBoardStateString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -280,9 +290,6 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
     public YipeeGameBoardState deepCopy() {
         YipeeGameBoardState copy = copy();
 
-        // deep object copies
-        copy.piece = (this.piece != null) ? this.piece.deepCopy() : null;
-        copy.nextPiece = (this.nextPiece != null) ? this.nextPiece.deepCopy() : null;
         copy.playerCells = StaticArrayUtils.copyIntMatrix(this.playerCells);
         copy.partnerCells = StaticArrayUtils.copyIntMatrix(this.partnerCells);
 

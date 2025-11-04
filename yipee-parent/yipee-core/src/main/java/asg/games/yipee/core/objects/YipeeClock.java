@@ -48,8 +48,11 @@ import java.util.Objects;
 public class YipeeClock extends AbstractYipeeObject {
     private static final Logger logger = LoggerFactory.getLogger(YipeeClock.class);
 
-    private long start;      // Start time in milliseconds
-    private boolean running; // Indicates whether the timer is active
+    // Start time in milliseconds
+    private long start;
+
+    // Indicates whether the timer is active
+    private boolean running;
 
     /**
      * Default constructor required for JSON serialization.

@@ -15,11 +15,13 @@
  */
 package asg.games.yipee.core.tools;
 
+import asg.games.yipee.common.game.GameBoardState;
 import asg.games.yipee.core.game.YipeeBlockEval;
 import asg.games.yipee.core.game.YipeeGameBoard;
 import asg.games.yipee.core.objects.YipeeBlock;
 import asg.games.yipee.core.objects.YipeeGameBoardState;
 import asg.games.yipee.core.objects.YipeePiece;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.Contract;
@@ -58,13 +60,13 @@ public class YipeePrinter {
         return INSTANCE;
     }
 
-    public static void printYipeeBoard(YipeeGameBoard board) {
+    public static void printYipeeBoard(YipeeGameBoard board) throws JsonProcessingException {
         if (board != null) {
             printYipeeBoardState(board.exportGameState());
         }
     }
 
-    public static String toStringYipeeBoard(YipeeGameBoard board) {
+    public static String toStringYipeeBoard(YipeeGameBoard board) throws JsonProcessingException {
         String output = "";
         if (board != null) {
             output = getYipeeBoardStateString(board.exportGameState());
@@ -72,37 +74,39 @@ public class YipeePrinter {
         return output;
     }
 
-    public static void printYipeeBoardState(YipeeGameBoardState gameState) {
+    public static void printYipeeBoardState(GameBoardState gameState) throws JsonProcessingException {
         getInstance().internalPrintYipeeBoardState(gameState);
     }
 
-    public static String getYipeeBoardStateString(YipeeGameBoardState gameState) {
+    public static String getYipeeBoardStateString(GameBoardState gameState) throws JsonProcessingException {
         return getInstance().getYipeeBoardStateOutput(gameState);
     }
 
-    public void internalPrintYipeeBoardState(YipeeGameBoardState gameState) {
+    public void internalPrintYipeeBoardState(GameBoardState gameState) throws JsonProcessingException {
         System.out.println(getYipeeBoardStateOutput(gameState));
     }
 
-    public String getYipeeBoardOutput(YipeeGameBoard board) {
+    public String getYipeeBoardOutput(YipeeGameBoard board) throws JsonProcessingException {
         if (board != null) {
             return getYipeeBoardStateOutput(board.exportGameState());
         }
         return "";
     }
 
-    public String getYipeeBoardStateOutput(YipeeGameBoardState gameState) {
+    public String getYipeeBoardStateOutput(GameBoardState gameState) throws JsonProcessingException {
         return stateToString(gameState);
     }
 
     // Print State
-    public String stateToString(YipeeGameBoardState gameState) {
+    public String stateToString(GameBoardState gameState) throws JsonProcessingException {
         return stateToString(gameState, 0);
     }
 
-    public String stateToString(YipeeGameBoardState gameState, int depth) {
-        if (gameState == null) throw new IllegalArgumentException("GameState cannot be null.");
+    public String stateToString(GameBoardState inState, int depth) throws JsonProcessingException {
+        if (inState == null) throw new IllegalArgumentException("GameState cannot be null.");
         if (depth > 1) return "(partner omitted to prevent circular reference)";
+
+        YipeeGameBoardState gameState = (YipeeGameBoardState) inState;
 
         StringBuilder out = new StringBuilder();
         if (isLogInfo()) {
@@ -142,8 +146,9 @@ public class YipeePrinter {
 
         if (isLogWarn()) {
             out.append("#################").append("\n");
-            if (gameState.getPiece() != null) {
-                out.append("player piece pos(").append(gameState.getPiece().column).append(",").append(gameState.getPiece().row).append(")").append("\n");
+            YipeePiece piece = NetUtil.getObjectFromJsonString(YipeePiece.class, gameState.getPiece());
+            if (piece != null) {
+                out.append("player piece pos(").append(piece.column).append(",").append(piece.row).append(")").append("\n");
             }
             out.append("#################").append("\n");
             addPrintLine(out);
@@ -175,7 +180,7 @@ public class YipeePrinter {
         return new int[YipeeGameBoard.MAX_ROWS][YipeeGameBoard.MAX_COLS];
     }
 
-    private void printRow(StringBuilder out, int r, @NotNull YipeeGameBoardState gameState, int depth) {
+    private void printRow(StringBuilder out, int r, @NotNull YipeeGameBoardState gameState, int depth) throws JsonProcessingException {
         boolean isPartnerRight = gameState.isPartnerRight();
         int[][] playerCells = gameState.getPlayerCells();
         int[][] partnerCells = gameState.getPartnerCells();
@@ -187,7 +192,7 @@ public class YipeePrinter {
         }
     }
 
-    private void printPlayerRows(int[][] cellsLeft, int[][] cellsRight, int r, StringBuilder out, @NotNull YipeeGameBoardState gameState) {
+    private void printPlayerRows(int[][] cellsLeft, int[][] cellsRight, int r, StringBuilder out, @NotNull YipeeGameBoardState gameState) throws JsonProcessingException {
         boolean isPartnerRight = gameState.isPartnerRight();
         for (int c = 0; c < YipeeGameBoard.MAX_COLS * 2; c++) {
             int block;
@@ -232,18 +237,18 @@ public class YipeePrinter {
         out.append("\n");
     }
 
-    private boolean isPieceBlock(int row, int col, @NotNull YipeeGameBoardState gameState) {
-        YipeePiece piece = gameState.getPiece();
+    private boolean isPieceBlock(int row, int col, @NotNull YipeeGameBoardState gameState) throws JsonProcessingException {
+        YipeePiece piece = NetUtil.getObjectFromJsonString(YipeePiece.class, gameState.getPiece());
         return piece != null && piece.column == col && (piece.row == row || piece.row + 1 == row || piece.row + 2 == row);
     }
 
-    private int getPieceBlock(int row, @NotNull YipeeGameBoardState gameState) {
-        YipeePiece piece = gameState.getPiece();
+    private int getPieceBlock(int row, YipeeGameBoardState gameState) throws JsonProcessingException {
+        YipeePiece piece = NetUtil.getObjectFromJsonString(YipeePiece.class, gameState.getPiece());
         return piece.getValueAt(Math.abs(2 - (row - piece.row)));
     }
 
     @Contract(pure = true)
-    private int getPieceValue(int[] @NotNull [] cells, int c, int r) {
+    private int getPieceValue(int[][] cells, int c, int r) {
         return YipeeBlockEval.getCellFlag(cells[r][c]);
     }
 }

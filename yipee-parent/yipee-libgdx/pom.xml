@@ -15,7 +15,7 @@
         <lml.version>1.10</lml.version>
         <lombok.version>1.18.28</lombok.version>
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
- </properties>
+    </properties>
 
     <dependencies>
         <dependency>

@@ -15,11 +15,12 @@
  */
 package asg.games.yipee.libgdx.objects;
 
+import asg.games.yipee.common.game.CommonRandomNumberArray;
 import asg.games.yipee.common.game.GameBoardState;
+import asg.games.yipee.common.game.GamePhase;
 import asg.games.yipee.common.tools.StaticArrayUtils;
 import asg.games.yipee.libgdx.game.YipeeBlockEvalGDX;
 import asg.games.yipee.libgdx.game.YipeeGameBoardGDX;
-import asg.games.yipee.libgdx.tools.LibGDXRandomUtil;
 import asg.games.yipee.libgdx.tools.LibGDXUtil;
 import asg.games.yipee.libgdx.tools.YipeeGDXPrinter;
 import com.badlogic.gdx.utils.Queue;
@@ -53,7 +54,7 @@ public class YipeeGameBoardStateGDX extends AbstractYipeeObjectGDX implements Ga
      *
      * The current game phase (e.g. SPAWN_NEXT, COLLAPSING, etc.).
      */
-    private YipeeGameBoardGDX.GamePhase currentPhase;
+    private GamePhase currentPhase;
 
     /**
      * The server-side timestamp when the game began for this board.
@@ -73,17 +74,17 @@ public class YipeeGameBoardStateGDX extends AbstractYipeeObjectGDX implements Ga
     /**
      * The currently falling piece controlled by the player.
      */
-    private YipeePieceGDX piece;
+    private String piece;
 
     /**
      * The next piece to be spawned after the current piece locks.
      */
-    private YipeePieceGDX nextPiece;
+    private String nextPiece;
 
     /**
      * Clock object that tracks total elapsed time and pauses.
      */
-    private YipeeClockGDX gameClock;
+    private String gameClock;
 
     /**
      * The main board grid of the current player.
@@ -178,7 +179,7 @@ public class YipeeGameBoardStateGDX extends AbstractYipeeObjectGDX implements Ga
     /**
      * Pre-generated list of upcoming piece values for this board.
      */
-    private LibGDXRandomUtil.RandomNumberArray nextBlocks;
+    private CommonRandomNumberArray nextBlocks;
 
     /**
      * Pointer to the current index in {@code nextBlocks}.
@@ -220,21 +221,29 @@ public class YipeeGameBoardStateGDX extends AbstractYipeeObjectGDX implements Ga
         this.currentStateTimeStamp = currentStateTimeStamp;
     }
 
+    @Override
+    public void setPowers(Iterable<Integer> powers) {
+        this.powers = LibGDXUtil.iterableToQueue(powers);
+    }
+
+    @Override
+    public void setBrokenCells(Object brokenCells) {
+
+    }
+
+    @Override
+    public Iterable<Object> getCellsToDrop() {
+        return null;
+    }
+
+    @Override
+    public void setSpecialPieces(Iterable<Integer> specialPieces) {
+        this.specialPieces = LibGDXUtil.iterableToQueue(specialPieces);
+    }
+
     // Print State
     public String toString() {
         return YipeeGDXPrinter.getYipeeBoardStateString(this);
-    }
-
-    private boolean isPieceBlock(int row, int col) {
-        return piece != null && piece.column == col && (piece.row == row || piece.row + 1 == row || piece.row + 2 == row);
-    }
-
-    private int getPieceBlock(int row) {
-        return piece.getValueAt(Math.abs(2 - (row - piece.row)));
-    }
-
-    private int getPieceValue(int[][] cells, int c, int r) {
-        return YipeeBlockEvalGDX.getCellFlag(cells[r][c]);
     }
 
     @Override
@@ -284,8 +293,6 @@ public class YipeeGameBoardStateGDX extends AbstractYipeeObjectGDX implements Ga
         YipeeGameBoardStateGDX copy = copy();
 
         // deep object copies
-        copy.piece = (this.piece != null) ? this.piece.deepCopy() : null;
-        copy.nextPiece = (this.nextPiece != null) ? this.nextPiece.deepCopy() : null;
         copy.playerCells = StaticArrayUtils.copyIntMatrix(this.playerCells);
         copy.partnerCells = StaticArrayUtils.copyIntMatrix(this.partnerCells);
 
