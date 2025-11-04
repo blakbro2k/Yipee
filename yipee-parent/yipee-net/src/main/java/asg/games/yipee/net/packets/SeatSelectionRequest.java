@@ -31,7 +31,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = {"player"})
 public class SeatSelectionRequest extends AbstractClientRequest {
 
     /**

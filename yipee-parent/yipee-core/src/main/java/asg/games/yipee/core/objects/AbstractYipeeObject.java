@@ -16,18 +16,20 @@
 package asg.games.yipee.core.objects;
 
 import asg.games.yipee.core.tools.TimeUtils;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.Transient;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,18 +83,16 @@ import java.util.Objects;
     @JsonSubTypes.Type(value = YipeeTable.class, name = "YipeeTable")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @MappedSuperclass
 public abstract class AbstractYipeeObject implements YipeeObject {
-    @Transient
     private static final Logger logger = LoggerFactory.getLogger(AbstractYipeeObject.class);
 
     /**
      * Unique identifier for the Yipee object
      */
     @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid")
-    @Column(name = "id", nullable = false, length = 32)
+    @Column(name = "id", nullable = false, updatable = false, length = 32)
     @JsonProperty()
     protected String id;
 
@@ -105,19 +105,46 @@ public abstract class AbstractYipeeObject implements YipeeObject {
     /**
      * Timestamp representing the creation time of the Yipee object (in milliseconds)
      */
+    /**
+     * Automatically set when the entity is first persisted.
+     */
+    @Column(name = "created", nullable = false, updatable = false)
     protected long created;
 
     /**
      * Timestamp representing the last modification time of the Yipee object (in milliseconds)
      */
+    @Column(name = "modified", nullable = false)
     protected long modified;
 
     /**
-     * Default constructor, which sets the creation and modification timestamps to the current time (in milliseconds).
+     * Default constructor, JPA needs a non-public no-arg constructor.
      */
-    AbstractYipeeObject() {
-        setCreated(TimeUtils.millis());
-        setModified(TimeUtils.millis());
+    protected AbstractYipeeObject() {
+    }
+
+    @PrePersist
+    protected void onPrePersist() {
+        final long now = TimeUtils.millis();
+
+        // 1) Ensure ID is present and normalized to 32 chars (no hyphens)
+        if (this.id == null || this.id.isEmpty()) {
+            this.id = java.util.UUID.randomUUID().toString().replace("-", "").toLowerCase();
+        } else {
+            this.id = this.id.replace("-", "").toLowerCase();
+            if (this.id.length() != 32) {
+                throw new IllegalArgumentException("ID must be 32 hex chars; was: " + this.id);
+            }
+        }
+
+        // 2) Timestamps
+        if (this.created <= 0) this.created = now;
+        this.modified = now;
+    }
+
+    @PreUpdate
+    protected void onPreUpdate() {
+        this.modified = TimeUtils.millis();
     }
 
     /**
@@ -130,9 +157,11 @@ public abstract class AbstractYipeeObject implements YipeeObject {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AbstractYipeeObject object = (AbstractYipeeObject) o;
-        return Objects.equals(getId(), object.getId()) && Objects.equals(getName(), object.getName());
+        if (o == null) return false;
+        if (Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        AbstractYipeeObject that = (AbstractYipeeObject) o;
+        // If either ID is null, fall back to object identity (unsaved entities are not equal).
+        return this.id != null && Objects.equals(this.id, that.id);
     }
 
     /**
@@ -143,7 +172,7 @@ public abstract class AbstractYipeeObject implements YipeeObject {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getCreated(), getModified());
+        return Objects.hash(Hibernate.getClass(this), id);
     }
 
     /**
@@ -168,8 +197,9 @@ public abstract class AbstractYipeeObject implements YipeeObject {
             logger.debug("Copying parent attributes to: " + o);
             o.setId(null);
             o.setName(this.getName());
-            o.setCreated(TimeUtils.millis());
-            o.setModified(TimeUtils.millis());
+            long now = TimeUtils.millis();
+            o.setCreated(now);
+            o.setModified(now);
         }
     }
 }

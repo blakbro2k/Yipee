@@ -1,0 +1,86 @@
+<packet-config>
+    <packages>
+        <package>asg.games.yipee.net.game</package>
+        <package>asg.games.yipee.net.packets</package>
+        <package>asg.games.yipee.common.net</package>
+        <package>asg.games.yipee.common.game</package>
+        <package>asg.games.yipee.common.packets</package>
+    </packages>
+    <excludedClasses>
+        <class>asg.games.yipee.net.PacketRegistrar</class>
+        <class>java.io.ObjectStreamField</class>
+        <class>java.lang.reflect.Constructor</class>
+        <class>java.lang.WeakPairMap</class>
+        <class>java.lang.Module$ArchivedData</class>
+        <class>java.security.ProtectionDomain</class>
+        <class>java.lang.ref.SoftReference</class>
+        <class>sun.reflect.generics.repository.ClassRepository</class>
+        <class>jdk.internal.reflect.ReflectionFactory</class>
+        <class>java.lang.Class$AnnotationData</class>
+        <class>java.io.ObjectStreamField</class>
+        <class>sun.reflect.annotation.AnnotationType</class>
+        <class>java.lang.ClassValue$Entry</class>
+        <class>java.lang.Class$ReflectionData</class>
+        <class>java.lang.Class$EnclosingMethodInfo</class>
+        <class>org.slf4j.Logger</class>
+        <class>org.aspectj.lang.JoinPoint$StaticPart</class>
+        <class>asg.games.yipee.aspects.LoggingAspect</class>
+        <class>java.lang.Class</class>
+        <class>[Ljava.lang.Object</class>
+        <class>[I</class>
+        <class>[B</class>
+        <class>[C</class>
+        <class>[[I</class>
+        <class>[Z</class>
+        <class>[Ljava.io.ObjectStreamField</class>
+    </excludedClasses>
+    <mappings>
+        <mapping class="java.lang.String" id="403"/>
+        <mapping class="java.util.ArrayList" id="404"/> <!-- For collections -->
+        <mapping class="java.lang.Integer" id="432"/> <!-- For fields -->
+        <mapping class="java.util.Set" id="415"/> <!-- For fields -->
+        <mapping class="java.util.Map" id="416"/> <!-- For fields -->
+        <mapping class="asg.games.yipee.net.packets.AbstractClientRequest" id="900"/>
+        <mapping class="asg.games.yipee.net.packets.AbstractServerResponse" id="901"/>
+        <mapping class="asg.games.yipee.net.packets.AllStatesBroadcastResponse" id="902"/>
+        <mapping class="asg.games.yipee.net.packets.ClientHandshakeRequest" id="903"/>
+        <mapping class="asg.games.yipee.net.packets.ClientHandshakeResponse" id="904"/>
+        <mapping class="asg.games.yipee.net.packets.DisconnectRequest" id="905"/>
+        <mapping class="asg.games.yipee.net.packets.DisconnectResponse" id="906"/>
+        <mapping class="asg.games.yipee.net.packets.ErrorCode" id="907"/>
+        <mapping class="asg.games.yipee.net.packets.ErrorResponse" id="908"/>
+        <mapping class="asg.games.yipee.net.packets.GameStartRequest" id="909"/>
+        <mapping class="asg.games.yipee.net.packets.GameStartResponse" id="910"/>
+        <mapping class="asg.games.yipee.net.packets.MappedKeyUpdateRequest" id="911"/>
+        <mapping class="asg.games.yipee.net.packets.MappedKeyUpdateResponse" id="912"/>
+        <mapping class="asg.games.yipee.net.packets.PlayerActionRequest" id="913"/>
+        <mapping class="asg.games.yipee.net.packets.PlayerActionResponse" id="914"/>
+        <mapping class="asg.games.yipee.net.packets.SeatSelectionRequest" id="915"/>
+        <mapping class="asg.games.yipee.net.packets.SeatSelectionResponse" id="916"/>
+        <mapping class="asg.games.yipee.net.packets.TableActionsBroadcastResponse" id="917"/>
+        <mapping class="asg.games.yipee.net.packets.TableStateBroadcastResponse" id="918"/>
+        <mapping class="asg.games.yipee.net.packets.TableStateUpdateRequest" id="919"/>
+        <mapping class="asg.games.yipee.common.enums.TableUpdateType" id="920"/>
+        <mapping class="asg.games.yipee.common.packets.YipeeSerializable" id="2009"/>
+        <mapping class="asg.games.yipee.libgdx.game.YipeeGameBoardGDX" id="2010"/>
+        <mapping class="asg.games.yipee.libgdx.objects.AbstractYipeeObjectGDX" id="2011"/>
+        <mapping class="asg.games.yipee.libgdx.objects.Copyable" id="2012"/>
+        <mapping class="asg.games.yipee.libgdx.objects.YipeeBlockGDX" id="2013"/>
+        <mapping class="asg.games.yipee.libgdx.objects.YipeeBlockMoveGDX" id="2014"/>
+        <mapping class="asg.games.yipee.libgdx.objects.YipeeBoardPairGDX" id="2015"/>
+        <mapping class="asg.games.yipee.libgdx.objects.YipeeBrokenBlockGDX" id="2016"/>
+        <mapping class="asg.games.yipee.libgdx.objects.YipeeClockGDX" id="2017"/>
+        <mapping class="asg.games.yipee.libgdx.objects.YipeeGameBoardStateGDX" id="2018"/>
+        <mapping class="asg.games.yipee.libgdx.objects.YipeeKeyMapGDX" id="2019"/>
+        <mapping class="asg.games.yipee.libgdx.objects.YipeeObjectGDX" id="2020"/>
+        <mapping class="asg.games.yipee.libgdx.objects.YipeePieceGDX" id="2021"/>
+        <mapping class="asg.games.yipee.libgdx.objects.YipeePlayerGDX" id="2022"/>
+        <mapping class="asg.games.yipee.libgdx.objects.YipeeRoomGDX" id="2023"/>
+        <mapping class="asg.games.yipee.libgdx.objects.YipeeSeatGDX" id="2024"/>
+        <mapping class="asg.games.yipee.libgdx.objects.YipeeTableGDX" id="2025"/>
+        <mapping class="asg.games.yipee.common.net.NetYipeeKeyMap" id="3000"/>
+        <mapping class="asg.games.yipee.common.net.NetYipeeObject" id="3001"/>
+        <mapping class="asg.games.yipee.common.net.NetYipeePlayer" id="3002"/>
+        <mapping class="asg.games.yipee.common.net.NetYipeeTable" id="3003"/>
+    </mappings>
+</packet-config>

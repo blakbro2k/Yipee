@@ -16,6 +16,7 @@
 package asg.games.yipee.core.objects;
 
 import asg.games.yipee.common.net.NetYipeePlayer;
+import asg.games.yipee.core.persistence.Updatable;
 import asg.games.yipee.core.tools.NetUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -49,8 +50,7 @@ import java.util.Objects;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_PLAYERS")
-public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePlayer>, Disposable, NetYipeePlayer {
-    @Transient
+public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePlayer>, Updatable<YipeePlayer>, Disposable, NetYipeePlayer {
     private static final Logger logger = LoggerFactory.getLogger(YipeePlayer.class);
 
     @JsonIgnore
@@ -200,12 +200,12 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
         if (!(o instanceof YipeePlayer)) return false;
         if (!super.equals(o)) return false;
         YipeePlayer player = (YipeePlayer) o;
-        return rating == player.rating && icon == player.icon && Objects.equals(keyConfig, player.keyConfig);
+        return rating == player.rating && icon == player.icon;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), rating, icon, keyConfig);
+        return Objects.hash(super.hashCode(), rating, icon, name);
     }
 
     /**
@@ -215,5 +215,14 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
     @Override
     public void dispose() {
         keyConfig.dispose();
+    }
+
+    @Override
+    public void updateFrom(YipeePlayer source) {
+        if (source != null) {
+            setName(source.getName());
+            setRating(source.getRating());
+            setIcon(source.getIcon());
+        }
     }
 }

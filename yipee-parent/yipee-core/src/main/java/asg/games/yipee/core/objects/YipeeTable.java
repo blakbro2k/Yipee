@@ -15,11 +15,8 @@
  */
 package asg.games.yipee.core.objects;
 
+import asg.games.yipee.common.enums.ACCESS_TYPE;
 import asg.games.yipee.common.net.NetYipeeTable;
-import asg.games.yipee.core.persistence.TerminatorJPAVisitor;
-import asg.games.yipee.core.persistence.YipeeObjectJPAVisitor;
-import asg.games.yipee.core.persistence.YipeeObjectTerminatorAdapter;
-import asg.games.yipee.core.persistence.YipeeStorageAdapter;
 import asg.games.yipee.core.tools.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -62,7 +59,7 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_TABLES")
 @JsonIgnoreProperties({"tableNumber", "tableStartReady", "upArguments", "tableName", "roomId"})
-public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVisitor, TerminatorJPAVisitor, Copyable<YipeeTable>, Disposable, NetYipeeTable {
+public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTable>, Disposable, NetYipeeTable {
     private static final Logger logger = LoggerFactory.getLogger(YipeeTable.class);
 
     @JsonIgnore
@@ -72,30 +69,11 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     @JsonIgnore
     public static final String ARG_SOUND = "sound";
     @JsonIgnore
-    public static final String ENUM_VALUE_PRIVATE = "PRIVATE";
-    @JsonIgnore
-    public static final String ENUM_VALUE_PUBLIC = "PUBLIC";
-    @JsonIgnore
-    public static final String ENUM_VALUE_PROTECTED = "PROTECTED";
-    @JsonIgnore
     public static final String ATT_NAME_PREPEND = "#";
     @JsonIgnore
     public static final String ATT_TABLE_SPACER = "_room_tbl";
     @JsonIgnore
     public static final int MAX_SEATS = 8;
-
-    public enum ACCESS_TYPE {
-        PRIVATE(ENUM_VALUE_PRIVATE), PUBLIC(ENUM_VALUE_PUBLIC), PROTECTED(ENUM_VALUE_PROTECTED);
-        private final String accessType;
-
-        ACCESS_TYPE(String accessType) {
-            this.accessType = accessType;
-        }
-
-        public String getValue() {
-            return accessType;
-        }
-    }
 
     @Getter
     private ACCESS_TYPE accessType = ACCESS_TYPE.PUBLIC;
@@ -114,7 +92,7 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
     private Set<YipeePlayer> watchers = new LinkedHashSet<>();
 
     @Column(nullable = true, unique = true)
-    private Integer tableNumber;
+    private int tableNumber;
 
     @JsonProperty("rated")
     private boolean isRated = false;
@@ -155,13 +133,28 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
      * @return a key-value map representing configuration arguments
      */
     private static Map<String, Object> buildAgumentsFromStrings(String[] argumentStrings) {
-        Map<String, Object> aruments = new HashMap<>();
+        Map<String, Object> arguments = new HashMap<>();
         for (String argumentString : Util.safeIterableArray(argumentStrings)) {
-            if (argumentString != null) {
-
+            if (argumentString != null && argumentString.contains(":")) {
+                if (argumentString.equalsIgnoreCase(ARG_RATED)) {
+                    String[] argPair = Util.split(argumentString, ":");
+                    if (argPair.length == 2) {
+                        arguments.put(ARG_RATED, argPair[1]);
+                    }
+                } else if (argumentString.equalsIgnoreCase(ARG_SOUND)) {
+                    String[] argPair = Util.split(argumentString, ":");
+                    if (argPair.length == 2) {
+                        arguments.put(ARG_SOUND, argPair[1]);
+                    }
+                } else if (argumentString.equalsIgnoreCase(ARG_TYPE)) {
+                    String[] argPair = Util.split(argumentString, ":");
+                    if (argPair.length == 2) {
+                        arguments.put(ARG_TYPE, argPair[1]);
+                    }
+                }
             }
         }
-        return aruments;
+        return arguments;
     }
 
     /**
@@ -201,7 +194,7 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
      * @return the table number
      */
     public int getTableNumber() {
-        return Integer.parseInt(Util.split(getName(), ATT_NAME_PREPEND)[1]);
+        return getName() == null ? -1 : Integer.parseInt(Util.split(getName(), ATT_NAME_PREPEND)[1]);
     }
 
     /**
@@ -429,6 +422,16 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         return copy;
     }
 
+    /*@Override
+    public <T> void setSeats(Iterable<T> seats) {
+        this.seats = Util.buildYipeeSeatSets(seats);
+    }
+
+    @Override
+    public <T> void setWatchers(Iterable<T> watchers) {
+        this.watchers = Util.buildYipeePlayerSets(watchers);
+    }*/
+
     /**
      * Creates a deep copy of this table, including cloned seats and watchers.
      *
@@ -449,38 +452,6 @@ public class YipeeTable extends AbstractYipeeObject implements YipeeObjectJPAVis
         }
         copy.setWatchers(newWatchers);
         return copy;
-    }
-
-    /**
-     * Visitor method used to persist the table and its state to the database.
-     *
-     * @param adapter the storage adapter used for saving
-     */
-    @Override
-    public void visitSave(YipeeStorageAdapter adapter) {
-        try {
-            if (adapter != null) {
-                adapter.visitSaveYipeeTable(this);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Issue visiting save for " + this.getClass().getSimpleName() + ": ", e);
-        }
-    }
-
-    /**
-     * Visitor method used to delete the table and its state from the database.
-     *
-     * @param terminatorAdapter the terminator adapter used for deletion
-     */
-    @Override
-    public void visitDelete(YipeeObjectTerminatorAdapter terminatorAdapter) {
-        try {
-            if (terminatorAdapter != null) {
-                terminatorAdapter.visitTerminateYipeeTable(this);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Issue visiting termination for " + this.getClass().getSimpleName() + ": ", e);
-        }
     }
 
     @Override

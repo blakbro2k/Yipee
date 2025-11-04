@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.core;
+package asg.games.yipee.net;
 
-import asg.games.yipee.core.net.PacketRegistrar;
+import asg.games.yipee.net.tools.PacketRegistrar;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.Registration;
 import org.junit.jupiter.api.BeforeAll;

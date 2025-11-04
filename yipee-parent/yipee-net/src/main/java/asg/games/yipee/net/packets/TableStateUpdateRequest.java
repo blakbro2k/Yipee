@@ -16,6 +16,7 @@
 package asg.games.yipee.net.packets;
 
 
+import asg.games.yipee.common.enums.TableUpdateType;
 import asg.games.yipee.common.net.NetYipeePlayer;
 import asg.games.yipee.common.net.NetYipeeTable;
 import lombok.Data;
@@ -39,7 +40,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = {"requestedBy", "partialTableUpdate"})
 public class TableStateUpdateRequest extends AbstractClientRequest {
 
     /**

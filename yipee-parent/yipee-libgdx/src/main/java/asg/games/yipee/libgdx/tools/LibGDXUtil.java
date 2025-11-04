@@ -15,7 +15,9 @@
  */
 package asg.games.yipee.libgdx.tools;
 
+import asg.games.yipee.libgdx.objects.YipeePlayerGDX;
 import asg.games.yipee.libgdx.objects.YipeeRoomGDX;
+import asg.games.yipee.libgdx.objects.YipeeSeatGDX;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -23,6 +25,7 @@ import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Queue;
 import com.github.czyzby.kiwi.util.common.UtilitiesClass;
 import com.github.czyzby.kiwi.util.gdx.collection.GdxArrays;
+import com.github.czyzby.kiwi.util.gdx.collection.GdxSets;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -198,6 +201,10 @@ public class LibGDXUtil extends UtilitiesClass {
 
     public static <T> Array<T> iterableToArray(Iterable<T> iterable) {
         return GdxArrays.newArray(iterable);
+    }
+
+    public static <T> ObjectSet<T> iterableToSet(Iterable<T> iterable) {
+        return GdxSets.newSet(iterable);
     }
 
     public static boolean otob(Object o) {
@@ -729,5 +736,27 @@ public class LibGDXUtil extends UtilitiesClass {
 
     public static boolean isEmpty(Iterable<?> collection) {
         return collection == null || !collection.iterator().hasNext();
+    }
+
+    public static <T> ObjectSet<YipeeSeatGDX> buildYipeeSeatGDXSets(Iterable<T> iterable) {
+        ObjectSet<YipeeSeatGDX> seats = GdxSets.newSet();
+
+        for (Object o : iterable) {
+            if (o instanceof YipeeSeatGDX) {
+                seats.add((YipeeSeatGDX) o);
+            }
+        }
+        return seats;
+    }
+
+    public static <T> ObjectSet<YipeePlayerGDX> buildYipeePlayerGDXSets(Iterable<T> iterable) {
+        ObjectSet<YipeePlayerGDX> players = GdxSets.newSet();
+
+        for (Object o : iterable) {
+            if (o instanceof YipeePlayerGDX) {
+                players.add((YipeePlayerGDX) o);
+            }
+        }
+        return players;
     }
 }

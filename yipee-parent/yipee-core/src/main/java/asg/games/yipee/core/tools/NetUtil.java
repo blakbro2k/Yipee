@@ -16,6 +16,7 @@
 package asg.games.yipee.core.tools;
 
 import asg.games.yipee.common.net.NetYipeePlayer;
+import asg.games.yipee.common.net.NetYipeeTable;
 import asg.games.yipee.core.objects.AbstractYipeeObject;
 import asg.games.yipee.core.objects.YipeePlayer;
 import asg.games.yipee.core.objects.YipeeRoom;
@@ -78,7 +79,15 @@ public class NetUtil {
      */
     public static YipeePlayer getCoreNetPlayer(NetYipeePlayer netYipeePlayer) {
         if (netYipeePlayer instanceof YipeePlayer) {
-            return (YipeePlayer) netYipeePlayer;
+            YipeePlayer player = (YipeePlayer) netYipeePlayer;
+            YipeePlayer retPlayer = new YipeePlayer();
+            retPlayer.setId(player.getId());
+            retPlayer.setName(player.getName());
+            retPlayer.setCreated(player.getCreated());
+            retPlayer.setModified(player.getModified());
+            retPlayer.setIcon(player.getIcon());
+            retPlayer.setRating(player.getRating());
+            return retPlayer;
         }
         return null;
     }
@@ -92,6 +101,28 @@ public class NetUtil {
     public static String getCoreNetPlayerName(NetYipeePlayer netYipeePlayer) {
         YipeePlayer player = getCoreNetPlayer(netYipeePlayer);
         return player != null ? player.getName() : "";
+    }
+
+    /**
+     * Casts a {@link NetYipeeTable} to its core {@link YipeeTable} implementation if possible.
+     *
+     * @param netYipeeTable the network player object
+     * @return the core {@link YipeeTable} if compatible, or {@code null} if not
+     */
+    public static YipeeTable getCoreNetTable(NetYipeeTable netYipeeTable) {
+        if (netYipeeTable instanceof YipeeTable) {
+            YipeeTable table = (YipeeTable) netYipeeTable;
+            YipeeTable retTable = new YipeeTable();
+            retTable.setId(table.getId());
+            retTable.setName(table.getName());
+            retTable.setCreated(table.getCreated());
+            retTable.setModified(table.getModified());
+            retTable.setTableNumber(table.getTableNumber());
+            retTable.setRated(table.isRated());
+            retTable.setSoundOn(table.isSoundOn());
+            return retTable;
+        }
+        return null;
     }
 
     /**

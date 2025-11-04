@@ -25,11 +25,8 @@ package asg.games.yipee.common.net;
  *
  * <p>Typically used in packet definitions and cross-platform communication.
  */
-public interface NetYipeePlayer {
-    int getIcon();
-
+public interface NetYipeePlayer extends NetYipeeObject {
     int getRating();
 
-    String getName();
+    int getIcon();
 }
-

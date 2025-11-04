@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.core.net;
+package asg.games.yipee.net.tools;
 
 import com.esotericsoftware.kryo.Kryo;
 import org.slf4j.Logger;
@@ -50,7 +50,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class PacketRegistrar {
     private static final Logger logger = LoggerFactory.getLogger(PacketRegistrar.class);
-    private static final String CONFIG_FILE = "packets.xml";
+    private static final String CONFIG_FILE = "resources/packets.xml";
     private static final AtomicInteger atomicIdCounter = new AtomicInteger(2000);
     private static final Map<String, Integer> explicitClassIds = new LinkedHashMap<>();
     private static final Map<String, Integer> primitiveClassIds = new LinkedHashMap<>();
@@ -84,14 +84,14 @@ public class PacketRegistrar {
     }
 
     /**
-     * Reloads the configuration from a classpath resource.
+     * Reloads the configuration from a classpath InputStream.
      *
      * @throws ParserConfigurationException if XML parser is misconfigured.
      * @throws IOException                  if an IO error occurs.
      * @throws SAXException                 if an XML parsing error occurs.
      */
-    public static void reloadConfigurationFromResource() throws ParserConfigurationException, IOException, SAXException {
-        try (InputStream inputStream = PacketRegistrar.class.getClassLoader().getResourceAsStream("packets.xml")) {
+    public static void reloadConfigurationFromStream(InputStream inputStream) throws ParserConfigurationException, IOException, SAXException {
+        try {
             if (inputStream == null) {
                 throw new IOException("packets.xml not found in classpath.");
             }
@@ -100,6 +100,8 @@ public class PacketRegistrar {
             excludedClasses = loadEntries("excludedClasses", "class");
             loadExplicitMappings();
             logger.info("PacketRegistrar initialized from classpath with {} packages and {} explicit mappings.", packages.size(), explicitClassIds.size());
+        } catch (Exception e) {
+            throw new IOException("Error loading a valid packets.xml from InputStream.");
         }
     }
 
