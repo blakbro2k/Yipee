@@ -21,18 +21,39 @@ package asg.games.yipee.common.dto;
  * <p>This interface exists to unify different player representations across platforms
  * (e.g., core, LibGDX, or GWT) without introducing tight coupling. It allows shared
  * serialization and polymorphism in the networking layer while decoupling platform-specific
- * implementations like `YipeePlayer` and `YipeePlayerGDX`.
+ * implementations like {@code YipeePlayer} and {@code GdxYipeePlayer}.
  *
- * <p>Typically used in packet definitions and cross-platform communication.
+ * <p>Typically used in packet definitions and cross-platform communication. Configuration
+ * objects such as {@code NetYipeeKeyMap} are intentionally not exposed here and should be
+ * synchronized via explicit configuration update requests/responses.
  */
 public interface NetYipeePlayer extends NetYipeeObject {
+
+    /**
+     * Returns the current rating of this player (e.g., for matchmaking or table sorting).
+     *
+     * @return the player rating value
+     */
     int getRating();
 
+    /**
+     * Sets the current rating of this player.
+     *
+     * @param rating the rating value to assign
+     */
     void setRating(int rating);
 
+    /**
+     * Returns the icon identifier associated with this player.
+     *
+     * @return the icon ID
+     */
     int getIcon();
 
+    /**
+     * Sets the icon identifier associated with this player.
+     *
+     * @param icon the icon ID to assign
+     */
     void setIcon(int icon);
-
-    NetYipeeKeyMap getKeyConfig();
 }

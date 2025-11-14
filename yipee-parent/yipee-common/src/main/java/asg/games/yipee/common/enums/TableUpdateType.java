@@ -16,17 +16,75 @@
 package asg.games.yipee.common.enums;
 
 /**
- * Enum representing the type of update that occurred at the table.
- * Used by clients to determine what changed and respond accordingly.
+ * Represents the specific type of update or event that occurred at a Yipee game table.
+ *
+ * <p>These update types allow clients and servers to determine which aspect of a table's
+ * state changed and to react appropriately—whether updating UI elements, refreshing seat
+ * states, or triggering transitions such as game start or end sequences.
+ *
+ * <p>Each constant is intentionally granular to support lightweight network updates and
+ * efficient filtering on the client side.
  */
 public enum TableUpdateType {
-    PLAYER_READY,      // A player marked themselves ready.
-    PLAYER_SEATED,     // A player sat down at the table.
-    PLAYER_STAND,      // A player stood up and became a spectator.
-    PLAYER_LEFT,       // A player left the table entirely.
-    PLAYER_LOST,       // A player's game ended (e.g. board overflow).
-    SETTINGS_CHANGED,  // Table settings were modified.
-    UPDATE_STATE,      // Updating the state of a table.
-    GAME_STARTED,      // Game is starting (all required players ready).
-    GAME_ENDED         // Game has ended (win/loss condition met).
+
+    /**
+     * Indicates that a player marked themselves as ready to start the game.
+     */
+    PLAYER_READY,
+
+    /**
+     * Indicates that a player has taken a seat at the table.
+     *
+     * <p>Clients may use this signal to update seat occupancy visuals or enable
+     * contextual UI elements (e.g., ready buttons).
+     */
+    PLAYER_SEATED,
+
+    /**
+     * Indicates that a player stood up from their seat and became a watcher/spectator.
+     */
+    PLAYER_STAND,
+
+    /**
+     * Indicates that a player has fully left the table.
+     *
+     * <p>Clients should remove or grey-out the player entry and may need to recalculate
+     * whether the minimum number of active players is still met.
+     */
+    PLAYER_LEFT,
+
+    /**
+     * Indicates that a player's game session ended, often due to board overflow or a loss
+     * condition during gameplay.
+     */
+    PLAYER_LOST,
+
+    /**
+     * Indicates that one or more table-level settings were modified (e.g., rating mode,
+     * sound settings, access type, or argument flags).
+     */
+    SETTINGS_CHANGED,
+
+    /**
+     * Indicates a general update to the table's state that does not fall under a more
+     * specific category. Often used for synchronization passes.
+     */
+    UPDATE_STATE,
+
+    /**
+     * Indicates that the game is starting, typically when required ready conditions are met.
+     *
+     * <p>Clients may respond by transitioning to the gameplay screen, initializing boards,
+     * or triggering countdown animations.
+     */
+    GAME_STARTED,
+
+    /**
+     * Indicates that the game has ended, usually due to win/loss conditions being met
+     * or all opponents being eliminated.
+     *
+     * <p>Clients may respond by showing final results, animations, or returning players
+     * back to the table view.
+     */
+    GAME_ENDED
 }

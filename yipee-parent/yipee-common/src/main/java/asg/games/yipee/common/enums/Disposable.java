@@ -16,13 +16,24 @@
 package asg.games.yipee.common.enums;
 
 /**
- * An interface that allows the object to be disposed of.
+ * Represents an object that can release internal resources when no longer needed.
  *
- * @author Blakbro2k
+ * <p>Implementations of this interface typically clear internal collections, detach
+ * references, or free platform-specific resources on both client and server. Once a
+ * {@code Disposable} object has been disposed, it should be considered unusable and
+ * should not be accessed further.
+ *
+ * <p>This interface provides symmetry with other lifecycle-related interfaces in the
+ * Yipee model and is used throughout the serialization, networking, and runtime logic.
  */
 public interface Disposable {
+
     /**
-     * Releases all resources of this object.
+     * Releases all internal resources and performs any necessary cleanup.
+     *
+     * <p>After invoking this method, the object should transition to an invalid or
+     * neutral state and must not retain references that could lead to memory leaks
+     * or inconsistent behavior.
      */
-    public void dispose();
+    void dispose();
 }
