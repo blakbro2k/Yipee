@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.common.packets;
+package asg.games.yipee.common.game;
 
+import asg.games.yipee.common.enums.YipeeSerializable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

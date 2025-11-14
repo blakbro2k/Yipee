@@ -15,8 +15,10 @@
  */
 package asg.games.yipee.core.persistence;
 
+import asg.games.yipee.common.enums.YipeeObject;
+
 /**
- * A visitor interface for saving complex, nested {@link asg.games.yipee.core.objects.YipeeObject} structures.
+ * A visitor interface for saving complex, nested {@link YipeeObject} structures.
  * <p>
  * Implementing classes should define how to handle the persistence of child or related entities
  * through the provided {@link YipeeStorageAdapter}. This enables fine-grained control over save operations

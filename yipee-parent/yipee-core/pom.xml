@@ -35,8 +35,8 @@
         <aspectj.version>1.9.7</aspectj.version>
         <aspectj-maven.version>1.15.0</aspectj-maven.version>
         <maven-compiler.version>3.10.1</maven-compiler.version>
-        <kyronet.version>2.22.0-RC1</kyronet.version>
         <reflections.version>0.10.2</reflections.version>
+        <slf4j.version>2.0.9</slf4j.version>
 
         <!--Put your own properties -->
         <repository-owner>blakbro2k</repository-owner>
@@ -52,7 +52,11 @@
       <artifactId>yipee-common</artifactId>
         <version>${revision}</version>
     </dependency>
-
+        <dependency>
+            <groupId>asg.games</groupId>
+            <artifactId>yipee-net</artifactId>
+            <version>${revision}</version>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core -->
         <dependency>
@@ -118,13 +122,6 @@
             <version>${testng.version}</version>
         </dependency>
 
-        <!-- Networking -->
-        <dependency>
-            <groupId>com.esotericsoftware</groupId>
-            <artifactId>kryonet</artifactId>
-            <version>${kyronet.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
@@ -143,7 +140,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.9</version>
+            <version>${slf4j.version}</version>
         </dependency>
 
         <!-- Logback (SLF4J implementation) -->

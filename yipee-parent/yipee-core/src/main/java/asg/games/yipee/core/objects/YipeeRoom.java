@@ -15,6 +15,8 @@
  */
 package asg.games.yipee.core.objects;
 
+import asg.games.yipee.common.enums.Copyable;
+import asg.games.yipee.common.enums.Disposable;
 import asg.games.yipee.core.tools.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -146,26 +148,6 @@ public class YipeeRoom extends AbstractYipeeObject implements Copyable<YipeeRoom
     }
 
     /**
-     * Adds the specified player to the room.
-     * Internal method used by {@link #joinRoom(YipeePlayer)}.
-     *
-     * @param player the player to add
-     */
-    private void addPlayer(YipeePlayer player) {
-        players.add(player);
-    }
-
-    /**
-     * Removes the specified player from the room.
-     * Internal method used by {@link #leaveRoom(YipeePlayer)}.
-     *
-     * @param player the player to remove
-     */
-    private void removePlayer(YipeePlayer player) {
-        players.remove(player);
-    }
-
-    /**
      * Handles player entry into the room.
      *
      * @param player the player joining the room
@@ -174,9 +156,8 @@ public class YipeeRoom extends AbstractYipeeObject implements Copyable<YipeeRoom
         if (player != null) {
             logger.info("Player: {}, is joining room: {}", player.getName(), this.getName());
         }
-        addPlayer(player);
+        players.add(player);
     }
-
 
     /**
      * Handles player exit from the room.
@@ -187,7 +168,7 @@ public class YipeeRoom extends AbstractYipeeObject implements Copyable<YipeeRoom
         if (player != null) {
             logger.info("Player: {}, is leaving room: {}", player.getName(), this.getName());
         }
-        removePlayer(player);
+        players.remove(player);
     }
 
     /**

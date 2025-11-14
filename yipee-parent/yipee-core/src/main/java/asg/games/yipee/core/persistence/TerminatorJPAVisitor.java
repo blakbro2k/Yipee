@@ -15,8 +15,10 @@
  */
 package asg.games.yipee.core.persistence;
 
+import asg.games.yipee.common.enums.YipeeObject;
+
 /**
- * A visitor interface for deleting complex, nested {@link asg.games.yipee.core.objects.YipeeObject} structures.
+ * A visitor interface for deleting complex, nested {@link YipeeObject} structures.
  * <p>
  * Implementing classes should define how to handle deletion of child or related entities through
  * the provided {@link YipeeObjectTerminatorAdapter}. This is typically used in persistence layers

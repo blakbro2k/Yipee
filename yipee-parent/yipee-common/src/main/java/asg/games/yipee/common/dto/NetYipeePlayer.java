@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.common.net;
+package asg.games.yipee.common.dto;
 
 /**
  * Marker interface for a network-serializable Yipee player object.
@@ -28,5 +28,11 @@ package asg.games.yipee.common.net;
 public interface NetYipeePlayer extends NetYipeeObject {
     int getRating();
 
+    void setRating(int rating);
+
     int getIcon();
+
+    void setIcon(int icon);
+
+    NetYipeeKeyMap getKeyConfig();
 }

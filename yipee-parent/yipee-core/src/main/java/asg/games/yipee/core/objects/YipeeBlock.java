@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.core.objects;
 
+import asg.games.yipee.common.enums.Disposable;
 import asg.games.yipee.core.game.YipeeBlockEval;
 import lombok.Getter;
 import lombok.Setter;

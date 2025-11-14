@@ -1,11 +1,4 @@
 <packet-config>
-    <packages>
-        <package>asg.games.yipee.net.game</package>
-        <package>asg.games.yipee.net.packets</package>
-        <package>asg.games.yipee.common.net</package>
-        <package>asg.games.yipee.common.game</package>
-        <package>asg.games.yipee.common.packets</package>
-    </packages>
     <excludedClasses>
         <class>asg.games.yipee.net.PacketRegistrar</class>
         <class>java.io.ObjectStreamField</class>
@@ -34,7 +27,7 @@
         <class>[Z</class>
         <class>[Ljava.io.ObjectStreamField</class>
     </excludedClasses>
-    <mappings>
+    <mappedClasses>
         <mapping class="java.lang.String" id="403"/>
         <mapping class="java.util.ArrayList" id="404"/> <!-- For collections -->
         <mapping class="java.lang.Integer" id="432"/> <!-- For fields -->
@@ -42,9 +35,8 @@
         <mapping class="java.util.Map" id="416"/> <!-- For fields -->
         <mapping class="asg.games.yipee.core.game.YipeeGameBoard" id="1000"/>
         <mapping class="asg.games.yipee.core.objects.AbstractYipeeObjectGDX" id="1001"/>
-        <mapping class="asg.games.yipee.core.objects.Copyable" id="1002"/>
-        <mapping class="asg.games.yipee.core.objects.Disposable" id="1003"/>
-        <mapping class="asg.games.yipee.core.objects.Visitable" id="1004"/>
+        <mapping class="asg.games.yipee.common.enums.Copyable" id="1002"/>
+        <mapping class="asg.games.yipee.common.enums.Disposable" id="1003"/>
         <mapping class="asg.games.yipee.core.objects.YipeeBlock" id="1005"/>
         <mapping class="asg.games.yipee.core.objects.YipeeBlockMove" id="1006"/>
         <mapping class="asg.games.yipee.core.objects.YipeeBoardPair" id="1007"/>
@@ -52,7 +44,7 @@
         <mapping class="asg.games.yipee.core.objects.YipeeClock" id="1009"/>
         <mapping class="asg.games.yipee.core.objects.YipeeGameBoardState" id="1010"/>
         <mapping class="asg.games.yipee.core.objects.YipeeKeyMap" id="1011"/>
-        <mapping class="asg.games.yipee.core.objects.YipeeObject" id="1012"/>
+        <mapping class="asg.games.yipee.common.enums.YipeeObject" id="1012"/>
         <mapping class="asg.games.yipee.core.objects.YipeePiece" id="1013"/>
         <mapping class="asg.games.yipee.core.objects.YipeePlayer" id="1014"/>
         <mapping class="asg.games.yipee.core.objects.YipeeRoom" id="1015"/>
@@ -79,7 +71,7 @@
         <mapping class="asg.games.yipee.net.packets.TableStateBroadcastResponse" id="918"/>
         <mapping class="asg.games.yipee.net.packets.TableStateUpdateRequest" id="919"/>
         <mapping class="asg.games.yipee.common.enums.TableUpdateType" id="920"/>
-        <mapping class="asg.games.yipee.common.packets.YipeeSerializable" id="2009"/>
+        <mapping class="asg.games.yipee.common.enums.YipeeSerializable" id="2009"/>
         <mapping class="asg.games.yipee.libgdx.game.YipeeGameBoardGDX" id="2010"/>
         <mapping class="asg.games.yipee.libgdx.objects.AbstractYipeeObjectGDX" id="2011"/>
         <mapping class="asg.games.yipee.libgdx.objects.Copyable" id="2012"/>
@@ -96,9 +88,8 @@
         <mapping class="asg.games.yipee.libgdx.objects.YipeeRoomGDX" id="2023"/>
         <mapping class="asg.games.yipee.libgdx.objects.YipeeSeatGDX" id="2024"/>
         <mapping class="asg.games.yipee.libgdx.objects.YipeeTableGDX" id="2025"/>
-        <mapping class="asg.games.yipee.common.net.NetYipeeKeyMap" id="3000"/>
-        <mapping class="asg.games.yipee.common.net.NetYipeeObject" id="3001"/>
-        <mapping class="asg.games.yipee.common.net.NetYipeePlayer" id="3002"/>
-        <mapping class="asg.games.yipee.common.net.NetYipeeTable" id="3003"/>
-    </mappings>
+        <mapping class="asg.games.yipee.common.dto.NetYipeeObject" id="3001"/>
+        <mapping class="asg.games.yipee.common.dto.NetYipeePlayer" id="3002"/>
+        <mapping class="asg.games.yipee.common.dto.NetYipeeTable" id="3003"/>
+    </mappedClasses>
 </packet-config>

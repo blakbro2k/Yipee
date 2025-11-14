@@ -42,9 +42,9 @@
   </dependencyManagement>
 
 <modules>
-     <module>yipee-common</module>
+       <module>yipee-net</module>
+   <module>yipee-common</module>
      <module>yipee-core</module>
-     <module>yipee-net</module>
     <module>yipee-libgdx</module>
 </modules>
 

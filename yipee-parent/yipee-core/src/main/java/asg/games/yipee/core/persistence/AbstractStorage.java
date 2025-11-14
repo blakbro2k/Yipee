@@ -15,7 +15,7 @@
  */
 package asg.games.yipee.core.persistence;
 
-import asg.games.yipee.core.objects.YipeeObject;
+import asg.games.yipee.common.enums.YipeeObject;
 import asg.games.yipee.core.tools.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

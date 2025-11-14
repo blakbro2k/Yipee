@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.core.objects;
 
+import asg.games.yipee.common.enums.Copyable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
@@ -72,7 +73,7 @@ import java.util.Objects;
  */
 @Getter
 @Setter
-public class YipeePiece extends AbstractYipeeObject implements Copyable<YipeePiece>{
+public class YipeePiece extends AbstractYipeeObject implements Copyable<YipeePiece> {
     private static final Logger logger = LoggerFactory.getLogger(YipeePiece.class);
 
     /**

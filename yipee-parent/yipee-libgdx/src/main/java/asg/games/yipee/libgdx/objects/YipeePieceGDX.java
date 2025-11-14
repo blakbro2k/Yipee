@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.libgdx.objects;
 
+import asg.games.yipee.common.enums.Copyable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -70,7 +71,7 @@ import java.util.Arrays;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-public class YipeePieceGDX extends AbstractYipeeObjectGDX implements Copyable<YipeePieceGDX>{
+public class YipeePieceGDX extends AbstractYipeeObjectGDX implements Copyable<YipeePieceGDX> {
     /**
      * Identifier for Medusa game pieces.
      */

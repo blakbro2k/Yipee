@@ -15,9 +15,9 @@
  */
 package asg.games.yipee.core;
 
+import asg.games.yipee.common.enums.YipeeObject;
 import asg.games.yipee.core.game.YipeeBlockEval;
 import asg.games.yipee.core.objects.YipeeBlock;
-import asg.games.yipee.core.objects.YipeeObject;
 import asg.games.yipee.core.tools.Util;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;

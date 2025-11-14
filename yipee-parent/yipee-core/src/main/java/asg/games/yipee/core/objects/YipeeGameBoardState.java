@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.core.objects;
 
+import asg.games.yipee.common.enums.Copyable;
 import asg.games.yipee.common.game.CommonRandomNumberArray;
 import asg.games.yipee.common.game.GameBoardState;
 import asg.games.yipee.common.game.GamePhase;

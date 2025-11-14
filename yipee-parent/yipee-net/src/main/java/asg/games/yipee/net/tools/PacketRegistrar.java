@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -55,8 +56,13 @@ public class PacketRegistrar {
     private static final Map<String, Integer> explicitClassIds = new LinkedHashMap<>();
     private static final Map<String, Integer> primitiveClassIds = new LinkedHashMap<>();
     private static final Map<String, Integer> kryoClassIds = new LinkedHashMap<>();
-    static final int PRIMITIVE_START_COUNTER = 500;
-    static final int INTERNAL_START_COUNTER = 50;
+    private static final int PRIMITIVE_START_COUNTER = 500;
+    private static final int INTERNAL_START_COUNTER = 50;
+    private static final String XML_ARG_EXCLUDED_CLASSES = "excludedClasses";
+    private static final String XML_ARG_CLASS = "class";
+    private static final String XML_ARG_ID = "id";
+    private static final String XML_ARG_MAPPED_CLASSES = "mappedClasses";
+    private static final String XML_ARG_MAPPING = "mapping";
     private static Set<String> excludedClasses = new LinkedHashSet<>();
     private static Document packetsXMLDocument = null;
 
@@ -66,17 +72,12 @@ public class PacketRegistrar {
      * @param path Configuration file path.
      * @throws ParserConfigurationException if XML parser is misconfigured.
      * @throws IOException                  if an IO error occurs.
-     * @throws SAXException                 if an XML parsing error occurs.
      */
-    public static void reloadConfiguration(String path) throws ParserConfigurationException, IOException, SAXException {
+    public static void reloadConfiguration(String path) throws ParserConfigurationException, IOException {
         String localFilePath = path != null ? path : CONFIG_FILE;
         File packetFile = getPacketFile(localFilePath);
         if (packetFile.exists()) {
-            packetsXMLDocument = loadXMLDocument(packetFile);
-            Set<String> packages = loadEntries("packages", "package");
-            excludedClasses = loadEntries("excludedClasses", "class");
-            loadExplicitMappings();
-            logger.info("PacketRegistrar initialized with {} packages and {} explicit mappings.", packages.size(), explicitClassIds.size());
+            reloadConfigurationFromStream(Files.newInputStream(packetFile.toPath()));
         } else {
             logger.error("No packets.xml found at {}", packetFile.getAbsolutePath());
             throw new ParserConfigurationException("No packets.xml found at " + packetFile.getAbsolutePath());
@@ -86,20 +87,19 @@ public class PacketRegistrar {
     /**
      * Reloads the configuration from a classpath InputStream.
      *
-     * @throws ParserConfigurationException if XML parser is misconfigured.
      * @throws IOException                  if an IO error occurs.
-     * @throws SAXException                 if an XML parsing error occurs.
      */
-    public static void reloadConfigurationFromStream(InputStream inputStream) throws ParserConfigurationException, IOException, SAXException {
+    public static void reloadConfigurationFromStream(InputStream inputStream) throws IOException {
         try {
             if (inputStream == null) {
                 throw new IOException("packets.xml not found in classpath.");
             }
+            reset();
             packetsXMLDocument = loadXMLDocument(inputStream);
-            Set<String> packages = loadEntries("packages", "package");
-            excludedClasses = loadEntries("excludedClasses", "class");
+            excludedClasses = loadEntries(XML_ARG_EXCLUDED_CLASSES, XML_ARG_CLASS);
             loadExplicitMappings();
-            logger.info("PacketRegistrar initialized from classpath with {} packages and {} explicit mappings.", packages.size(), explicitClassIds.size());
+            logger.info("PacketRegistrar initialized from {} explicit mappings.", explicitClassIds.size());
+            logger.trace(dumpRegisteredPackets());
         } catch (Exception e) {
             throw new IOException("Error loading a valid packets.xml from InputStream.");
         }
@@ -111,15 +111,15 @@ public class PacketRegistrar {
     static void loadExplicitMappings() {
         if (packetsXMLDocument == null) return;
 
-        NodeList mappings = packetsXMLDocument.getElementsByTagName("mappings");
+        NodeList mappings = packetsXMLDocument.getElementsByTagName(XML_ARG_MAPPED_CLASSES);
         if (mappings.getLength() > 0) {
             NodeList list = mappings.item(0).getChildNodes();
             for (int i = 0; i < list.getLength(); i++) {
                 Node node = list.item(i);
-                if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals("mapping")) {
+                if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals(XML_ARG_MAPPING)) {
                     Element element = (Element) node;
-                    String className = element.getAttribute("class").trim();
-                    String idText = element.getAttribute("id").trim();
+                    String className = element.getAttribute(XML_ARG_CLASS).trim();
+                    String idText = element.getAttribute(XML_ARG_ID).trim();
                     if (!className.isEmpty() && !idText.isEmpty()) {
                         try {
                             int id = Integer.parseInt(idText);
@@ -218,23 +218,6 @@ public class PacketRegistrar {
      */
     private static File getPacketFile(String path) {
         return new File(path);
-    }
-
-    /**
-     * Loads and parses the XML document from the specified file.
-     *
-     * @param file XML configuration file.
-     * @return Parsed XML Document.
-     * @throws ParserConfigurationException if a parser cannot be created.
-     * @throws IOException                  if an IO error occurs.
-     * @throws SAXException                 if parsing fails.
-     */
-    private static Document loadXMLDocument(File file) throws ParserConfigurationException, IOException, SAXException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        Document doc = db.parse(file);
-        doc.getDocumentElement().normalize();
-        return doc;
     }
 
     /**

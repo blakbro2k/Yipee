@@ -15,7 +15,7 @@
  */
 package asg.games.yipee.net.game;
 
-import asg.games.yipee.common.packets.PlayerAction;
+import asg.games.yipee.common.game.PlayerAction;
 import asg.games.yipee.net.packets.AbstractServerResponse;
 import lombok.Getter;
 

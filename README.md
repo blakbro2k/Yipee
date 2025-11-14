@@ -114,7 +114,7 @@ Any future platform-specific layer (e.g., Python, .NET, web) can complement `yip
    mvn clean install
    ```
 3. **Run the core game** (YipeeTestDriver is a CLI version of running the minimal game).
-   **It is incommplete at the momment**
+   **It is incomplete at the moment**
 
 ---
 

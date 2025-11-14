@@ -15,7 +15,7 @@
  */
 package asg.games.yipee.core.persistence;
 
-import asg.games.yipee.core.objects.Disposable;
+import asg.games.yipee.common.enums.Disposable;
 
 /**
  * The Storage interface provides a unified contract for managing

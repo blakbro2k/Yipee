@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.common.net;
+package asg.games.yipee.common.dto;
 
-import asg.games.yipee.common.packets.YipeeSerializable;
+import asg.games.yipee.common.enums.YipeeSerializable;
 
 /**
  * Represents a basic network-serializable Yipee object with metadata fields such as ID, name,
@@ -30,7 +30,6 @@ import asg.games.yipee.common.packets.YipeeSerializable;
  * @author Blakbro2k
  */
 public interface NetYipeeObject extends YipeeSerializable {
-
     /**
      * Sets the unique identifier for this object.
      *

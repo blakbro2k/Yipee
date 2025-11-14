@@ -15,8 +15,10 @@
  */
 package asg.games.yipee.core.objects;
 
+import asg.games.yipee.common.dto.NetYipeeTable;
 import asg.games.yipee.common.enums.ACCESS_TYPE;
-import asg.games.yipee.common.net.NetYipeeTable;
+import asg.games.yipee.common.enums.Copyable;
+import asg.games.yipee.common.enums.Disposable;
 import asg.games.yipee.core.tools.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -30,6 +32,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -59,7 +62,7 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_TABLES")
 @JsonIgnoreProperties({"tableNumber", "tableStartReady", "upArguments", "tableName", "roomId"})
-public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTable>, Disposable, NetYipeeTable {
+public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTable>, Disposable, NetYipeeTable<YipeeSeat, YipeePlayer> {
     private static final Logger logger = LoggerFactory.getLogger(YipeeTable.class);
 
     @JsonIgnore
@@ -78,8 +81,7 @@ public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTab
     @Getter
     private ACCESS_TYPE accessType = ACCESS_TYPE.PUBLIC;
 
-    @Setter
-    @Getter
+    @Setter(AccessLevel.NONE) // don't let Lombok generate setSeats
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<YipeeSeat> seats = new LinkedHashSet<>();
 
@@ -89,9 +91,10 @@ public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTab
         joinColumns = @JoinColumn(name = "table_id"), // Foreign key to YipeeRoom
         inverseJoinColumns = @JoinColumn(name = "player_id") // Foreign key to YipeePlayer
     )
+    @Setter(AccessLevel.NONE) // don't let Lombok generate setWatchers
     private Set<YipeePlayer> watchers = new LinkedHashSet<>();
 
-    @Column(nullable = true, unique = true)
+    @Column(name = "tableNumber", nullable = false, unique = true)
     private int tableNumber;
 
     @JsonProperty("rated")
@@ -122,7 +125,7 @@ public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTab
      * @param argumentStrings optional configuration flags (e.g., "rated", "sound", "type")
      */
     public YipeeTable(int nameNumber, String... argumentStrings) {
-        this(nameNumber, buildAgumentsFromStrings(argumentStrings));
+        this(nameNumber, buildArgumentsFromStrings(argumentStrings));
     }
 
     /**
@@ -132,30 +135,33 @@ public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTab
      * @param argumentStrings the array of argument flags
      * @return a key-value map representing configuration arguments
      */
-    private static Map<String, Object> buildAgumentsFromStrings(String[] argumentStrings) {
+    private static Map<String, Object> buildArgumentsFromStrings(String[] argumentStrings) {
         Map<String, Object> arguments = new HashMap<>();
         for (String argumentString : Util.safeIterableArray(argumentStrings)) {
-            if (argumentString != null && argumentString.contains(":")) {
-                if (argumentString.equalsIgnoreCase(ARG_RATED)) {
-                    String[] argPair = Util.split(argumentString, ":");
-                    if (argPair.length == 2) {
-                        arguments.put(ARG_RATED, argPair[1]);
-                    }
-                } else if (argumentString.equalsIgnoreCase(ARG_SOUND)) {
-                    String[] argPair = Util.split(argumentString, ":");
-                    if (argPair.length == 2) {
-                        arguments.put(ARG_SOUND, argPair[1]);
-                    }
-                } else if (argumentString.equalsIgnoreCase(ARG_TYPE)) {
-                    String[] argPair = Util.split(argumentString, ":");
-                    if (argPair.length == 2) {
-                        arguments.put(ARG_TYPE, argPair[1]);
-                    }
-                }
+            if (argumentString == null) continue;
+            String trimmed = argumentString.trim();
+            if (trimmed.isEmpty()) continue;
+
+            String[] argPair = Util.split(trimmed, ":");
+            if (argPair.length != 2) continue;
+
+            String key = argPair[0].trim();
+            String value = argPair[1].trim();
+
+            if (Util.equalsIgnoreCase(ARG_RATED, key)) {
+                arguments.put(ARG_RATED, value);
+            } else if (Util.equalsIgnoreCase(ARG_SOUND, key)) {
+                arguments.put(ARG_SOUND, value);
+            } else if (Util.equalsIgnoreCase(ARG_TYPE, key)) {
+                arguments.put(ARG_TYPE, value);
+            } else {
+                // Optional: support arbitrary extra args for future use
+                arguments.put(key, value);
             }
         }
         return arguments;
     }
+
 
     /**
      * Constructs a new table using a map of arguments.
@@ -174,18 +180,29 @@ public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTab
      * @param arguments optional argument map for configuration
      */
     private void initialize(int nameNumber, Map<String, Object> arguments) {
-        setTableName(nameNumber);
+        setTableNumber(nameNumber);    // sets field + derived name
         setUpSeats();
         setUpArguments(arguments);
     }
 
     /**
-     * Sets the table's name using its ID and numeric index.
+     * Builds the table's name using its ID and numeric index.
      *
      * @param tableNumber the table's numeric index
      */
-    public void setTableName(int tableNumber) {
-        setName(getId() + ATT_TABLE_SPACER + ATT_NAME_PREPEND + tableNumber);
+    private String buildTableName(int tableNumber) {
+        return getId() + ATT_TABLE_SPACER + ATT_NAME_PREPEND + tableNumber;
+    }
+
+    /**
+     * Sets the table's number.
+     *
+     * @param tableNumber the table's numeric index
+     */
+    public void setTableNumber(int tableNumber) {
+        this.tableNumber = tableNumber;
+        // Keep name in sync whenever number changes
+        setName(buildTableName(tableNumber));
     }
 
     /**
@@ -230,7 +247,7 @@ public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTab
             } else if (Util.equalsIgnoreCase(ARG_RATED, arg)) {
                 setRated(Util.otob(value));
             } else if (Util.equalsIgnoreCase(ARG_SOUND, arg)) {
-                setSound(Util.otob(value));
+                setSoundOn(Util.otob(value));
             }
         }
     }
@@ -242,6 +259,16 @@ public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTab
      */
     public void setAccessType(ACCESS_TYPE accessType) {
         this.accessType = accessType;
+    }
+
+    @Override
+    public void setWatchers(Iterable<YipeePlayer> watchers) {
+        this.watchers = Util.iterableToSet(watchers);
+    }
+
+    @Override
+    public void setSeats(Iterable<YipeeSeat> seats) {
+        this.seats = Util.iterableToSet(seats);
     }
 
     /**
@@ -257,42 +284,6 @@ public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTab
         } else {
             setAccessType(ACCESS_TYPE.PUBLIC);
         }
-    }
-
-    /**
-     * Enables or disables rated mode.
-     *
-     * @param rated true to enable rated mode
-     */
-    public void setRated(boolean rated) {
-        this.isRated = rated;
-    }
-
-    /**
-     * Enables or disables sound for the table.
-     *
-     * @param sound true to enable sound
-     */
-    public void setSound(boolean sound) {
-        this.isSoundOn = sound;
-    }
-
-    /**
-     * Indicates whether this table is in rated mode.
-     *
-     * @return {@code true} if the table is rated, {@code false} otherwise
-     */
-    public boolean isRated() {
-        return isRated;
-    }
-
-    /**
-     * Indicates whether sound is enabled for this table.
-     *
-     * @return {@code true} if sound is on, {@code false} otherwise
-     */
-    public boolean isSoundOn() {
-        return isSoundOn;
     }
 
     /**
@@ -359,7 +350,7 @@ public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTab
     /**
      * Marks all seats as not ready.
      */
-    public void makeAllTablesUnready() {
+    public void makeAllSeatsUnready() {
         for (YipeeSeat seat : Util.safeIterable(seats)) {
             if (seat != null) {
                 seat.setSeatReady(false);
@@ -418,7 +409,7 @@ public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTab
         copyParent(copy);
         copy.setAccessType(accessType);
         copy.setRated(isRated);
-        copy.setSound(isSoundOn);
+        copy.setSoundOn(isSoundOn);
         return copy;
     }
 
@@ -460,7 +451,7 @@ public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTab
         if (!(o instanceof YipeeTable)) return false;
         if (!super.equals(o)) return false;
         YipeeTable that = (YipeeTable) o;
-        return isRated == that.isRated && isSoundOn == that.isSoundOn && accessType == that.accessType && Objects.equals(seats, that.seats) && Objects.equals(watchers, that.watchers);
+        return isRated == that.isRated && isSoundOn == that.isSoundOn && accessType == that.accessType;
     }
 
     @Override

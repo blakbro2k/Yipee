@@ -15,12 +15,13 @@
  */
 package asg.games.yipee.core.persistence;
 
-import asg.games.yipee.core.objects.Disposable;
+import asg.games.yipee.common.enums.Disposable;
+import asg.games.yipee.common.enums.YipeeObject;
 import asg.games.yipee.core.objects.YipeeRoom;
 import asg.games.yipee.core.objects.YipeeTable;
 
 /**
- * Defines storage logic for complex {@link asg.games.yipee.core.objects.YipeeObject} structures,
+ * Defines storage logic for complex {@link YipeeObject} structures,
  * allowing objects to delegate their persistence to a visitor-style adapter.
  * <p>
  * Implementations of this interface should encapsulate the logic for saving domain objects

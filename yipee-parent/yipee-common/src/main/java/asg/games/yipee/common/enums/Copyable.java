@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.core.objects;
+package asg.games.yipee.common.enums;
 
 /**
  * Interface for objects that can produce shallow and deep copies of themselves.

@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee;
+package asg.games.yipee.net;
 
+import asg.games.yipee.common.dto.NetYipeePlayer;
+import asg.games.yipee.common.dto.NetYipeeTable;
+import asg.games.yipee.common.enums.ACCESS_TYPE;
 import asg.games.yipee.common.enums.TableUpdateType;
-import asg.games.yipee.common.packets.PlayerAction;
-import asg.games.yipee.core.objects.YipeePlayer;
-import asg.games.yipee.core.objects.YipeeTable;
-import asg.games.yipee.core.tools.NetUtil;
+import asg.games.yipee.common.game.PlayerAction;
 import asg.games.yipee.net.packets.AbstractClientRequest;
 import asg.games.yipee.net.packets.AbstractServerResponse;
 import asg.games.yipee.net.packets.ClientHandshakeRequest;
@@ -43,14 +43,17 @@ import org.testng.TestException;
 
 public class TestYipeeNetworkObjects {
     private static final Logger logger = LoggerFactory.getLogger(TestYipeeNetworkObjects.class);
-    static YipeePlayer testPlayer = new YipeePlayer("TestPlayer", 1500, 1);
-    static YipeeTable testTable = new YipeeTable(1, "rated:true", "sound:false", "type:protected");
+    static NetYipeePlayer testPlayer = new TestNetYipeePlayer("TestPlayer", 1500, 1);
+    static NetYipeeTable testTable = new TestNetYipeeTable(1);
 
     static {
         testPlayer.setId("00000002");
         testTable.setId("00000001");
         testTable.setName("testTable#2");
         testTable.setTableNumber(2);
+        testTable.setRated(true);
+        testTable.setSoundOn(false);
+        testTable.setAccessType(ACCESS_TYPE.PROTECTED);
     }
 
     private TestYipeeNetworkObjects() {
@@ -85,8 +88,8 @@ public class TestYipeeNetworkObjects {
             ClientHandshakeRequest c = (ClientHandshakeRequest) copy;
             Assertions.assertAll("ClientHandshakeRequest",
                 () -> Assertions.assertEquals(o.getAuthToken(), c.getAuthToken(), "AuthToken mismatch"),
-                () -> Assertions.assertEquals(asg.games.yipee.core.tools.NetUtil.getCoreNetPlayerName(o.getPlayer()),
-                    asg.games.yipee.core.tools.NetUtil.getCoreNetPlayerName(c.getPlayer()), "Player name mismatch")
+                () -> Assertions.assertEquals(NetUtil.getCoreNetPlayerName(o.getPlayer()),
+                    NetUtil.getCoreNetPlayerName(c.getPlayer()), "Player name mismatch")
             );
         } else if (original instanceof ClientHandshakeResponse) {
             ClientHandshakeResponse o = (ClientHandshakeResponse) original;
@@ -99,16 +102,16 @@ public class TestYipeeNetworkObjects {
             DisconnectRequest o = (DisconnectRequest) original;
             DisconnectRequest c = (DisconnectRequest) copy;
 
-            Assertions.assertAll("DisconnectRequest", () -> Assertions.assertEquals(asg.games.yipee.core.tools.NetUtil.getCoreNetPlayerName(o.getPlayer()),
-                asg.games.yipee.core.tools.NetUtil.getCoreNetPlayerName(c.getPlayer()), "Player mismatch")
+            Assertions.assertAll("DisconnectRequest", () -> Assertions.assertEquals(NetUtil.getCoreNetPlayerName(o.getPlayer()),
+                NetUtil.getCoreNetPlayerName(c.getPlayer()), "Player mismatch")
             );
         } else if (original instanceof DisconnectResponse) {
             DisconnectResponse o = (DisconnectResponse) original;
             DisconnectResponse c = (DisconnectResponse) copy;
             Assertions.assertAll("DisconnectResponse",
                 () -> Assertions.assertEquals(o.isSuccessful(), c.isSuccessful(), "Success mismatch"),
-                () -> Assertions.assertEquals(asg.games.yipee.core.tools.NetUtil.getCoreNetPlayerName(o.getPlayer()),
-                    asg.games.yipee.core.tools.NetUtil.getCoreNetPlayerName(c.getPlayer()), "Player mismatch")
+                () -> Assertions.assertEquals(NetUtil.getCoreNetPlayerName(o.getPlayer()),
+                    NetUtil.getCoreNetPlayerName(c.getPlayer()), "Player mismatch")
             );
         } else if (original instanceof ErrorResponse) {
             ErrorResponse o = (ErrorResponse) original;
@@ -174,8 +177,8 @@ public class TestYipeeNetworkObjects {
             SeatSelectionRequest c = (SeatSelectionRequest) copy;
             Assertions.assertAll("SeatSelectionRequest",
                 () -> Assertions.assertEquals(o.getSeatIndex(), c.getSeatIndex(), "Seat Index mismatch"),
-                () -> Assertions.assertEquals(asg.games.yipee.core.tools.NetUtil.getCoreNetPlayerName(o.getPlayer()),
-                    asg.games.yipee.core.tools.NetUtil.getCoreNetPlayerName(c.getPlayer()), "Player mismatch"),
+                () -> Assertions.assertEquals(NetUtil.getCoreNetPlayerName(o.getPlayer()),
+                    NetUtil.getCoreNetPlayerName(c.getPlayer()), "Player mismatch"),
                 () -> Assertions.assertEquals(o.getTableId(), c.getTableId(), "TableId mismatch"),
                 () -> Assertions.assertEquals(o.isSpectator(), c.isSpectator(), "Is spectator mismatch")
             );

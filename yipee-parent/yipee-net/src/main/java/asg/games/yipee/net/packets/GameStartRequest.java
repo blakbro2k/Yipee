@@ -15,8 +15,8 @@
  */
 package asg.games.yipee.net.packets;
 
-import asg.games.yipee.common.net.NetYipeePlayer;
-import asg.games.yipee.common.net.NetYipeeTable;
+import asg.games.yipee.common.dto.NetYipeePlayer;
+import asg.games.yipee.common.dto.NetYipeeTable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

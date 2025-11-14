@@ -16,9 +16,11 @@
 package asg.games.yipee.core.objects;
 
 
-import asg.games.yipee.common.net.NetYipeeKeyMap;
-import asg.games.yipee.common.packets.PlayerAction;
-import asg.games.yipee.common.packets.YipeeSerializable;
+import asg.games.yipee.common.dto.NetYipeeKeyMap;
+import asg.games.yipee.common.enums.Copyable;
+import asg.games.yipee.common.enums.Disposable;
+import asg.games.yipee.common.enums.YipeeSerializable;
+import asg.games.yipee.common.game.PlayerAction;
 import asg.games.yipee.core.tools.Input;
 import asg.games.yipee.core.tools.NetUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;

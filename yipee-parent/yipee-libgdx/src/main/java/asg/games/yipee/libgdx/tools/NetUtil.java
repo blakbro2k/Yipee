@@ -15,7 +15,7 @@
  */
 package asg.games.yipee.libgdx.tools;
 
-import asg.games.yipee.common.net.NetYipeePlayer;
+import asg.games.yipee.common.dto.NetYipeePlayer;
 import asg.games.yipee.libgdx.objects.YipeePlayerGDX;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;

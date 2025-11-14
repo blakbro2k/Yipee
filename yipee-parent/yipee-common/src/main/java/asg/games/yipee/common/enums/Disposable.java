@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.core.objects;
-
+package asg.games.yipee.common.enums;
 
 /**
- * Interface that allows objects to accept the Vistor Pattern.
+ * An interface that allows the object to be disposed of.
  *
- * Typically used for persistence, caching, or audit logging.
+ * @author Blakbro2k
  */
-public interface Visitable<T extends YipeeVisitor> {
-    /** Returns the creation timestamp in milliseconds since epoch. */
-    void accept(T visitor);
+public interface Disposable {
+    /**
+     * Releases all resources of this object.
+     */
+    public void dispose();
 }
