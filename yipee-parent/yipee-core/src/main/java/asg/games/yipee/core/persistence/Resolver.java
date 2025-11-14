@@ -15,7 +15,7 @@
  */
 package asg.games.yipee.core.persistence;
 
-import asg.games.yipee.core.objects.YipeeObject;
+import asg.games.yipee.common.enums.YipeeObject;
 
 /**
  * The Resolver interface defines methods for resolving and interacting with

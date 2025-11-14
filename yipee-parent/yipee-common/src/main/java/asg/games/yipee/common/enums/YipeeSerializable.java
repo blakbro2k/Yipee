@@ -13,16 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.core.objects;
+package asg.games.yipee.common.enums;
+
+
+import java.io.Serializable;
 
 /**
- * An interface that allows the object to be disposed of.
+ * A net serializable game object
  *
  * @author Blakbro2k
  */
-public interface Disposable {
+public interface YipeeSerializable extends Serializable {
     /**
-     * Releases all resources of this object.
+     * Returns the type identifier of the packet.
+     *
+     * @return a string representing the packet's type
      */
-    public void dispose();
+    default String getPacketType() {
+        return this.getClass().getSimpleName();
+    }
 }

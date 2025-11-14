@@ -15,7 +15,7 @@
  */
 package asg.games.yipee.core.persistence;
 
-import asg.games.yipee.core.objects.YipeeObject;
+import asg.games.yipee.common.enums.YipeeObject;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.UUIDGenerator;

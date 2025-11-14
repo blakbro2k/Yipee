@@ -15,6 +15,9 @@
  */
 package asg.games.yipee.core.objects;
 
+import asg.games.yipee.common.dto.NetYipeeSeat;
+import asg.games.yipee.common.enums.Copyable;
+import asg.games.yipee.common.enums.Disposable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
@@ -50,7 +53,7 @@ import java.util.Objects;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_SEATS")
 @JsonIgnoreProperties({"occupied", "tableId"})
-public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat>, Disposable {
+public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat>, Disposable, NetYipeeSeat {
     @Transient
     private static final Logger logger = LoggerFactory.getLogger(YipeeSeat.class);
 

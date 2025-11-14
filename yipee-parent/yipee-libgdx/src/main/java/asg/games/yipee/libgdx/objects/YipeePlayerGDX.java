@@ -15,7 +15,8 @@
  */
 package asg.games.yipee.libgdx.objects;
 
-import asg.games.yipee.common.net.NetYipeePlayer;
+import asg.games.yipee.common.dto.NetYipeePlayer;
+import asg.games.yipee.common.enums.Copyable;
 import asg.games.yipee.libgdx.tools.NetUtil;
 import com.badlogic.gdx.utils.Disposable;
 import lombok.EqualsAndHashCode;

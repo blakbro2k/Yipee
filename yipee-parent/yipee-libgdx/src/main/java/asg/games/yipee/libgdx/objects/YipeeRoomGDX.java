@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.libgdx.objects;
 
+import asg.games.yipee.common.enums.Copyable;
 import asg.games.yipee.libgdx.tools.LibGDXUtil;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;

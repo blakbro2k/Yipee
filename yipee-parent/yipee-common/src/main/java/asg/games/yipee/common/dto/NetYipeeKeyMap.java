@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.common.net;
+package asg.games.yipee.common.dto;
 
 /**
  * Marker interface representing a serializable client-side key mapping configuration
@@ -26,7 +26,13 @@ package asg.games.yipee.common.net;
  * Implementations should define player input bindings such as key-to-action mappings
  * in a platform-agnostic format suitable for transmission over the network.
  *
- * @see asg.games.yipee.common.packets.PlayerAction
  */
 public interface NetYipeeKeyMap {
+    String getPlayerId();
+
+    void setPlayerId(String id);
+
+    void dispose();
+
+    NetYipeeKeyMap deepCopy();
 }

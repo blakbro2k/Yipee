@@ -15,9 +15,10 @@
  */
 package asg.games.yipee.libgdx.objects;
 
-import asg.games.yipee.common.net.NetYipeeKeyMap;
-import asg.games.yipee.common.packets.PlayerAction;
-import asg.games.yipee.common.packets.YipeeSerializable;
+import asg.games.yipee.common.dto.NetYipeeKeyMap;
+import asg.games.yipee.common.enums.Copyable;
+import asg.games.yipee.common.enums.YipeeSerializable;
+import asg.games.yipee.common.game.PlayerAction;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;

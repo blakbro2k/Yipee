@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.common.net;
+package asg.games.yipee.common.dto;
 
 import asg.games.yipee.common.enums.ACCESS_TYPE;
 
@@ -27,7 +27,30 @@ import asg.games.yipee.common.enums.ACCESS_TYPE;
  * <p>Primarily used in multiplayer synchronization, matchmaking, and table-state exchange
  * between server and client.
  */
-public interface NetYipeeTable {
+public interface NetYipeeTable<
+    S extends NetYipeeSeat,
+    W extends NetYipeePlayer> extends NetYipeeObject {
+    void setAccessType(ACCESS_TYPE accessType);
 
     ACCESS_TYPE getAccessType();
+
+    void setWatchers(Iterable<W> watchers);
+
+    Iterable<W> getWatchers();
+
+    void setSeats(Iterable<S> seats);
+
+    Iterable<S> getSeats();
+
+    void setTableNumber(int tableNumber);
+
+    int getTableNumber();
+
+    void setRated(boolean rating);
+
+    boolean isRated();
+
+    void setSoundOn(boolean soundOn);
+
+    boolean isSoundOn();
 }

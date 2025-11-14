@@ -15,10 +15,8 @@
  */
 package asg.games.yipee.core.tools;
 
-import asg.games.yipee.core.objects.Copyable;
-import asg.games.yipee.core.objects.YipeePlayer;
+import asg.games.yipee.common.enums.Copyable;
 import asg.games.yipee.core.objects.YipeeRoom;
-import asg.games.yipee.core.objects.YipeeSeat;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -220,26 +218,13 @@ public class Util {
         return null;
     }
 
-    public static <T> Set<YipeeSeat> buildYipeeSeatSets(Iterable<T> iterable) {
-        Set<YipeeSeat> seats = new LinkedHashSet<>();
+    public static <T> Set<T> iterableToSet(Iterable<T> iterable) {
+        Set<T> hashSets = new LinkedHashSet<>();
 
-        for (Object o : iterable) {
-            if (o instanceof YipeeSeat) {
-                seats.add((YipeeSeat) o);
-            }
+        for (T o : iterable) {
+            hashSets.add(o);
         }
-        return seats;
-    }
-
-    public static <T> Set<YipeePlayer> buildYipeePlayerSets(Iterable<T> iterable) {
-        Set<YipeePlayer> players = new LinkedHashSet<>();
-
-        for (Object o : iterable) {
-            if (o instanceof YipeePlayer) {
-                players.add((YipeePlayer) o);
-            }
-        }
-        return players;
+        return hashSets;
     }
 
     public static class IDGenerator {

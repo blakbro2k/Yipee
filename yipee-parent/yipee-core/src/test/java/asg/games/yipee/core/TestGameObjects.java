@@ -17,9 +17,10 @@ package asg.games.yipee.core;
 
 import asg.games.yipee.common.enums.ACCESS_TYPE;
 import asg.games.yipee.common.enums.Constants;
+import asg.games.yipee.common.enums.Copyable;
+import asg.games.yipee.common.enums.YipeeObject;
 import asg.games.yipee.core.game.YipeeGameBoard;
 import asg.games.yipee.core.objects.AbstractYipeeObject;
-import asg.games.yipee.core.objects.Copyable;
 import asg.games.yipee.core.objects.YipeeBlock;
 import asg.games.yipee.core.objects.YipeeBlockMove;
 import asg.games.yipee.core.objects.YipeeBoardPair;
@@ -27,7 +28,6 @@ import asg.games.yipee.core.objects.YipeeBrokenBlock;
 import asg.games.yipee.core.objects.YipeeClock;
 import asg.games.yipee.core.objects.YipeeGameBoardState;
 import asg.games.yipee.core.objects.YipeeKeyMap;
-import asg.games.yipee.core.objects.YipeeObject;
 import asg.games.yipee.core.objects.YipeePiece;
 import asg.games.yipee.core.objects.YipeePlayer;
 import asg.games.yipee.core.objects.YipeeRoom;
@@ -702,11 +702,11 @@ public class TestGameObjects {
         YipeeTable yokelTable3 = new YipeeTable(1, arguments);
         setIdAndName(yokelTable, yokelTable2, yokelTable3, yokelPlayer, yokelPlayer2);
         yokelTable.setName("sim:room1");
-        yokelTable.setTableName(1);
+        yokelTable.setTableNumber(1);
         yokelTable2.setName("sim:room2");
-        yokelTable2.setTableName(2);
+        yokelTable2.setTableNumber(2);
         yokelTable3.setName("sim:room3");
-        yokelTable3.setTableName(1);
+        yokelTable3.setTableNumber(1);
 
         yokelTable2.setAccessType(ACCESS_TYPE.PROTECTED);
         Assert.assertEquals(yokelTable.getAccessType(), ACCESS_TYPE.PUBLIC);

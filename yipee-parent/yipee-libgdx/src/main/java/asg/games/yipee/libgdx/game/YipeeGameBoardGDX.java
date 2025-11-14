@@ -18,7 +18,7 @@ package asg.games.yipee.libgdx.game;
 import asg.games.yipee.common.game.CommonRandomNumberArray;
 import asg.games.yipee.common.game.GameBoardState;
 import asg.games.yipee.common.game.GamePhase;
-import asg.games.yipee.common.packets.PlayerAction;
+import asg.games.yipee.common.game.PlayerAction;
 import asg.games.yipee.libgdx.objects.YipeeBlockGDX;
 import asg.games.yipee.libgdx.objects.YipeeBlockMoveGDX;
 import asg.games.yipee.libgdx.objects.YipeeBrokenBlockGDX;

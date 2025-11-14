@@ -15,8 +15,8 @@
  */
 package asg.games.yipee.core.tools;
 
-import asg.games.yipee.common.net.NetYipeePlayer;
-import asg.games.yipee.common.net.NetYipeeTable;
+import asg.games.yipee.common.dto.NetYipeePlayer;
+import asg.games.yipee.common.dto.NetYipeeTable;
 import asg.games.yipee.core.objects.AbstractYipeeObject;
 import asg.games.yipee.core.objects.YipeePlayer;
 import asg.games.yipee.core.objects.YipeeRoom;

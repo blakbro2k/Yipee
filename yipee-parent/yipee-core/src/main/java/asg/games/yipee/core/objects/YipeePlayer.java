@@ -15,7 +15,10 @@
  */
 package asg.games.yipee.core.objects;
 
-import asg.games.yipee.common.net.NetYipeePlayer;
+import asg.games.yipee.common.dto.NetYipeeKeyMap;
+import asg.games.yipee.common.dto.NetYipeePlayer;
+import asg.games.yipee.common.enums.Copyable;
+import asg.games.yipee.common.enums.Disposable;
 import asg.games.yipee.core.persistence.Updatable;
 import asg.games.yipee.core.tools.NetUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -70,7 +73,7 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
     private String serializedKeyConfig;
 
     @Transient
-    private YipeeKeyMap keyConfig = new YipeeKeyMap(this.getId());
+    private NetYipeeKeyMap keyConfig = new YipeeKeyMap(this.getId());
 
     /**
      * Default constructor required for JSON serialization/deserialization.
@@ -115,7 +118,7 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
      * Gets the {@code YipeeKeyMap} which holds the player key configuration map
      * @return
      */
-    public YipeeKeyMap getKeyConfig() {
+    public NetYipeeKeyMap getKeyConfig() {
         if (keyConfig == null && serializedKeyConfig != null) {
             synchronized (this) {
                 if (keyConfig == null) {
@@ -139,7 +142,7 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
      * Sets the {@code YipeeKeyMap} which holds the player key configuration map
      * @param keyConfig
      */
-    public void setKeyConfig(YipeeKeyMap keyConfig) {
+    public void setKeyConfig(NetYipeeKeyMap keyConfig) {
         if (keyConfig != null && keyConfig.getPlayerId() == null && getId() != null) {
             keyConfig.setPlayerId(getId());
         }

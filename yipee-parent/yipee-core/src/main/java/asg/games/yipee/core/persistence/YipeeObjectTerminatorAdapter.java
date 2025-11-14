@@ -15,11 +15,12 @@
  */
 package asg.games.yipee.core.persistence;
 
+import asg.games.yipee.common.enums.YipeeObject;
 import asg.games.yipee.core.objects.YipeeRoom;
 import asg.games.yipee.core.objects.YipeeTable;
 
 /**
- * Defines termination logic for complex {@link asg.games.yipee.core.objects.YipeeObject} types.
+ * Defines termination logic for complex {@link YipeeObject} types.
  * <p>
  * This adapter is used by {@link TerminatorJPAVisitor} implementations to decouple deletion logic
  * from the core object structure. Each method provides a hook to perform any cleanup or cascading

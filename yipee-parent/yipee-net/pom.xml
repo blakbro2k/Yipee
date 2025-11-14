@@ -17,6 +17,8 @@
         <lombok.version>1.18.28</lombok.version>
         <aspectj.version>1.9.7</aspectj.version>
         <aspectj-maven.version>1.15.0</aspectj-maven.version>
+        <kyronet.version>2.22.0-RC1</kyronet.version>
+        <slf4j.version>2.0.9</slf4j.version>
     </properties>
 
     <dependencies>
@@ -46,11 +48,25 @@
             <version>${revision}</version>
             <scope>compile</scope>
         </dependency>
+
+        <!-- Networking -->
         <dependency>
-            <groupId>asg.games</groupId>
-            <artifactId>yipee-core</artifactId>
-            <version>${revision}</version>
-            <scope>compile</scope>
+            <groupId>com.esotericsoftware</groupId>
+            <artifactId>kryonet</artifactId>
+            <version>${kyronet.version}</version>
+        </dependency>
+
+        <!-- SLF4J API -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>7.5</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

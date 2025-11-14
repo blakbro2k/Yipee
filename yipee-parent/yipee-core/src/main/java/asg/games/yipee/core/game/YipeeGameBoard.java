@@ -15,11 +15,11 @@
  */
 package asg.games.yipee.core.game;
 
+import asg.games.yipee.common.enums.Disposable;
 import asg.games.yipee.common.game.CommonRandomNumberArray;
 import asg.games.yipee.common.game.GameBoardState;
 import asg.games.yipee.common.game.GamePhase;
-import asg.games.yipee.common.packets.PlayerAction;
-import asg.games.yipee.core.objects.Disposable;
+import asg.games.yipee.common.game.PlayerAction;
 import asg.games.yipee.core.objects.YipeeBlock;
 import asg.games.yipee.core.objects.YipeeBlockMove;
 import asg.games.yipee.core.objects.YipeeBrokenBlock;

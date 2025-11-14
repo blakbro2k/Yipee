@@ -15,7 +15,7 @@
  */
 package asg.games.yipee.net.packets;
 
-import asg.games.yipee.common.packets.PlayerAction;
+import asg.games.yipee.common.game.PlayerAction;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

@@ -15,8 +15,8 @@
  */
 package asg.games.yipee.net.game;
 
+import asg.games.yipee.common.enums.YipeeSerializable;
 import asg.games.yipee.common.game.GameBoardState;
-import asg.games.yipee.common.packets.YipeeSerializable;
 
 /**
  * Defines the contract for managing a Yipee game session.

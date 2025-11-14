@@ -15,13 +15,15 @@
  */
 package asg.games.yipee.libgdx.objects;
 
+import asg.games.yipee.common.dto.NetYipeeTable;
 import asg.games.yipee.common.enums.ACCESS_TYPE;
-import asg.games.yipee.common.net.NetYipeeTable;
+import asg.games.yipee.common.enums.Copyable;
 import asg.games.yipee.libgdx.tools.LibGDXUtil;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.github.czyzby.kiwi.util.gdx.collection.GdxSets;
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,7 +51,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<YipeeTableGDX>, Disposable, NetYipeeTable {
+public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<YipeeTableGDX>, Disposable, NetYipeeTable<YipeeSeatGDX, YipeePlayerGDX> {
     public static final String ARG_TYPE = "type";
     public static final String ARG_RATED = "rated";
     public static final String ARG_SOUND = "sound";
@@ -65,9 +67,11 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
     private ACCESS_TYPE accessType = ACCESS_TYPE.PUBLIC;
 
     /** Set of all 8 player seats available at the table. */
+    @Setter(AccessLevel.NONE) // don't let Lombok generate setSeats
     private ObjectSet<YipeeSeatGDX> seats = GdxSets.newSet();
 
     /** Players who are watching (spectating) the table. */
+    @Setter(AccessLevel.NONE) // don't let Lombok generate setWatchers
     private ObjectSet<YipeePlayerGDX> watchers = GdxSets.newSet();
 
     /** Numeric identifier for the table, used in naming. */
@@ -123,16 +127,6 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
         setName(getId() + ATT_TABLE_SPACER + ATT_NAME_PREPEND + tableNumber);
     }
 
-    /*@Override
-    public <T> void setSeats(Iterable<T> seats) {
-        this.seats = LibGDXUtil.buildYipeeSeatGDXSets(seats);
-    }
-
-    @Override
-    public <T> void setWatchers(Iterable<T> watchers) {
-        this.watchers = LibGDXUtil.buildYipeePlayerGDXSets(watchers);
-    }*/
-
     /**
      * Extracts and returns the table number from the current table name.
      * Assumes table name follows the pattern set in {@link #setTableName(int)}.
@@ -169,13 +163,23 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
             } else if (LibGDXUtil.equalsIgnoreCase(ARG_RATED, arg)) {
                 setRated(LibGDXUtil.otob(value));
             } else if (LibGDXUtil.equalsIgnoreCase(ARG_SOUND, arg)) {
-                setSound(LibGDXUtil.otob(value));
+                setSoundOn(LibGDXUtil.otob(value));
             }
         }
     }
 
     public void setAccessType(ACCESS_TYPE accessType) {
         this.accessType = accessType;
+    }
+
+    @Override
+    public void setWatchers(Iterable<YipeePlayerGDX> watchers) {
+        this.watchers = GdxSets.newSet(watchers);
+    }
+
+    @Override
+    public void setSeats(Iterable<YipeeSeatGDX> seats) {
+        this.seats = GdxSets.newSet(seats);
     }
 
     /**
@@ -193,24 +197,6 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
         } else {
             setAccessType(ACCESS_TYPE.PUBLIC);
         }
-    }
-
-    /**
-     * Sets whether the table's games are rated (affecting score/ranking).
-     *
-     * @param rated true if the table should use rated gameplay.
-     */
-    public void setRated(boolean rated) {
-        this.isRated = rated;
-    }
-
-    /**
-     * Enables or disables sound for this table's game session.
-     *
-     * @param sound true to enable game sound; false to disable.
-     */
-    public void setSound(boolean sound) {
-        this.isSoundOn = sound;
     }
 
     /**
@@ -361,7 +347,7 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
         copyParent(copy);
         copy.setAccessType(accessType);
         copy.setRated(isRated);
-        copy.setSound(isSoundOn);
+        copy.setSoundOn(isSoundOn);
         return copy;
     }
 

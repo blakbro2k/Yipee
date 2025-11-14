@@ -23,7 +23,6 @@ import asg.games.yipee.libgdx.objects.YipeeGameBoardStateGDX;
 import asg.games.yipee.libgdx.objects.YipeePieceGDX;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
@@ -177,7 +176,7 @@ public class YipeeGDXPrinter {
         return new int[YipeeGameBoardGDX.MAX_ROWS][YipeeGameBoardGDX.MAX_COLS];
     }
 
-    private void printRow(StringBuilder out, int r, @NotNull YipeeGameBoardStateGDX gameState, int depth) {
+    private void printRow(StringBuilder out, int r, YipeeGameBoardStateGDX gameState, int depth) {
         boolean isPartnerRight = gameState.isPartnerRight();
         int[][] playerCells = gameState.getPlayerCells();
         int[][] partnerCells = gameState.getPartnerCells();
@@ -189,7 +188,7 @@ public class YipeeGDXPrinter {
         }
     }
 
-    private void printPlayerRows(int[][] cellsLeft, int[][] cellsRight, int r, StringBuilder out, @NotNull YipeeGameBoardStateGDX gameState) {
+    private void printPlayerRows(int[][] cellsLeft, int[][] cellsRight, int r, StringBuilder out, YipeeGameBoardStateGDX gameState) {
         boolean isPartnerRight = gameState.isPartnerRight();
         for (int c = 0; c < YipeeGameBoardGDX.MAX_COLS * 2; c++) {
             int block;

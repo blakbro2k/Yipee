@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.core.objects;
 
+import asg.games.yipee.common.enums.YipeeObject;
 import asg.games.yipee.core.tools.TimeUtils;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
