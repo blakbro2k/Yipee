@@ -76,7 +76,6 @@ public class TestYipeeNetworkObjects {
             AbstractServerResponse c = (AbstractServerResponse) copy;
             Assertions.assertAll("AbstractServerResponse",
                 () -> Assertions.assertEquals(o.getServerId(), c.getServerId(), "ServerId mismatch"),
-                () -> Assertions.assertEquals(o.getAuthToken(), c.getAuthToken(), "AuthToken mismatch"),
                 () -> Assertions.assertEquals(o.getPacketType(), c.getPacketType(), "PacketType name mismatch"),
                 () -> Assertions.assertEquals(o.getServerTick(), c.getServerTick(), "Player name mismatch"),
                 () -> Assertions.assertEquals(o.getServerTimestamp(), c.getServerTimestamp(), "Timestamp mismatch")
@@ -88,30 +87,27 @@ public class TestYipeeNetworkObjects {
             ClientHandshakeRequest c = (ClientHandshakeRequest) copy;
             Assertions.assertAll("ClientHandshakeRequest",
                 () -> Assertions.assertEquals(o.getAuthToken(), c.getAuthToken(), "AuthToken mismatch"),
-                () -> Assertions.assertEquals(NetUtil.getCoreNetPlayerName(o.getPlayer()),
-                    NetUtil.getCoreNetPlayerName(c.getPlayer()), "Player name mismatch")
+                () -> Assertions.assertEquals(o.getPlayerId(), c.getPlayerId(), "Player name mismatch")
             );
         } else if (original instanceof ClientHandshakeResponse) {
             ClientHandshakeResponse o = (ClientHandshakeResponse) original;
             ClientHandshakeResponse c = (ClientHandshakeResponse) copy;
             Assertions.assertAll("ClientHandshakeResponse",
-                () -> Assertions.assertEquals(o.getPlayer(), c.getPlayer(), "Player mismatch"),
+                () -> Assertions.assertEquals(o.getPlayerId(), c.getPlayerId(), "Player mismatch"),
                 () -> Assertions.assertEquals(o.isConnected(), c.isConnected(), "Connection status mismatch")
             );
         } else if (original instanceof DisconnectRequest) {
             DisconnectRequest o = (DisconnectRequest) original;
             DisconnectRequest c = (DisconnectRequest) copy;
 
-            Assertions.assertAll("DisconnectRequest", () -> Assertions.assertEquals(NetUtil.getCoreNetPlayerName(o.getPlayer()),
-                NetUtil.getCoreNetPlayerName(c.getPlayer()), "Player mismatch")
+            Assertions.assertAll("DisconnectRequest", () -> Assertions.assertEquals(o.getPlayerId(), c.getPlayerId(), "Player mismatch")
             );
         } else if (original instanceof DisconnectResponse) {
             DisconnectResponse o = (DisconnectResponse) original;
             DisconnectResponse c = (DisconnectResponse) copy;
             Assertions.assertAll("DisconnectResponse",
                 () -> Assertions.assertEquals(o.isSuccessful(), c.isSuccessful(), "Success mismatch"),
-                () -> Assertions.assertEquals(NetUtil.getCoreNetPlayerName(o.getPlayer()),
-                    NetUtil.getCoreNetPlayerName(c.getPlayer()), "Player mismatch")
+                () -> Assertions.assertEquals(o.getPlayerId(), c.getPlayerId(), "Player mismatch")
             );
         } else if (original instanceof ErrorResponse) {
             ErrorResponse o = (ErrorResponse) original;
@@ -152,8 +148,8 @@ public class TestYipeeNetworkObjects {
             TableStateUpdateRequest c = (TableStateUpdateRequest) copy;
             Assertions.assertAll("TableStateUpdateRequest",
                 () -> Assertions.assertEquals(o.getTableId(), c.getTableId(), "TableId mismatch"),
-                () -> Assertions.assertEquals(NetUtil.getCoreNetPlayerName(o.getRequestedBy()), NetUtil.getCoreNetPlayerName(c.getRequestedBy()), "RequestedBy mismatch"),
-                () -> Assertions.assertEquals(NetUtil.getCoreNetTable(o.getPartialTableUpdate()), NetUtil.getCoreNetTable(c.getPartialTableUpdate()), "PartialTableUpdate mismatch"),
+                () -> Assertions.assertEquals(o.getRequestedBy(), c.getRequestedBy(), "RequestedBy mismatch"),
+                () -> Assertions.assertEquals(o.getPartialTableUpdate(), c.getPartialTableUpdate(), "PartialTableUpdate mismatch"),
                 () -> Assertions.assertEquals(o.getUpdateType(), c.getUpdateType(), "Update Type mismatch")
             );
         } else if (original instanceof TableStateBroadcastResponse) {
@@ -177,8 +173,7 @@ public class TestYipeeNetworkObjects {
             SeatSelectionRequest c = (SeatSelectionRequest) copy;
             Assertions.assertAll("SeatSelectionRequest",
                 () -> Assertions.assertEquals(o.getSeatIndex(), c.getSeatIndex(), "Seat Index mismatch"),
-                () -> Assertions.assertEquals(NetUtil.getCoreNetPlayerName(o.getPlayer()),
-                    NetUtil.getCoreNetPlayerName(c.getPlayer()), "Player mismatch"),
+                () -> Assertions.assertEquals(o.getPlayerId(), c.getPlayerId(), "Player mismatch"),
                 () -> Assertions.assertEquals(o.getTableId(), c.getTableId(), "TableId mismatch"),
                 () -> Assertions.assertEquals(o.isSpectator(), c.isSpectator(), "Is spectator mismatch")
             );
@@ -201,7 +196,6 @@ public class TestYipeeNetworkObjects {
             response.setServerId("server-abc");
             response.setServerTick(15);
             response.setServerTimestamp(System.currentTimeMillis());
-            response.setAuthToken("testing-session-123");
         }
     }
 
@@ -215,7 +209,7 @@ public class TestYipeeNetworkObjects {
     public static ClientHandshakeRequest getClientHandshakeRequestObject() {
         ClientHandshakeRequest request = new ClientHandshakeRequest();
         setUpAbstractPacketRequest(request);
-        request.setPlayer(testPlayer);
+        request.setPlayerId(testPlayer.getId());
         request.setClientId("Client123");
         request.setAuthToken("AuthToken");
         return request;
@@ -224,14 +218,14 @@ public class TestYipeeNetworkObjects {
     public static DisconnectRequest getDisconnectRequestObject() {
         DisconnectRequest request = new DisconnectRequest();
         setUpAbstractPacketRequest(request);
-        request.setPlayer(testPlayer);
+        request.setPlayerId(testPlayer.getId());
         return request;
     }
 
     public static DisconnectResponse getDisconnectResponseObject() {
         DisconnectResponse response = new DisconnectResponse();
         setUpAbstractPacketResponse(response);
-        response.setPlayer(testPlayer);
+        response.setPlayerId(testPlayer.getId());
         response.setSuccessful(true);
         return response;
     }
@@ -251,7 +245,7 @@ public class TestYipeeNetworkObjects {
         request.setTableId(testTable.getId());
         request.setSeatIndex(1);
         request.setSpectator(false);
-        request.setPlayer(testPlayer);
+        request.setPlayerId(testPlayer.getId());
         return request;
     }
 
@@ -269,7 +263,7 @@ public class TestYipeeNetworkObjects {
         MappedKeyUpdateRequest request = new MappedKeyUpdateRequest();
         //YipeeKeyMap map = new YipeeKeyMap("2");
         setUpAbstractPacketRequest(request);
-        request.setKeyConfig(testPlayer.getKeyConfig());
+        //request.setKeyConfig(testPlayer.getKeyConfig());
         return request;
     }
 
@@ -311,8 +305,8 @@ public class TestYipeeNetworkObjects {
         TableStateUpdateRequest request = new TableStateUpdateRequest();
         setUpAbstractPacketRequest(request);
         request.setTableId(testTable.getId());
-        request.setRequestedBy(testPlayer);
-        request.setPartialTableUpdate(testTable);
+        request.setRequestedBy(testPlayer.getId());
+        request.setPartialTableUpdate(testTable.getId());
         request.setUpdateType(TableUpdateType.PLAYER_SEATED);
         return request;
     }

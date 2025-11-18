@@ -31,7 +31,7 @@ public enum GamePhase {
      * A new piece is being spawned onto the board.
      *
      * <p>During this phase, the active block is selected (using the deterministic
-     * {@link asg.games.yipee.common.game.CommonRandomNumberArray}) and placed at the
+     * {@link CommonRandomNumberArray}) and placed at the
      * spawn position. The board then transitions to the {@link #FALLING} phase.</p>
      */
     SPAWN_NEXT,

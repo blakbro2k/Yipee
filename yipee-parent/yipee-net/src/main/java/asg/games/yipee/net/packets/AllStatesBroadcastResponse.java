@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,24 +20,54 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
- * Broadcast response sent by the server to all clients seated at a table,
- * notifying them of a change in the table's state.
+ * Broadcast packet containing the latest full-state snapshots for all
+ * eight seats at a Yipee table.
  *
- * <p>Common triggers include player seat changes, readiness status updates,
- * game start/end events, or table configuration changes.</p>
+ * <p>This message is emitted by the server when it needs to deliver a
+ * synchronized, table-wide view of game state to all connected clients.
+ * It is typically used during:
  *
- * <p><b>Direction:</b> Server → Clients</p>
+ * <ul>
+ *   <li>initial table sync after a player joins,</li>
+ *   <li>recovery after a network hiccup,</li>
+ *   <li>full-state reconciliation after desync,</li>
+ *   <li>or periodic broadcast in lower-latency modes.</li>
+ * </ul>
+ *
+ * <p>The server includes one {@link TableStateBroadcastResponse} per seat,
+ * indexed consistently from 1 through 8. Any seat not currently occupied
+ * may contain a null entry.
+ *
+ * <p><b>Direction:</b> Server → Clients
  */
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class AllStatesBroadcastResponse extends AbstractServerResponse {
+
+    /**
+     * State snapshot for board/seat #1. May be null if unoccupied.
+     */
     private TableStateBroadcastResponse tableState1;
+
+    /** State snapshot for board/seat #2. May be null if unoccupied. */
     private TableStateBroadcastResponse tableState2;
+
+    /** State snapshot for board/seat #3. May be null if unoccupied. */
     private TableStateBroadcastResponse tableState3;
+
+    /** State snapshot for board/seat #4. May be null if unoccupied. */
     private TableStateBroadcastResponse tableState4;
+
+    /** State snapshot for board/seat #5. May be null if unoccupied. */
     private TableStateBroadcastResponse tableState5;
+
+    /** State snapshot for board/seat #6. May be null if unoccupied. */
     private TableStateBroadcastResponse tableState6;
+
+    /** State snapshot for board/seat #7. May be null if unoccupied. */
     private TableStateBroadcastResponse tableState7;
+
+    /** State snapshot for board/seat #8. May be null if unoccupied. */
     private TableStateBroadcastResponse tableState8;
 }

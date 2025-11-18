@@ -16,7 +16,6 @@
 package asg.games.yipee.net.packets;
 
 
-import asg.games.yipee.common.dto.NetYipeePlayer;
 import asg.games.yipee.common.dto.NetYipeeTable;
 import asg.games.yipee.common.enums.TableUpdateType;
 import lombok.Data;
@@ -52,13 +51,13 @@ public class TableStateUpdateRequest extends AbstractClientRequest {
      * The player making the update request.
      * Should match the table owner for most types of updates.
      */
-    private NetYipeePlayer requestedBy;
+    private String requestedBy;
 
     /**
      * A partial or full {@link NetYipeeTable} object representing the proposed changes.
      * The server should apply only those fields deemed safe and allowed.
      */
-    private NetYipeeTable partialTableUpdate;
+    private String partialTableUpdate;
 
     /**
      * Describes the kind of update being requested, such as seating changes or game start.

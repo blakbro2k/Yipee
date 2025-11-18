@@ -15,7 +15,7 @@
  */
 package asg.games.yipee.net.packets;
 
-import asg.games.yipee.net.game.GameSeatActionPair;
+import asg.games.yipee.common.game.PlayerAction;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -31,5 +31,5 @@ public class TableActionsBroadcastResponse extends AbstractServerResponse {
      * The updated authoritative table state after the server processed changes.
      * Clients should use this to synchronize their local table view.
      */
-    List<GameSeatActionPair> actions;
+    List<PlayerAction> actions;
 }

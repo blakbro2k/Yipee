@@ -51,12 +51,4 @@ public class GameStartResponse extends AbstractServerResponse {
      * involved in the match for consistent simulation and prediction.
      */
     private long gameSeed;
-
-    /**
-     * The wall-clock epoch time (in milliseconds) when the countdown started.
-     * <p>
-     * Clients can calculate their local countdown offset and tick alignment
-     * using this value to improve synchronization accuracy.
-     */
-    private long serverStartEpochMillis;
 }

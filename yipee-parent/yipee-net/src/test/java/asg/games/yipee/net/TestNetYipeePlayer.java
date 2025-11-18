@@ -16,7 +16,6 @@
 package asg.games.yipee.net;
 
 
-import asg.games.yipee.common.dto.NetYipeeKeyMap;
 import asg.games.yipee.common.dto.NetYipeePlayer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,10 +33,5 @@ public class TestNetYipeePlayer extends TestNetYipeeObject implements NetYipeePl
         setName(playerName);
         setRating(rating);
         setIcon(iconNumber);
-    }
-
-    @Override
-    public NetYipeeKeyMap getKeyConfig() {
-        return null;
     }
 }
