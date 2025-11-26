@@ -60,7 +60,7 @@ public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat
     private boolean isSeatReady = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seated_player_id", unique = true)
+    @JoinColumn(name = "seated_player_id")
     private YipeePlayer seatedPlayer;
 
     private int seatNumber;
