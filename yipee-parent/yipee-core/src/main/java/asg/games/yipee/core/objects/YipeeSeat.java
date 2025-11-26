@@ -20,7 +20,6 @@ import asg.games.yipee.common.enums.Copyable;
 import asg.games.yipee.common.enums.Disposable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
@@ -33,8 +32,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Objects;
 
 /**
  * Represents a seat at a {@link YipeeTable} in the Yipee game.
@@ -52,7 +49,7 @@ import java.util.Objects;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_SEATS")
-@JsonIgnoreProperties({"occupied", "tableId"})
+@JsonIgnoreProperties({"occupied"})
 public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat>, Disposable, NetYipeeSeat {
     @Transient
     private static final Logger logger = LoggerFactory.getLogger(YipeeSeat.class);
@@ -62,32 +59,20 @@ public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat
 
     private boolean isSeatReady = false;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seated_player_id", unique = true)
     private YipeePlayer seatedPlayer;
 
     private int seatNumber;
 
-    private String parentTableId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "table_id", nullable = false)
+    private YipeeTable parentTable;
 
     /**
      * Default constructor for JSON deserialization and ORM.
      */
     public YipeeSeat() {
-    }
-
-    /**
-     * Constructs a new seat with the given table ID and seat number.
-     *
-     * @param tableId    the ID of the parent table
-     * @param seatNumber the seat's number (must be between 0 and 7)
-     * @throws IllegalArgumentException if the seat number is out of bounds
-     */
-    public YipeeSeat(String tableId, int seatNumber) {
-        if (seatNumber < 0 || seatNumber > 7) throw new IllegalArgumentException("Seat number must be between 0 - 7.");
-        setParentTableId(tableId);
-        setSeatNumber(seatNumber);
-        setSeatName();
     }
 
     /**
@@ -120,6 +105,19 @@ public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat
     private String getSeatName() {
         logger.debug("seatname={}", getParentTableId() + ATTR_SEAT_NUM_SEPARATOR);
         return getParentTableId() + ATTR_SEAT_NUM_SEPARATOR;
+    }
+
+    /**
+     * Helper method that safely gets the parent table id
+     *
+     * @return
+     */
+    public String getParentTableId() {
+        String id = "_null_";
+        if (getParentTable() != null) {
+            id = getParentTable().getId();
+        }
+        return id;
     }
 
     /**
@@ -160,7 +158,7 @@ public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat
      */
     public void setParentTable(YipeeTable parentTable) {
         if (parentTable != null) {
-            parentTableId = parentTable.getId();
+            this.parentTable = parentTable;                      // <--- important
             setName(getSeatName() + getSeatNumber());
         }
     }
@@ -193,18 +191,6 @@ public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        YipeeSeat yipeeSeat = (YipeeSeat) o;
-        return isSeatReady == yipeeSeat.isSeatReady && seatNumber == yipeeSeat.seatNumber && Objects.equals(seatedPlayer, yipeeSeat.seatedPlayer) && Objects.equals(parentTableId, yipeeSeat.parentTableId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), isSeatReady, seatedPlayer, seatNumber, parentTableId);
-    }
 
     /**
      * Creates a shallow copy of this seat (does not copy player).
@@ -217,7 +203,7 @@ public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat
         copyParent(copy);
         copy.setSeatReady(isSeatReady);
         copy.setSeatNumber(seatNumber);
-        copy.setParentTableId(parentTableId);
+        copy.setParentTable(parentTable);
         return copy;
     }
 
@@ -229,7 +215,9 @@ public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat
     @Override
     public YipeeSeat deepCopy() {
         YipeeSeat deep = copy();
-        deep.setSeatedPlayer(seatedPlayer.deepCopy());
+        if (seatedPlayer != null) {
+            deep.setSeatedPlayer(seatedPlayer.deepCopy());
+        }
         return deep;
     }
 }

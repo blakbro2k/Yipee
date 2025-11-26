@@ -25,9 +25,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Getter;
@@ -35,7 +37,8 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Objects;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Represents a player in the Yipee game. Each player has a rating and an icon.
@@ -74,6 +77,10 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
 
     @Transient
     private NetYipeeKeyMap keyConfig = new YipeeKeyMap(this.getId());
+
+    @ManyToMany(mappedBy = "players", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<YipeeRoom> rooms = new HashSet<>();
 
     /**
      * Default constructor required for JSON serialization/deserialization.
@@ -195,20 +202,6 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
         YipeePlayer copy = copy();
         copy.setKeyConfig(this.getKeyConfig() != null ? this.getKeyConfig().deepCopy() : null);
         return copy;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof YipeePlayer)) return false;
-        if (!super.equals(o)) return false;
-        YipeePlayer player = (YipeePlayer) o;
-        return rating == player.rating && icon == player.icon;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), rating, icon, name);
     }
 
     /**
