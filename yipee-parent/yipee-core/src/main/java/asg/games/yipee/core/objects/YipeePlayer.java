@@ -82,6 +82,9 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
     @JsonIgnore
     private Set<YipeeRoom> rooms = new HashSet<>();
 
+    @Column(name = "name", nullable = false, unique = true)
+    private String name;
+
     /**
      * Default constructor required for JSON serialization/deserialization.
      */
