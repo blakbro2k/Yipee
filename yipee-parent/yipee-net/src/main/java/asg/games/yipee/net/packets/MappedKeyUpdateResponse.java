@@ -44,4 +44,14 @@ public class MappedKeyUpdateResponse extends AbstractServerResponse {
      * For example: "Update successful", "Invalid key mapping", etc.
      */
     private String message;
+
+    /**
+     * The player sending the request. Typically validated server-side using JWT.
+     */
+    private String playerId;
+
+    /**
+     * The player sending the request. Typically validated server-side using JWT.
+     */
+    private boolean success;
 }

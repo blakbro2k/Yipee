@@ -61,69 +61,108 @@ public class PlayerAction implements YipeeSerializable {
      * </ul>
      */
     public enum ActionType {
+        // ---------------------------------------------------------------------
         // Row Manipulation
+        // ---------------------------------------------------------------------
+
         /**
-         * Adds a row to a board
-         **/
+         * Adds a row to a board.
+         */
         Y_ADD_ROW,
-        /** Removes a row to a board **/
+        /** Removes a row from a board. */
         Y_REMOVE_ROW,
 
+        // ---------------------------------------------------------------------
         // Color Manipulation
-        /** Separates like colors to make matches difficult **/
+        // ---------------------------------------------------------------------
+
+        /** Separates like colors to make matching more difficult. */
         A_DITHER,
-        /** Combines like colors to make matches easier **/
+        /** Groups similar colors together to make matching easier. */
         A_CLUMP,
 
-        // Stone Powers
+
+        // ---------------------------------------------------------------------
+        // Stone Manipulation
+        // ---------------------------------------------------------------------
+
         /** Adds a stone to a board **/
         H_ADD_STONE,
         /** Drops a stone to the bottom of board **/
         H_DROP_STONE,
 
+        // ---------------------------------------------------------------------
         // Block Manipulation
+        // ---------------------------------------------------------------------
+
         /** Change the block color to a stone **/
         O_DEFUSE,
         /** Converts all the block's adjacent blocks **/
         O_COLOR_BLAST,
 
+        // ---------------------------------------------------------------------
         // Special 3-piece blocks
+        // ---------------------------------------------------------------------
+
         /** Adds the Medusa 3Piece as the board nextPiece **/
         O_MEDUSA,
         /** Adds the Midas 3Piece as the board nextPiece **/
         O_MIDAS,
 
-        // Board Manipulation
+        // ---------------------------------------------------------------------
+        // Special Board Manipulation
+        // ---------------------------------------------------------------------
+
         /** Adds half of powers queue to bottom of board **/
         I_REMOVE_POWERS,
         /** Removes all of a single color from board **/
         I_COLOR_REMOVE,
 
-        /** Speeds up a user's board **/
+        // ---------------------------------------------------------------------
+        // Special Power Blocks
+        // ---------------------------------------------------------------------
+
+        /** Increases the fall speed of the player’s board. */
         S_SPEED,
-        /** Removes all powers from a user's board **/
+
+        /** Removes all powers currently stored on the board. */
         S_POWERS,
-        /** Remove all stones from a user's board **/
+
+        /** Removes all stones from the player's board. */
         S_STONES,
 
-        /** Adds a block to a user's board from a yahoo **/
+        /** Adds a block to a user's board from a yahoo! **/
         YAHOO_ADD_BLOCK,
 
-        // Player Movement & Targeting
-        /** Move the 3-piece block left. */
+        // ---------------------------------------------------------------------
+        // Player Input / Direct Control
+        // ---------------------------------------------------------------------
+
+        /** Move the active 3-piece block left. */
         P_MOVE_LEFT,
-        /** Move the 3-piece block right. */
+
+        /** Move the active 3-piece block right. */
         P_MOVE_RIGHT,
-        /** Start accelerating the 3-piece block downward. */
+
+        /** Begin fast-dropping the active piece. */
         P_MOVE_DOWN_START,
-        /** Stop accelerating the 3-piece block downward. */
+
+        /** Stop fast-dropping the active piece. */
         P_MOVE_DOWN_END,
-        /** Cycle the 3-piece block upward. */
+
+        /** Cycle the current 3-piece upward. */
         P_CYCLE_UP,
-        /** Cycle the 3-piece block downward. */
+
+        /** Cycle the current 3-piece downward. */
         P_CYCLE_DOWN,
-        /** Attack a random board. */
+
+        // ---------------------------------------------------------------------
+        // Targeted Attacks
+        // ---------------------------------------------------------------------
+
+        /** Attack a random enemy board. */
         P_ATTACK_RANDOM,
+
         /** Attack board in seat 1. */
         P_ATTACK_TARGET1,
         /** Attack board in seat 2. */
@@ -142,34 +181,65 @@ public class PlayerAction implements YipeeSerializable {
         P_ATTACK_TARGET8
     }
 
-    /** The board ID that originated this action. */
-    private final int initiatingBoardId;
-
-    /** The type of action to execute. */
-    private final ActionType actionType;
-
-    /** The target board ID affected by this action (may match initiator for self-effects). */
-    private final int targetBoardId;
-
-    /** Optional action payload (e.g., block type, color, index). */
-    private Object actionData;
+    // -------------------------------------------------------------------------
+    // Fields
+    // -------------------------------------------------------------------------
 
     /**
-     * Creates a default no-op PlayerAction.
+     * The board ID that originated this action.
+     *
+     * <p>This identifies which game board (0–7) created the action. The ID is used
+     * server-side to validate ownership and apply proper prediction reconciliation.</p>
+     */
+    private final int initiatingBoardId;
+
+    /**
+     * The type of action being performed.
+     */
+    private final ActionType actionType;
+
+    /**
+     * The board ID that is the target of this action.
+     *
+     * <p>May equal {@code initiatingBoardId} for self-affecting actions or differ
+     * for attacks and powers.</p>
+     */
+    private final int targetBoardId;
+
+    /**
+     * Optional payload attached to this action.
+     *
+     * <p>This may contain color data, block indexes, effect intensity, or any other
+     * lightweight, GWT-safe value. The server determines how to interpret the payload
+     * depending on {@link #actionType}.</p>
+     */
+    private Object actionData;
+
+    // -------------------------------------------------------------------------
+    // Constructors
+    // -------------------------------------------------------------------------
+
+    /**
+     * Creates a default no-op {@code PlayerAction}.
+     *
+     * <p>This is used by Kryo and GWT during deserialization and should not normally
+     * be instantiated by gameplay logic.</p>
      */
     public PlayerAction() {
         this(-1, null, -2, null);
     }
 
     /**
-     * Creates a new PlayerAction with the given parameters.
+     * Creates a fully-specified gameplay action.
      *
-     * @param initiatingBoardId the ID of the player/board that initiated the action
-     * @param actionType        the type of action
-     * @param targetBoardId     the ID of the board being targeted
-     * @param actionData        any extra payload needed for execution
+     * @param initiatingBoardId ID of the board/player issuing the action
+     * @param actionType        the action type to perform
+     * @param targetBoardId     the board affected by this action
+     * @param actionData        optional payload with action-specific details
      */
-    public PlayerAction(int initiatingBoardId, ActionType actionType, int targetBoardId, Object actionData) {
+    public PlayerAction(int initiatingBoardId, ActionType actionType,
+                        int targetBoardId, Object actionData) {
+
         this.initiatingBoardId = initiatingBoardId;
         this.actionType = actionType;
         this.targetBoardId = targetBoardId;

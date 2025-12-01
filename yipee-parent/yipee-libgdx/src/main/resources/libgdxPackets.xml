@@ -42,12 +42,12 @@
         <mapping class="java.util.Map" id="416"/> <!-- For fields -->
         <mapping class="asg.games.yipee.net.packets.AbstractClientRequest" id="900"/>
         <mapping class="asg.games.yipee.net.packets.AbstractServerResponse" id="901"/>
-        <mapping class="asg.games.yipee.net.packets.AllStatesBroadcastResponse" id="902"/>
+        <mapping class="asg.games.yipee.net.packets.TableStateUpdateResponse" id="902"/>
         <mapping class="asg.games.yipee.net.packets.ClientHandshakeRequest" id="903"/>
         <mapping class="asg.games.yipee.net.packets.ClientHandshakeResponse" id="904"/>
         <mapping class="asg.games.yipee.net.packets.DisconnectRequest" id="905"/>
         <mapping class="asg.games.yipee.net.packets.DisconnectResponse" id="906"/>
-        <mapping class="asg.games.yipee.net.packets.ErrorCode" id="907"/>
+        <mapping class="asg.games.yipee.net.errors.ErrorCode" id="907"/>
         <mapping class="asg.games.yipee.net.packets.ErrorResponse" id="908"/>
         <mapping class="asg.games.yipee.net.packets.GameStartRequest" id="909"/>
         <mapping class="asg.games.yipee.net.packets.GameStartResponse" id="910"/>
@@ -58,7 +58,7 @@
         <mapping class="asg.games.yipee.net.packets.SeatSelectionRequest" id="915"/>
         <mapping class="asg.games.yipee.net.packets.SeatSelectionResponse" id="916"/>
         <mapping class="asg.games.yipee.net.packets.TableActionsBroadcastResponse" id="917"/>
-        <mapping class="asg.games.yipee.net.packets.TableStateBroadcastResponse" id="918"/>
+        <mapping class="asg.games.yipee.net.packets.SeatStateUpdateResponse" id="918"/>
         <mapping class="asg.games.yipee.net.packets.TableStateUpdateRequest" id="919"/>
         <mapping class="asg.games.yipee.common.enums.TableUpdateType" id="920"/>
         <mapping class="asg.games.yipee.common.enums.YipeeSerializable" id="2009"/>

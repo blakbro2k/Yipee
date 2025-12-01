@@ -100,7 +100,7 @@ public abstract class AbstractYipeeObject implements YipeeObject {
     /**
      * Name of the Yipee object, must be unique
      */
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false)
     protected String name;
 
     /**

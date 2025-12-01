@@ -21,11 +21,13 @@ import asg.games.yipee.core.tools.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.MapKey;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -39,7 +41,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -86,19 +87,19 @@ public class YipeeRoom extends AbstractYipeeObject implements Copyable<YipeeRoom
     @JsonIgnore
     public static final String DEFAULT_LOUNGE_NAME = "_NoLoungeSelected";
 
+    @Column(name = "lounge_name", nullable = false)
     @JsonProperty("lounge")
     private String loungeName = DEFAULT_LOUNGE_NAME;
 
-    @Getter
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
     @JoinTable(
-        name = "YT_ROOM_PLAYERS", // Join table name
-        joinColumns = @JoinColumn(name = "room_id"), // Foreign key to YipeeRoom
-        inverseJoinColumns = @JoinColumn(name = "player_id") // Foreign key to YipeePlayer
+        name = "YT_ROOM_PLAYERS",
+        joinColumns = @JoinColumn(name = "room_id"),
+        inverseJoinColumns = @JoinColumn(name = "player_id")
     )
     private Set<YipeePlayer> players = new LinkedHashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     @MapKey(name = "tableNumber")
     private Map<Integer, YipeeTable> tableIndexMap = new HashMap<>();
 
@@ -155,8 +156,9 @@ public class YipeeRoom extends AbstractYipeeObject implements Copyable<YipeeRoom
     public void joinRoom(YipeePlayer player) {
         if (player != null) {
             logger.info("Player: {}, is joining room: {}", player.getName(), this.getName());
+            players.add(player);
+            player.getRooms().add(this);
         }
-        players.add(player);
     }
 
     /**
@@ -167,8 +169,9 @@ public class YipeeRoom extends AbstractYipeeObject implements Copyable<YipeeRoom
     public void leaveRoom(YipeePlayer player) {
         if (player != null) {
             logger.info("Player: {}, is leaving room: {}", player.getName(), this.getName());
+            players.remove(player);
+            player.getRooms().remove(this);
         }
-        players.remove(player);
     }
 
     /**
@@ -203,6 +206,8 @@ public class YipeeRoom extends AbstractYipeeObject implements Copyable<YipeeRoom
         YipeeTable table = arguments != null
             ? new YipeeTable(tableNumber, arguments)
             : new YipeeTable(tableNumber);
+
+        table.setRoom(this);                // <-- important
         tableIndexMap.put(tableNumber, table);
         return table;
     }
@@ -236,6 +241,7 @@ public class YipeeRoom extends AbstractYipeeObject implements Copyable<YipeeRoom
             return;
         }
         YipeeTable table = getTableAt(index);
+        table.setRoom(null);                // <-- important
         tableIndexMap.remove(index);
     }
 
@@ -284,7 +290,6 @@ public class YipeeRoom extends AbstractYipeeObject implements Copyable<YipeeRoom
         tableIndexMap.clear();
     }
 
-
     /**
      * Creates a shallow copy of this room.
      * Players and tables are not deep-copied.
@@ -315,19 +320,5 @@ public class YipeeRoom extends AbstractYipeeObject implements Copyable<YipeeRoom
         copy.setTableIndexMap(deepCopiedTableMap);
         copy.setPlayers(players.stream().map(YipeePlayer::deepCopy).collect(Collectors.toSet())); // Assuming YipeePlayer is immutable or cloned
         return copy;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof YipeeRoom)) return false;
-        if (!super.equals(o)) return false;
-        YipeeRoom room = (YipeeRoom) o;
-        return Objects.equals(loungeName, room.loungeName) && Objects.equals(players, room.players) && Objects.equals(tableIndexMap, room.tableIndexMap);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), loungeName, players, tableIndexMap);
     }
 }

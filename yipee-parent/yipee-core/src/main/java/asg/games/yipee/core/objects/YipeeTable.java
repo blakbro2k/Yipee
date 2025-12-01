@@ -26,10 +26,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -41,7 +44,6 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -61,7 +63,7 @@ import java.util.Set;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_TABLES")
-@JsonIgnoreProperties({"tableNumber", "tableStartReady", "upArguments", "tableName", "roomId"})
+@JsonIgnoreProperties({"tableStartReady", "upArguments", "tableName", "roomId"})
 public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTable>, Disposable, NetYipeeTable<YipeeSeat, YipeePlayer> {
     private static final Logger logger = LoggerFactory.getLogger(YipeeTable.class);
 
@@ -82,20 +84,32 @@ public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTab
     private ACCESS_TYPE accessType = ACCESS_TYPE.PUBLIC;
 
     @Setter(AccessLevel.NONE) // don't let Lombok generate setSeats
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "parentTable", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<YipeeSeat> seats = new LinkedHashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
     @JoinTable(
-        name = "YT_TABLE_PLAYERS", // Join table name
-        joinColumns = @JoinColumn(name = "table_id"), // Foreign key to YipeeRoom
-        inverseJoinColumns = @JoinColumn(name = "player_id") // Foreign key to YipeePlayer
+        name = "YT_TABLE_PLAYERS",
+        joinColumns = @JoinColumn(name = "table_id"),
+        inverseJoinColumns = @JoinColumn(name = "player_id")
     )
     @Setter(AccessLevel.NONE) // don't let Lombok generate setWatchers
     private Set<YipeePlayer> watchers = new LinkedHashSet<>();
 
-    @Column(name = "tableNumber", nullable = false, unique = true)
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "room_id", nullable = false)
+    private YipeeRoom room;
+
+    /**
+     * Room-local numeric identifier for this table (e.g., 1, 2, 4).
+     * Exposed to clients as "tableNumber" and used as the map key in YipeeRoom.
+     */
+    @Getter
+    @Column(name = "table_number", nullable = false)
+    @JsonProperty("tableNumber")
     private int tableNumber;
+
 
     @JsonProperty("rated")
     private boolean isRated = false;
@@ -191,7 +205,7 @@ public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTab
      * @param tableNumber the table's numeric index
      */
     private String buildTableName(int tableNumber) {
-        return getId() + ATT_TABLE_SPACER + ATT_NAME_PREPEND + tableNumber;
+        return ATT_TABLE_SPACER + ATT_NAME_PREPEND + tableNumber;
     }
 
     /**
@@ -203,15 +217,6 @@ public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTab
         this.tableNumber = tableNumber;
         // Keep name in sync whenever number changes
         setName(buildTableName(tableNumber));
-    }
-
-    /**
-     * Parses the table number from its name.
-     *
-     * @return the table number
-     */
-    public int getTableNumber() {
-        return getName() == null ? -1 : Integer.parseInt(Util.split(getName(), ATT_NAME_PREPEND)[1]);
     }
 
     /**
@@ -413,16 +418,6 @@ public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTab
         return copy;
     }
 
-    /*@Override
-    public <T> void setSeats(Iterable<T> seats) {
-        this.seats = Util.buildYipeeSeatSets(seats);
-    }
-
-    @Override
-    public <T> void setWatchers(Iterable<T> watchers) {
-        this.watchers = Util.buildYipeePlayerSets(watchers);
-    }*/
-
     /**
      * Creates a deep copy of this table, including cloned seats and watchers.
      *
@@ -443,19 +438,5 @@ public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTab
         }
         copy.setWatchers(newWatchers);
         return copy;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof YipeeTable)) return false;
-        if (!super.equals(o)) return false;
-        YipeeTable that = (YipeeTable) o;
-        return isRated == that.isRated && isSoundOn == that.isSoundOn && accessType == that.accessType;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), accessType, isRated, isSoundOn);
     }
 }

@@ -27,7 +27,7 @@ import asg.games.yipee.net.packets.PlayerActionRequest;
 import asg.games.yipee.net.packets.PlayerActionResponse;
 import asg.games.yipee.net.packets.SeatSelectionRequest;
 import asg.games.yipee.net.packets.SeatSelectionResponse;
-import asg.games.yipee.net.packets.TableStateBroadcastResponse;
+import asg.games.yipee.net.packets.SeatStateUpdateResponse;
 import asg.games.yipee.net.packets.TableStateUpdateRequest;
 import asg.games.yipee.net.tools.PacketRegistrar;
 import com.esotericsoftware.kryo.Kryo;
@@ -65,7 +65,7 @@ public class PacketSerializationTest {
             {TestYipeeNetworkObjects.getPlayerActionResponseObject(), PlayerActionResponse.class},
             {TestYipeeNetworkObjects.getSeatSelectionRequestObject(), SeatSelectionRequest.class},
             {TestYipeeNetworkObjects.getSeatSelectionResponseObject(), SeatSelectionResponse.class},
-            {TestYipeeNetworkObjects.getTableStateBroadcastResponseObject(), TableStateBroadcastResponse.class},
+            {TestYipeeNetworkObjects.getTableStateBroadcastResponseObject(), SeatStateUpdateResponse.class},
             {TestYipeeNetworkObjects.getTableStateUpdateRequestObject(), TableStateUpdateRequest.class}
         };
     }

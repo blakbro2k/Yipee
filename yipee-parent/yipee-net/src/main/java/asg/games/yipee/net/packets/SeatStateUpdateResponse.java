@@ -15,7 +15,7 @@
  */
 package asg.games.yipee.net.packets;
 
-import asg.games.yipee.net.game.GameStatePair;
+import asg.games.yipee.common.game.GameBoardState;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -34,10 +34,21 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class TableStateBroadcastResponse extends AbstractServerResponse {
+public class SeatStateUpdateResponse extends AbstractServerResponse {
+    /**
+     * The identifier of the table to be updated.
+     */
+    private String tableId;
+
     /**
      * The updated authoritative table state after the server processed changes.
      * Clients should use this to synchronize their local table view.
      */
-    List<GameStatePair> states;
+    List<GameBoardState> states;
+
+    /**
+     * The index of the seat being requested (0–7).
+     * Ignored if {@code spectator} is true.
+     */
+    private int seatIndex;
 }

@@ -15,7 +15,6 @@
  */
 package asg.games.yipee.net.packets;
 
-import asg.games.yipee.common.dto.NetYipeePlayer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -31,7 +30,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = {"player"})
+@EqualsAndHashCode(callSuper = true)
 public class SeatSelectionRequest extends AbstractClientRequest {
 
     /**
@@ -42,7 +41,6 @@ public class SeatSelectionRequest extends AbstractClientRequest {
 
     /**
      * The index of the seat being requested (0–7).
-     * Ignored if {@code spectator} is true.
      */
     private int seatIndex;
 
@@ -54,5 +52,5 @@ public class SeatSelectionRequest extends AbstractClientRequest {
     /**
      * The player initiating the seat selection.
      */
-    private NetYipeePlayer player;
+    private String playerId;
 }

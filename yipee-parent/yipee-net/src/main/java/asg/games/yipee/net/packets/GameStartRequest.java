@@ -15,8 +15,6 @@
  */
 package asg.games.yipee.net.packets;
 
-import asg.games.yipee.common.dto.NetYipeePlayer;
-import asg.games.yipee.common.dto.NetYipeeTable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -41,18 +39,12 @@ public class GameStartRequest extends AbstractClientRequest {
     private boolean isReady;
 
     /**
-     * The tick at which this request was sent. Used for debug or timing analysis.
-     * Not used in actual gameplay simulation.
-     */
-    private int tick;
-
-    /**
      * The table the player is attempting to join or mark ready in.
      */
-    private NetYipeeTable table;
+    private String tableId;
 
     /**
      * The player sending the request. Typically validated server-side using JWT.
      */
-    private NetYipeePlayer player;
+    private String playerId;
 }

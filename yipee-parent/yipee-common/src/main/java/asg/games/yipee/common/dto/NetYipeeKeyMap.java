@@ -28,11 +28,36 @@ package asg.games.yipee.common.dto;
  *
  */
 public interface NetYipeeKeyMap {
+    /**
+     * Returns the unique identifier of the player whose key mapping this configuration
+     * belongs to.
+     *
+     * @return the player ID associated with this key-map configuration
+     */
     String getPlayerId();
 
+    /**
+     * Associates this key-map configuration with the given player identifier.
+     *
+     * @param id the player ID to bind to this configuration
+     */
     void setPlayerId(String id);
 
+    /**
+     * Releases any internal resources and performs cleanup for this key-map instance.
+     *
+     * <p>Most implementations are lightweight and may simply clear internal collections
+     * or reset state to defaults.
+     */
     void dispose();
 
+    /**
+     * Creates a deep copy of this key-map configuration.
+     *
+     * <p>The returned instance should be completely independent of the original so that
+     * modifications to one do not affect the other.
+     *
+     * @return a new {@code NetYipeeKeyMap} instance with copied configuration
+     */
     NetYipeeKeyMap deepCopy();
 }
