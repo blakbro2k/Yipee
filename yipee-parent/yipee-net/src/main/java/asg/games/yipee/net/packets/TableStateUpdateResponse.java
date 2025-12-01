@@ -34,7 +34,7 @@ import lombok.NoArgsConstructor;
  *   <li>or periodic broadcast in lower-latency modes.</li>
  * </ul>
  *
- * <p>The server includes one {@link TableStateBroadcastResponse} per seat,
+ * <p>The server includes one {@link SeatStateUpdateResponse} per seat,
  * indexed consistently from 1 through 8. Any seat not currently occupied
  * may contain a null entry.
  *
@@ -43,31 +43,30 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class AllStatesBroadcastResponse extends AbstractServerResponse {
-
+public class TableStateUpdateResponse extends AbstractServerResponse {
     /**
      * State snapshot for board/seat #1. May be null if unoccupied.
      */
-    private TableStateBroadcastResponse tableState1;
+    private SeatStateUpdateResponse seatState1;
 
     /** State snapshot for board/seat #2. May be null if unoccupied. */
-    private TableStateBroadcastResponse tableState2;
+    private SeatStateUpdateResponse seatState2;
 
     /** State snapshot for board/seat #3. May be null if unoccupied. */
-    private TableStateBroadcastResponse tableState3;
+    private SeatStateUpdateResponse seatState3;
 
     /** State snapshot for board/seat #4. May be null if unoccupied. */
-    private TableStateBroadcastResponse tableState4;
+    private SeatStateUpdateResponse seatState4;
 
     /** State snapshot for board/seat #5. May be null if unoccupied. */
-    private TableStateBroadcastResponse tableState5;
+    private SeatStateUpdateResponse seatState5;
 
     /** State snapshot for board/seat #6. May be null if unoccupied. */
-    private TableStateBroadcastResponse tableState6;
+    private SeatStateUpdateResponse seatState6;
 
     /** State snapshot for board/seat #7. May be null if unoccupied. */
-    private TableStateBroadcastResponse tableState7;
+    private SeatStateUpdateResponse seatState7;
 
     /** State snapshot for board/seat #8. May be null if unoccupied. */
-    private TableStateBroadcastResponse tableState8;
+    private SeatStateUpdateResponse seatState8;
 }

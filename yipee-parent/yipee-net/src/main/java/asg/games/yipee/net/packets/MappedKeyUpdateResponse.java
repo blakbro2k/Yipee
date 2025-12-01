@@ -49,4 +49,9 @@ public class MappedKeyUpdateResponse extends AbstractServerResponse {
      * The player sending the request. Typically validated server-side using JWT.
      */
     private String playerId;
+
+    /**
+     * The player sending the request. Typically validated server-side using JWT.
+     */
+    private boolean success;
 }

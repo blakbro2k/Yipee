@@ -51,4 +51,10 @@ public class GameStartResponse extends AbstractServerResponse {
      * involved in the match for consistent simulation and prediction.
      */
     private long gameSeed;
+
+    /**
+     * Server response that GameStartRequest was valid and the seat now marked ready.
+     * It does not mean the match is starting immediately.
+     */
+    private boolean accepted;
 }

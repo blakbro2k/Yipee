@@ -34,7 +34,12 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class TableStateBroadcastResponse extends AbstractServerResponse {
+public class SeatStateUpdateResponse extends AbstractServerResponse {
+    /**
+     * The identifier of the table to be updated.
+     */
+    private String tableId;
+
     /**
      * The updated authoritative table state after the server processed changes.
      * Clients should use this to synchronize their local table view.

@@ -47,6 +47,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false, exclude = {"timestamp"})
 public abstract class AbstractClientRequest implements YipeeSerializable {
+    /**
+     * Identifier of the game/table context associated with this response.
+     *
+     * <p>If the response does not pertain to a specific game (e.g., handshake),
+     * this field may be null.
+     */
+    private String gameId;
 
     /**
      * A stable identifier for the client instance (device, browser, or app install).

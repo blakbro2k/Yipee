@@ -41,7 +41,6 @@ public class SeatSelectionRequest extends AbstractClientRequest {
 
     /**
      * The index of the seat being requested (0–7).
-     * Ignored if {@code spectator} is true.
      */
     private int seatIndex;
 

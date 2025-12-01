@@ -28,6 +28,11 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class TableActionsBroadcastResponse extends AbstractServerResponse {
     /**
+     * The identifier of the table to be updated.
+     */
+    private String tableId;
+
+    /**
      * The updated authoritative table state after the server processed changes.
      * Clients should use this to synchronize their local table view.
      */

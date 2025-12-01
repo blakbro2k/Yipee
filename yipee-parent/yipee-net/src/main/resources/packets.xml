@@ -52,7 +52,7 @@
         <mapping class="asg.games.yipee.core.objects.YipeeTable" id="1017"/>
         <mapping class="asg.games.yipee.net.packets.AbstractClientRequest" id="900"/>
         <mapping class="asg.games.yipee.net.packets.AbstractServerResponse" id="901"/>
-        <mapping class="asg.games.yipee.net.packets.AllStatesBroadcastResponse" id="902"/>
+        <mapping class="asg.games.yipee.net.packets.TableStateUpdateResponse" id="902"/>
         <mapping class="asg.games.yipee.net.packets.ClientHandshakeRequest" id="903"/>
         <mapping class="asg.games.yipee.net.packets.ClientHandshakeResponse" id="904"/>
         <mapping class="asg.games.yipee.net.packets.DisconnectRequest" id="905"/>
@@ -68,7 +68,7 @@
         <mapping class="asg.games.yipee.net.packets.SeatSelectionRequest" id="915"/>
         <mapping class="asg.games.yipee.net.packets.SeatSelectionResponse" id="916"/>
         <mapping class="asg.games.yipee.net.packets.TableActionsBroadcastResponse" id="917"/>
-        <mapping class="asg.games.yipee.net.packets.TableStateBroadcastResponse" id="918"/>
+        <mapping class="asg.games.yipee.net.packets.SeatStateUpdateResponse" id="918"/>
         <mapping class="asg.games.yipee.net.packets.TableStateUpdateRequest" id="919"/>
 
         <mapping class="asg.games.yipee.libgdx.game.YipeeGameBoardGDX" id="2010"/>

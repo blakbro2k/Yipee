@@ -18,7 +18,6 @@ package asg.games.yipee.net;
 import asg.games.yipee.common.dto.NetYipeePlayer;
 import asg.games.yipee.common.dto.NetYipeeTable;
 import asg.games.yipee.common.enums.ACCESS_TYPE;
-import asg.games.yipee.common.enums.TableUpdateType;
 import asg.games.yipee.common.game.PlayerAction;
 import asg.games.yipee.net.packets.AbstractClientRequest;
 import asg.games.yipee.net.packets.AbstractServerResponse;
@@ -34,7 +33,7 @@ import asg.games.yipee.net.packets.PlayerActionRequest;
 import asg.games.yipee.net.packets.PlayerActionResponse;
 import asg.games.yipee.net.packets.SeatSelectionRequest;
 import asg.games.yipee.net.packets.SeatSelectionResponse;
-import asg.games.yipee.net.packets.TableStateBroadcastResponse;
+import asg.games.yipee.net.packets.SeatStateUpdateResponse;
 import asg.games.yipee.net.packets.TableStateUpdateRequest;
 import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
@@ -148,14 +147,12 @@ public class TestYipeeNetworkObjects {
             TableStateUpdateRequest c = (TableStateUpdateRequest) copy;
             Assertions.assertAll("TableStateUpdateRequest",
                 () -> Assertions.assertEquals(o.getTableId(), c.getTableId(), "TableId mismatch"),
-                () -> Assertions.assertEquals(o.getRequestedBy(), c.getRequestedBy(), "RequestedBy mismatch"),
-                () -> Assertions.assertEquals(o.getPartialTableUpdate(), c.getPartialTableUpdate(), "PartialTableUpdate mismatch"),
-                () -> Assertions.assertEquals(o.getUpdateType(), c.getUpdateType(), "Update Type mismatch")
+                () -> Assertions.assertEquals(o.getRequestedById(), c.getRequestedById(), "RequestedById mismatch")
             );
-        } else if (original instanceof TableStateBroadcastResponse) {
-            TableStateBroadcastResponse o = (TableStateBroadcastResponse) original;
-            TableStateBroadcastResponse c = (TableStateBroadcastResponse) copy;
-            Assertions.assertAll("TableStateBroadcastResponse",
+        } else if (original instanceof SeatStateUpdateResponse) {
+            SeatStateUpdateResponse o = (SeatStateUpdateResponse) original;
+            SeatStateUpdateResponse c = (SeatStateUpdateResponse) copy;
+            Assertions.assertAll("SeatStateUpdateResponse",
                 () -> Assertions.assertEquals(o.getStates(), c.getStates(), "States mismatch")
                 //() -> Assertions.assertEquals(o.getUpdateType(), c.getUpdateType(), "Update Type mismatch")
             );
@@ -293,8 +290,8 @@ public class TestYipeeNetworkObjects {
         return request;
     }
 
-    public static TableStateBroadcastResponse getTableStateBroadcastResponseObject() {
-        TableStateBroadcastResponse obj = new TableStateBroadcastResponse();
+    public static SeatStateUpdateResponse getTableStateBroadcastResponseObject() {
+        SeatStateUpdateResponse obj = new SeatStateUpdateResponse();
         setUpAbstractPacketResponse(obj);
         //bbj.set(table); // Replace with YipeeTableDTO test instance
         //obj.setUpdateType(TableUpdateType.PLAYER_READY);
@@ -305,9 +302,7 @@ public class TestYipeeNetworkObjects {
         TableStateUpdateRequest request = new TableStateUpdateRequest();
         setUpAbstractPacketRequest(request);
         request.setTableId(testTable.getId());
-        request.setRequestedBy(testPlayer.getId());
-        request.setPartialTableUpdate(testTable.getId());
-        request.setUpdateType(TableUpdateType.PLAYER_SEATED);
+        request.setRequestedById(testPlayer.getId());
         return request;
     }
 }
