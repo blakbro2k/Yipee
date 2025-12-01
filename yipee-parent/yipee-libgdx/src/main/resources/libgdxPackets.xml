@@ -47,7 +47,7 @@
         <mapping class="asg.games.yipee.net.packets.ClientHandshakeResponse" id="904"/>
         <mapping class="asg.games.yipee.net.packets.DisconnectRequest" id="905"/>
         <mapping class="asg.games.yipee.net.packets.DisconnectResponse" id="906"/>
-        <mapping class="asg.games.yipee.net.packets.ErrorCode" id="907"/>
+        <mapping class="asg.games.yipee.net.errors.ErrorCode" id="907"/>
         <mapping class="asg.games.yipee.net.packets.ErrorResponse" id="908"/>
         <mapping class="asg.games.yipee.net.packets.GameStartRequest" id="909"/>
         <mapping class="asg.games.yipee.net.packets.GameStartResponse" id="910"/>

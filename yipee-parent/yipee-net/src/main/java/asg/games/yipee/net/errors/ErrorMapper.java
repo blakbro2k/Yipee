@@ -1,7 +1,5 @@
 package asg.games.yipee.net.errors;
 
-import asg.games.yipee.net.packets.ErrorCode;
-
 public class ErrorMapper {
     private ErrorMapper() {
     }

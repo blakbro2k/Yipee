@@ -80,7 +80,7 @@ public class AbstractServerResponse implements YipeeSerializable {
      * <p>Clients use this to align prediction, rollback, or interpolation logic
      * with the server's deterministic game loop.
      */
-    private int serverTick;
+    private long serverTick;
 
     /**
      * Local system time (server-side) in milliseconds when the response was sent.

@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.net.packets;
+package asg.games.yipee.net.errors;
+
+import asg.games.yipee.net.packets.ErrorResponse;
 
 /**
  * Standardized error codes returned by the server in {@link ErrorResponse}

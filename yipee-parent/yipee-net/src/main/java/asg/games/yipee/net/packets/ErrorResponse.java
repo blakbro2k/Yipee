@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.net.packets;
 
+import asg.games.yipee.net.errors.ErrorCode;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

@@ -95,7 +95,7 @@ public abstract class AbstractClientRequest implements YipeeSerializable {
      * client's predicted state and to support features like reconciliation,
      * rollback, or latency-compensated input handling.
      */
-    private int clientTick;
+    private long clientTick;
 
     /**
      * Local system time in milliseconds (typically {@code System.currentTimeMillis()})
