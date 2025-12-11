@@ -74,7 +74,7 @@ public class Util {
                 }
                 return num;
             } else if (size == 0) {
-                return 0;
+                return 1;
             }
         }
         return tableIndex;
