@@ -20,6 +20,7 @@ import asg.games.yipee.common.enums.Copyable;
 import asg.games.yipee.common.enums.Disposable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
@@ -28,6 +29,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -48,7 +50,10 @@ import org.slf4j.LoggerFactory;
 @Setter
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@Table(name = "YT_SEATS")
+@Table(
+    name = "YT_SEATS",
+    uniqueConstraints = @UniqueConstraint(columnNames = {"table_id", "seat_number"})
+)
 @JsonIgnoreProperties({"occupied"})
 public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat>, Disposable, NetYipeeSeat {
     @Transient
@@ -63,6 +68,7 @@ public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat
     @JoinColumn(name = "seated_player_id")
     private YipeePlayer seatedPlayer;
 
+    @Column(name="seat_number")
     private int seatNumber;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -113,9 +119,9 @@ public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat
      * @return
      */
     public String getParentTableId() {
-        String id = "_null_";
+        String id = "_null";
         if (getParentTable() != null) {
-            id = getParentTable().getId();
+            id = getParentTable().getTableNumber() + "_tbl";
         }
         return id;
     }
