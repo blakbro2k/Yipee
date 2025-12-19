@@ -85,9 +85,18 @@ public class PacketRegistrar {
     }
 
     /**
-     * Reloads the configuration from a classpath InputStream.
+     * Reloads the packet registration configuration from the provided
+     * classpath {@link InputStream}.
+     * <p>
+     * This method fully resets the current registrar state and rebuilds all
+     * packet mappings based on the contents of the supplied {@code packets.xml}.
+     * It should be invoked during application startup or controlled reload
+     * scenarios only.
      *
-     * @throws IOException                  if an IO error occurs.
+     * @param inputStream input stream pointing to a valid {@code packets.xml}
+     *                    resource on the classpath
+     * @throws IOException if the stream is {@code null}, cannot be read,
+     *                     or does not contain a valid packet configuration
      */
     public static void reloadConfigurationFromStream(InputStream inputStream) throws IOException {
         try {
@@ -101,9 +110,10 @@ public class PacketRegistrar {
             logger.info("PacketRegistrar initialized from {} explicit mappings.", explicitClassIds.size());
             logger.trace(dumpRegisteredPackets());
         } catch (Exception e) {
-            throw new IOException("Error loading a valid packets.xml from InputStream.");
+            throw new IOException("Error loading a valid packets.xml from InputStream.", e);
         }
     }
+
 
     /**
      * Loads explicit class-ID mappings from the XML configuration.

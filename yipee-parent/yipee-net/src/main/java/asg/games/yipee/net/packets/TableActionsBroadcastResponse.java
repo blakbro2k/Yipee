@@ -22,19 +22,35 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-
+/**
+ * Server broadcast sent to all subscribed clients when one or more
+ * player actions have been processed for a table.
+ * <p>
+ * This response represents the authoritative action sequence accepted
+ * by the server. Clients should apply these actions in order to
+ * advance their local simulation and resolve any prediction or
+ * synchronization discrepancies.
+ * <p>
+ * This message is broadcast-only and is not sent as a direct response
+ * to a specific client request.
+ */
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class TableActionsBroadcastResponse extends AbstractServerResponse {
+
     /**
-     * The identifier of the table to be updated.
+     * Identifier of the table whose actions are being broadcast.
      */
     private String tableId;
 
     /**
-     * The updated authoritative table state after the server processed changes.
-     * Clients should use this to synchronize their local table view.
+     * Ordered list of authoritative {@link PlayerAction} objects
+     * accepted and processed by the server.
+     * <p>
+     * Clients should apply these actions sequentially in the order
+     * provided to ensure deterministic state convergence.
      */
-    List<PlayerAction> actions;
+    private List<PlayerAction> actions;
 }
+

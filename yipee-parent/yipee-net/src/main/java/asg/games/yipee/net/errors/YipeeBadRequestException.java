@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,7 +15,32 @@
  */
 package asg.games.yipee.net.errors;
 
+/**
+ * Thrown when a client request is structurally invalid or missing
+ * required data.
+ * <p>
+ * This exception represents a malformed or incomplete request rather
+ * than an authentication, session, synchronization, or game-rule failure.
+ * It is typically raised before any game logic is executed.
+ * <p>
+ * Typical causes include:
+ * <ul>
+ *   <li>Missing required fields in a request payload</li>
+ *   <li>Invalid field values (null, out-of-range, or improperly formatted)</li>
+ *   <li>Requests that violate API contract expectations</li>
+ * </ul>
+ * <p>
+ * When propagated through the networking layer, this exception is mapped
+ * to {@link ErrorCode#BAD_REQUEST} by {@link ErrorMapper}.
+ */
 public class YipeeBadRequestException extends YipeeException {
+
+    /**
+     * Constructs a new {@code YipeeBadRequestException} with a descriptive
+     * message explaining why the request is invalid.
+     *
+     * @param msg human-readable explanation of the bad request
+     */
     public YipeeBadRequestException(String msg) {
         super(msg);
     }

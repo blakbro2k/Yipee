@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- * <p>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,7 +15,28 @@
  */
 package asg.games.yipee.net.errors;
 
+/**
+ * Thrown when a player attempts an illegal or invalid in-game action.
+ * <p>
+ * This exception represents a logical game-rule violation rather than
+ * a transport, authentication, or synchronization failure.
+ * Typical causes include:
+ * <ul>
+ *   <li>Performing an action when the game is not in a valid phase</li>
+ *   <li>Acting on a board or target the player does not control</li>
+ *   <li>Submitting an action that violates game rules or constraints</li>
+ * </ul>
+ * <p>
+ * When propagated through the networking layer, this exception is mapped
+ * to {@link ErrorCode#ILLEGAL_ACTION} by {@link ErrorMapper}.
+ */
 public class YipeeActionException extends YipeeException {
+    /**
+     * Constructs a new {@code YipeeActionException} with a descriptive message
+     * explaining why the attempted action is invalid.
+     *
+     * @param msg human-readable explanation of the illegal action
+     */
     public YipeeActionException(String msg) {
         super(msg);
     }
