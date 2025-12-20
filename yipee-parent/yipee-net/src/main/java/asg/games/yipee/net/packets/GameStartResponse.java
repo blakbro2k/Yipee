@@ -57,4 +57,9 @@ public class GameStartResponse extends AbstractServerResponse {
      * It does not mean the match is starting immediately.
      */
     private boolean accepted;
+
+    /**
+     * The table the player is attempting to join or mark ready in.
+     */
+    private String tableId;
 }
