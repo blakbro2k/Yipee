@@ -21,6 +21,12 @@ import java.util.Arrays;
  * Utility class for performing static operations on arrays and matrices.
  */
 public class StaticArrayUtils {
+    public static final int[][] EMPTY_2D_INT_ARRAY = new int[0][0];
+
+    /**
+     * Private instantiation to hide public instantiation og a utility class
+     */
+    private StaticArrayUtils(){}
 
     /**
      * Creates a deep copy of a 2D integer matrix.
@@ -29,7 +35,7 @@ public class StaticArrayUtils {
      * @return a new matrix with the same values
      */
     public static int[][] copyIntMatrix(int[][] original) {
-        if (original == null) return null;
+        if (original == null) return EMPTY_2D_INT_ARRAY;
         int[][] copy = new int[original.length][];
         for (int i = 0; i < original.length; i++) {
             copy[i] = (original[i] != null) ? Arrays.copyOf(original[i], original[i].length) : null;

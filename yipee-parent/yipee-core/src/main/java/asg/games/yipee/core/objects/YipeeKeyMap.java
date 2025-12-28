@@ -389,7 +389,7 @@ public class YipeeKeyMap implements Copyable<YipeeKeyMap>, Disposable, YipeeSeri
         try {
             return NetUtil.writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to serialize YipeeKeyMap", e);
+            throw new UnsupportedOperationException("Failed to serialize YipeeKeyMap", e);
         }
     }
 
@@ -403,7 +403,7 @@ public class YipeeKeyMap implements Copyable<YipeeKeyMap>, Disposable, YipeeSeri
         try {
             return NetUtil.readValue(json, YipeeKeyMap.class);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to deserialize YipeeKeyMap", e);
+            throw new UnsupportedOperationException("Failed to deserialize YipeeKeyMap", e);
         }
     }
 }
