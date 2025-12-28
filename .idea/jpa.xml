@@ -7,6 +7,8 @@
   <component name="PersistenceUnitSettings">
     <persistence-units>
       <persistence-unit moduleName="yipee" name="Default" />
+      <persistence-unit moduleName="yipee-core" name="Default" />
+      <persistence-unit moduleName="yipee-common" name="Default" />
     </persistence-units>
   </component>
 </project>
