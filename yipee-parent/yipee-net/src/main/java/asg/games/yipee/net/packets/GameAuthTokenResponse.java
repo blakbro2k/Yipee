@@ -89,6 +89,11 @@ public class GameAuthTokenResponse extends AbstractServerResponse {
     public String tableId;
 
     /**
+     * The index of the seat that was requested.
+     */
+    private int seatIndex;
+
+    /**
      * ISO-8601 timestamp indicating when the launch token expires.
      * <p>
      * Clients should treat this value as informational; expired tokens will
