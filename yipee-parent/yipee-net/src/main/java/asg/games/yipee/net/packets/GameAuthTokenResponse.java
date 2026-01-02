@@ -84,9 +84,16 @@ public class GameAuthTokenResponse extends AbstractServerResponse {
     public String clientId;
 
     /**
-     * Identifier of the table the player is attempting to join.
+     * Unique identifier of the table this snapshot describes.
+     *
+     * <p>Used by the client to:
+     * <ul>
+     *   <li>Verify table context and routing</li>
+     *   <li>Associate subsequent updates with the correct table</li>
+     *   <li>Detect stale or mismatched responses</li>
+     * </ul>
      */
-    public String tableId;
+    private String tableId;
 
     /**
      * The index of the seat that was requested.

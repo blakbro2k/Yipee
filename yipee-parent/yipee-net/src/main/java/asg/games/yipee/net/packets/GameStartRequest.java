@@ -39,7 +39,14 @@ public class GameStartRequest extends AbstractClientRequest {
     private boolean isReady;
 
     /**
-     * The table the player is attempting to join or mark ready in.
+     * Unique identifier of the table this snapshot describes.
+     *
+     * <p>Used by the client to:
+     * <ul>
+     *   <li>Verify table context and routing</li>
+     *   <li>Associate subsequent updates with the correct table</li>
+     *   <li>Detect stale or mismatched responses</li>
+     * </ul>
      */
     private String tableId;
 

@@ -34,8 +34,14 @@ import lombok.NoArgsConstructor;
 public class SeatSelectionRequest extends AbstractClientRequest {
 
     /**
-     * The ID of the table the player is assigned to.
-     * This is typically issued by the web layer.
+     * Unique identifier of the table this snapshot describes.
+     *
+     * <p>Used by the client to:
+     * <ul>
+     *   <li>Verify table context and routing</li>
+     *   <li>Associate subsequent updates with the correct table</li>
+     *   <li>Detect stale or mismatched responses</li>
+     * </ul>
      */
     private String tableId;
 
