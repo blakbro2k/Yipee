@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.net.packets;
 
+import asg.games.yipee.common.dto.NetYipeePlayer;
 import asg.games.yipee.common.game.GameBoardState;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -59,4 +60,12 @@ public class SeatStateUpdateResponse extends AbstractServerResponse {
      * Ignored if {@code spectator} is true.
      */
     private int seatIndex;
+
+    private boolean isOccupied;
+
+    private NetYipeePlayer player;
+
+    private String playerId;
+
+    private boolean isReady;
 }

@@ -56,6 +56,8 @@ public class TableDetailsResponse extends AbstractServerResponse {
      */
     private String tableId;
 
+    private String roomName;
+
     /**
      * Current state of all seats at the table.
      *
