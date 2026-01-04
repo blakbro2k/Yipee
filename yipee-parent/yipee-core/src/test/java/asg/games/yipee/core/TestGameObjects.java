@@ -474,8 +474,8 @@ public class TestGameObjects {
         //Test Json
         String json = NetUtil.getJsonString(yokelPlayer3);
         YipeePlayer readYokelPlayer3 = NetUtil.getObjectFromJsonString(YipeePlayer.class, json);
-        System.out.println("readYokelPlayer3: " + readYokelPlayer3.getSerializedKeyConfig());
-        System.out.println("yokelPlayer3: " + yokelPlayer3.getSerializedKeyConfig());
+        //System.out.println("readYokelPlayer3: " + readYokelPlayer3.getSerializedKeyConfig());
+        //System.out.println("yokelPlayer3: " + yokelPlayer3.getSerializedKeyConfig());
 
         System.out.println("Expected: " + NetUtil.getJsonString(readYokelPlayer3));
         System.out.println("Actual: " + NetUtil.getJsonString(yokelPlayer3));
