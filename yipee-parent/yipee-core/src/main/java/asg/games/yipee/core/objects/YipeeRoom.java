@@ -42,7 +42,6 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Represents a room in the game where players can join, interact, and play at tables.
@@ -313,12 +312,19 @@ public class YipeeRoom extends AbstractYipeeObject implements Copyable<YipeeRoom
     public YipeeRoom deepCopy() {
         YipeeRoom copy = copy();
         logger.info("Building a deep copy of table map");
+
         Map<Integer, YipeeTable> deepCopiedTableMap = new HashMap<>();
         for (Map.Entry<Integer, YipeeTable> entry : this.tableIndexMap.entrySet()) {
-            deepCopiedTableMap.put(entry.getKey(), entry.getValue().deepCopy());
+            YipeeTable tCopy = entry.getValue().deepCopy();
+            tCopy.setRoom(copy); // maintain ownership in the copy graph
+            deepCopiedTableMap.put(entry.getKey(), tCopy);
         }
         copy.setTableIndexMap(deepCopiedTableMap);
-        copy.setPlayers(players.stream().map(YipeePlayer::deepCopy).collect(Collectors.toSet())); // Assuming YipeePlayer is immutable or cloned
+
+        // players: shallow copy references, NOT deep clone
+        copy.setPlayers(new LinkedHashSet<>(this.players));
+
         return copy;
     }
+
 }

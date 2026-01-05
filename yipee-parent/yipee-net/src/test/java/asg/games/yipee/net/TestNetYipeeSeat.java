@@ -16,13 +16,12 @@
 package asg.games.yipee.net;
 
 
-import asg.games.yipee.common.dto.NetYipeeSeat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class TestNetYipeeSeat extends TestNetYipeeObject implements NetYipeeSeat {
+public class TestNetYipeeSeat extends TestNetYipeeObject {
     int seatNumber;
     boolean seatReady;
 

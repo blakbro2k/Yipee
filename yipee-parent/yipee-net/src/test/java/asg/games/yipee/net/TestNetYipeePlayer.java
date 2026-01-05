@@ -16,13 +16,12 @@
 package asg.games.yipee.net;
 
 
-import asg.games.yipee.common.dto.NetYipeePlayer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class TestNetYipeePlayer extends TestNetYipeeObject implements NetYipeePlayer {
+public class TestNetYipeePlayer extends TestNetYipeeObject {
     int rating;
     int icon;
 

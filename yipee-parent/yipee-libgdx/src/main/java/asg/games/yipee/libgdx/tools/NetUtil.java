@@ -15,8 +15,6 @@
  */
 package asg.games.yipee.libgdx.tools;
 
-import asg.games.yipee.common.dto.NetYipeePlayer;
-import asg.games.yipee.libgdx.objects.YipeePlayerGDX;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;
 
@@ -39,25 +37,5 @@ public class NetUtil {
         return json.fromJson(type, jsonString);
     }
 
-    public static YipeePlayerGDX getLibGDXNetPlayer(NetYipeePlayer netYipeePlayer) {
-        if(netYipeePlayer instanceof YipeePlayerGDX) {
-            YipeePlayerGDX player = (YipeePlayerGDX) netYipeePlayer;
-            YipeePlayerGDX retPlayer = new YipeePlayerGDX();
-            retPlayer.setId(player.getId());
-            retPlayer.setName(player.getName());
-            retPlayer.setCreated(player.getCreated());
-            retPlayer.setModified(player.getModified());
-            retPlayer.setIcon(player.getIcon());
-            retPlayer.setRating(player.getRating());
-            return retPlayer;
-        }
-        return null;
-    }
 
-    public static String getLibGDXNetPlayerName(NetYipeePlayer netYipeePlayer) {
-        if(getLibGDXNetPlayer(netYipeePlayer) != null) {
-            return getLibGDXNetPlayer(netYipeePlayer).getName();
-        }
-        return "";
-    }
 }

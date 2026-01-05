@@ -15,7 +15,6 @@
  */
 package asg.games.yipee.net.packets;
 
-import asg.games.yipee.common.dto.NetYipeeKeyMap;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -48,5 +47,5 @@ public class MappedKeyUpdateRequest extends AbstractClientRequest {
     /**
      * The full key configuration to apply, replacing the current binding.
      */
-    private NetYipeeKeyMap keyConfig;
+    //private NetYipeeKeyMap keyConfig;
 }

@@ -15,7 +15,6 @@
  */
 package asg.games.yipee.libgdx.objects;
 
-import asg.games.yipee.common.dto.NetYipeeSeat;
 import asg.games.yipee.common.enums.Copyable;
 import com.badlogic.gdx.utils.Disposable;
 import lombok.EqualsAndHashCode;
@@ -43,7 +42,7 @@ import lombok.Setter;
 @Setter
 @EqualsAndHashCode(callSuper = true)
 public class YipeeSeatGDX extends AbstractYipeeObjectGDX
-    implements Copyable<YipeeSeatGDX>, Disposable, NetYipeeSeat {
+        implements Copyable<YipeeSeatGDX>, Disposable {
 
     private static final String ATTR_SEAT_NUM_SEPARATOR = "-";
 

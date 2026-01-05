@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.common.dto;
+package asg.games.yipee.net.dto;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Network-serializable representation of a seat within a Yipee game table.
@@ -30,29 +33,12 @@ package asg.games.yipee.common.dto;
  *     <li>Server–client synchronization of ready states</li>
  * </ul>
  *
- * <p>All implementations must also implement {@link NetYipeeObject}, ensuring a consistent
  * ID-bearing contract across network transfers.
  */
-public interface NetYipeeSeat extends NetYipeeObject {
-    /**
-     * Returns the index of this seat within its table.
-     *
-     * <p>Seat numbering is zero-based and typically ranges from {@code 0} to
-     * {@code MAX_SEATS - 1}. The index determines which player positions form
-     * pairs or opposing teams within the game's table layout.
-     *
-     * @return the zero-based seat number
-     */
-    int getSeatNumber();
-
-    /**
-     * Indicates whether this seat is currently marked as "ready" for game start.
-     *
-     * <p>A seat is usually set ready when a player has confirmed they are prepared
-     * to begin the match. This flag is used by table logic such as
-     * {@code isTableStartReady()} to determine if enough players are ready.
-     *
-     * @return {@code true} if the seat is marked ready; {@code false} otherwise
-     */
-    boolean isSeatReady();
+@Data
+@NoArgsConstructor
+public class NetYipeeSeatDTO extends AbstractNetObjectDTO {
+    private String seatedPlayerId;
+    private int seatNumber;
+    private String parentTableId;
 }

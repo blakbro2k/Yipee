@@ -15,7 +15,6 @@
  */
 package asg.games.yipee.libgdx.objects;
 
-import asg.games.yipee.common.dto.NetYipeePlayer;
 import asg.games.yipee.common.enums.Copyable;
 import com.badlogic.gdx.utils.Disposable;
 import lombok.EqualsAndHashCode;
@@ -30,15 +29,13 @@ import lombok.Setter;
  * Implements {@link Disposable} to clean up input configuration when no longer needed.
  * </p>
  *
- * <p>This class is designed for use in the LibGDX client layer and interacts with
- * networked data via {@link NetYipeePlayer}.</p>
  *
  * @author Blakbro2k
  */
 @Setter
 @Getter
 @EqualsAndHashCode(callSuper = true)
-public class YipeePlayerGDX extends AbstractYipeeObjectGDX implements Copyable<YipeePlayerGDX>, Disposable, NetYipeePlayer {
+public class YipeePlayerGDX extends AbstractYipeeObjectGDX implements Copyable<YipeePlayerGDX>, Disposable {
     /**
      * Default player rating value (Elo-style)
      */

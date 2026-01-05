@@ -15,7 +15,7 @@
  */
 package asg.games.yipee.net.packets;
 
-import asg.games.yipee.common.dto.NetYipeePlayer;
+import asg.games.yipee.net.dto.NetYipeePlayerDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -72,5 +72,5 @@ public class TableDetailsResponse extends AbstractServerResponse {
      * <p>Watchers may receive table updates but are not allowed to
      * participate in gameplay actions.</p>
      */
-    public List<NetYipeePlayer> watchers;
+    public List<NetYipeePlayerDTO> watchers;
 }

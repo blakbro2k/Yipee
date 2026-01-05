@@ -15,8 +15,6 @@
  */
 package asg.games.yipee.net;
 
-import asg.games.yipee.common.dto.NetYipeePlayer;
-import asg.games.yipee.common.dto.NetYipeeTable;
 import asg.games.yipee.common.enums.ACCESS_TYPE;
 import lombok.AccessLevel;
 import lombok.Data;

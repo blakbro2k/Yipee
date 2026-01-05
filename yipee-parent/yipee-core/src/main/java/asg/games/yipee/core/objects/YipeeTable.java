@@ -15,7 +15,6 @@
  */
 package asg.games.yipee.core.objects;
 
-import asg.games.yipee.common.dto.NetYipeeTable;
 import asg.games.yipee.common.enums.ACCESS_TYPE;
 import asg.games.yipee.common.enums.Copyable;
 import asg.games.yipee.common.enums.Disposable;
@@ -64,7 +63,7 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_TABLES")
 @JsonIgnoreProperties({"tableStartReady", "upArguments", "tableName", "roomId"})
-public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTable>, Disposable, NetYipeeTable<YipeeSeat, YipeePlayer> {
+public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTable>, Disposable {
     private static final Logger logger = LoggerFactory.getLogger(YipeeTable.class);
 
     @JsonIgnore
@@ -266,12 +265,10 @@ public class YipeeTable extends AbstractYipeeObject implements Copyable<YipeeTab
         this.accessType = accessType;
     }
 
-    @Override
     public void setWatchers(Iterable<YipeePlayer> watchers) {
         this.watchers = Util.iterableToSet(watchers);
     }
 
-    @Override
     public void setSeats(Iterable<YipeeSeat> seats) {
         this.seats = Util.iterableToSet(seats);
     }

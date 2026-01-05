@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.common.dto;
+package asg.games.yipee.net.dto;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Marker interface for a network-serializable Yipee player object.
@@ -27,33 +30,10 @@ package asg.games.yipee.common.dto;
  * objects such as {@code NetYipeeKeyMap} are intentionally not exposed here and should be
  * synchronized via explicit configuration update requests/responses.
  */
-public interface NetYipeePlayer extends NetYipeeObject {
-
-    /**
-     * Returns the current rating of this player (e.g., for matchmaking or table sorting).
-     *
-     * @return the player rating value
-     */
-    int getRating();
-
-    /**
-     * Sets the current rating of this player.
-     *
-     * @param rating the rating value to assign
-     */
-    void setRating(int rating);
-
-    /**
-     * Returns the icon identifier associated with this player.
-     *
-     * @return the icon ID
-     */
-    int getIcon();
-
-    /**
-     * Sets the icon identifier associated with this player.
-     *
-     * @param icon the icon ID to assign
-     */
-    void setIcon(int icon);
+@Data
+@NoArgsConstructor
+public class NetYipeePlayerDTO extends AbstractNetObjectDTO {
+    private int rating;
+    private int icon;
+    private int roomsCount;
 }

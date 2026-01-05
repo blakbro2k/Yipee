@@ -15,7 +15,6 @@
  */
 package asg.games.yipee.core.objects;
 
-import asg.games.yipee.common.dto.NetYipeeSeat;
 import asg.games.yipee.common.enums.Copyable;
 import asg.games.yipee.common.enums.Disposable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -55,7 +54,7 @@ import org.slf4j.LoggerFactory;
     uniqueConstraints = @UniqueConstraint(columnNames = {"table_id", "seat_number"})
 )
 @JsonIgnoreProperties({"occupied"})
-public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat>, Disposable, NetYipeeSeat {
+public class YipeeSeat extends AbstractYipeeObject implements Copyable<YipeeSeat>, Disposable {
     @Transient
     private static final Logger logger = LoggerFactory.getLogger(YipeeSeat.class);
 

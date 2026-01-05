@@ -15,7 +15,6 @@
  */
 package asg.games.yipee.core.objects;
 
-import asg.games.yipee.common.dto.NetYipeePlayer;
 import asg.games.yipee.common.enums.Copyable;
 import asg.games.yipee.common.enums.Disposable;
 import asg.games.yipee.core.persistence.Updatable;
@@ -51,7 +50,7 @@ import java.util.Set;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_PLAYERS")
-public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePlayer>, Updatable<YipeePlayer>, Disposable, NetYipeePlayer {
+public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePlayer>, Updatable<YipeePlayer>, Disposable {
     private static final Logger logger = LoggerFactory.getLogger(YipeePlayer.class);
 
     @JsonIgnore

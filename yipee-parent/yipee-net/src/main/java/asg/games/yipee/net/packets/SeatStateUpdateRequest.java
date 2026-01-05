@@ -16,7 +16,6 @@
 package asg.games.yipee.net.packets;
 
 
-import asg.games.yipee.common.dto.NetYipeeTable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -24,8 +23,6 @@ import lombok.NoArgsConstructor;
 /**
  * Sent by a client (usually the table owner) to request an update to a table's state.
  * <p>
- * This packet allows the client to propose changes to table settings, player slots,
- * or other mutable fields within the {@link NetYipeeTable} structure.
  *
  * <p>The server will:</p>
  * <ul>

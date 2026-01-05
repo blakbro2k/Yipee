@@ -15,11 +15,10 @@
  */
 package asg.games.yipee.net;
 
-import asg.games.yipee.common.dto.NetYipeeObject;
 import lombok.Data;
 
 @Data
-public class TestNetYipeeObject implements NetYipeeObject {
+public class TestNetYipeeObject {
     String id;
     String name;
     long created;

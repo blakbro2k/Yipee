@@ -16,7 +16,6 @@
 package asg.games.yipee.core.objects;
 
 
-import asg.games.yipee.common.dto.NetYipeeKeyMap;
 import asg.games.yipee.common.enums.Copyable;
 import asg.games.yipee.common.enums.Disposable;
 import asg.games.yipee.common.enums.YipeeSerializable;
@@ -46,7 +45,7 @@ import java.util.Optional;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class YipeeKeyMap implements Copyable<YipeeKeyMap>, Disposable, YipeeSerializable, NetYipeeKeyMap {
+public class YipeeKeyMap implements Copyable<YipeeKeyMap>, Disposable, YipeeSerializable {
 
     /**
      * Internal mapping from actions to keycodes.

@@ -19,7 +19,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-
 /**
  * Sent by the client when a player clicks "Join" and toggles their ready state
  * before the game begins. The server uses this to determine whether all players

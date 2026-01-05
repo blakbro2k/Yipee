@@ -15,7 +15,6 @@
  */
 package asg.games.yipee.libgdx.objects;
 
-import asg.games.yipee.common.dto.NetYipeeTable;
 import asg.games.yipee.common.enums.ACCESS_TYPE;
 import asg.games.yipee.common.enums.Copyable;
 import asg.games.yipee.libgdx.tools.LibGDXUtil;
@@ -51,7 +50,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<YipeeTableGDX>, Disposable, NetYipeeTable<YipeeSeatGDX, YipeePlayerGDX> {
+public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<YipeeTableGDX>, Disposable {
     public static final String ARG_TYPE = "type";
     public static final String ARG_RATED = "rated";
     public static final String ARG_SOUND = "sound";
@@ -172,12 +171,10 @@ public class YipeeTableGDX extends AbstractYipeeObjectGDX implements Copyable<Yi
         this.accessType = accessType;
     }
 
-    @Override
     public void setWatchers(Iterable<YipeePlayerGDX> watchers) {
         this.watchers = GdxSets.newSet(watchers);
     }
 
-    @Override
     public void setSeats(Iterable<YipeeSeatGDX> seats) {
         this.seats = GdxSets.newSet(seats);
     }
