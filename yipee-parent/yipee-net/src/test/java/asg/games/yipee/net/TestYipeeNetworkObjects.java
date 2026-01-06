@@ -40,8 +40,8 @@ import org.testng.TestException;
 
 public class TestYipeeNetworkObjects {
     private static final Logger logger = LoggerFactory.getLogger(TestYipeeNetworkObjects.class);
-    static YipeePlayer testPlayer = new TestNetYipeePlayer("TestPlayer", 1500, 1);
-    static YipeeTable testTable = new TestNetYipeeTable(1);
+    static TestNetYipeePlayer testPlayer = new TestNetYipeePlayer("TestPlayer", 1500, 1);
+    static TestNetYipeeTable testTable = new TestNetYipeeTable(1);
 
     static {
         testPlayer.setId("00000002");

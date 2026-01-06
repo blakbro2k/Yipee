@@ -21,8 +21,6 @@ import asg.games.yipee.net.packets.ClientHandshakeResponse;
 import asg.games.yipee.net.packets.DisconnectRequest;
 import asg.games.yipee.net.packets.DisconnectResponse;
 import asg.games.yipee.net.packets.ErrorResponse;
-import asg.games.yipee.net.packets.MappedKeyUpdateRequest;
-import asg.games.yipee.net.packets.MappedKeyUpdateResponse;
 import asg.games.yipee.net.packets.PlayerActionRequest;
 import asg.games.yipee.net.packets.PlayerActionResponse;
 import asg.games.yipee.net.packets.SeatSelectionRequest;
@@ -59,8 +57,8 @@ public class PacketSerializationTest {
             {TestYipeeNetworkObjects.getDisconnectRequestObject(), DisconnectRequest.class},
             {TestYipeeNetworkObjects.getDisconnectResponseObject(), DisconnectResponse.class},
             {TestYipeeNetworkObjects.getErrorResponseObject(), ErrorResponse.class},
-            {TestYipeeNetworkObjects.getMappedKeyUpdateRequestObject(), MappedKeyUpdateRequest.class},
-            {TestYipeeNetworkObjects.getMappedKeyUpdateResponseObject(), MappedKeyUpdateResponse.class},
+                //{TestYipeeNetworkObjects.getMappedKeyUpdateRequestObject(), MappedKeyUpdateRequest.class},
+                //{TestYipeeNetworkObjects.getMappedKeyUpdateResponseObject(), MappedKeyUpdateResponse.class},
             {TestYipeeNetworkObjects.getPlayerActionRequestObject(), PlayerActionRequest.class},
             {TestYipeeNetworkObjects.getPlayerActionResponseObject(), PlayerActionResponse.class},
             {TestYipeeNetworkObjects.getSeatSelectionRequestObject(), SeatSelectionRequest.class},

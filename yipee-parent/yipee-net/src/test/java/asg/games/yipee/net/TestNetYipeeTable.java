@@ -26,13 +26,13 @@ import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class TestNetYipeeTable extends TestNetYipeeObject implements NetYipeeTable<TestNetYipeeSeat, NetYipeePlayer> {
+public class TestNetYipeeTable extends TestNetYipeeObject {
     ACCESS_TYPE accessType;
     boolean rated;
     boolean soundOn;
     int tableNumber;
     @Setter(AccessLevel.NONE) // don't let Lombok generate setSeats
-    Set<NetYipeePlayer> watchers = new LinkedHashSet<>();
+    Set<TestNetYipeePlayer> watchers = new LinkedHashSet<>();
     @Setter(AccessLevel.NONE) // don't let Lombok generate setSeats
     Set<TestNetYipeeSeat> seats = new LinkedHashSet<>();
 
@@ -43,17 +43,15 @@ public class TestNetYipeeTable extends TestNetYipeeObject implements NetYipeeTab
         setTableNumber(tableNumber);
     }
 
-    @Override
-    public void setWatchers(Iterable<NetYipeePlayer> watchers) {
-        Set<NetYipeePlayer> hashSets = new LinkedHashSet<>();
+    public void setWatchers(Iterable<TestNetYipeePlayer> watchers) {
+        Set<TestNetYipeePlayer> hashSets = new LinkedHashSet<>();
 
-        for (NetYipeePlayer o : watchers) {
+        for (TestNetYipeePlayer o : watchers) {
             hashSets.add(o);
         }
         this.watchers = hashSets;
     }
 
-    @Override
     public void setSeats(Iterable<TestNetYipeeSeat> seats) {
         Set<TestNetYipeeSeat> hashSets = new LinkedHashSet<>();
 

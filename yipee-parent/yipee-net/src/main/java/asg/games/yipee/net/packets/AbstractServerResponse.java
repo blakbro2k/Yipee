@@ -46,7 +46,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = false, exclude = {"serverTimestamp"})
+@EqualsAndHashCode(callSuper = false)
 public class AbstractServerResponse implements YipeeSerializable {
 
     /**
