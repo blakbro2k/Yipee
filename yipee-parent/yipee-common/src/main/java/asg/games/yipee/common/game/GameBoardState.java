@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -338,14 +338,14 @@ public interface GameBoardState {
      *
      * @return implementation-defined broken cell data
      */
-    Object getBrokenCells();
+    Iterable<BrokenBlock> getBrokenCells();
 
     /**
      * Sets the broken cell data.
      *
      * @param brokenCells implementation-defined representation of broken cells
      */
-    void setBrokenCells(Object brokenCells);
+    void setBrokenCells(Iterable<BrokenBlock> brokenCells);
 
     /**
      * Returns the current list of special pieces affecting gameplay.
@@ -420,9 +420,16 @@ public interface GameBoardState {
     /**
      * Returns the list of cells that are currently in a dropping animation or transition.
      *
-     * @return iterable of cell descriptors
+     * @return iterable of block move descriptors
      */
-    Iterable<Object> getCellsToDrop();
+    Iterable<BlockMove> getCellsToDrop();
+
+    /**
+     * Sets the list of cells that are currently in a dropping animation or transition.
+     *
+     * @param cellsToDrop iterable of block move descriptors
+     */
+    void setCellsToDrop(Iterable<BlockMove> cellsToDrop);
 
     /**
      * Returns the partner board’s cell matrix.

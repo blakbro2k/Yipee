@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,8 @@
  */
 package asg.games.yipee.libgdx.game;
 
+import asg.games.yipee.common.game.BlockMove;
+import asg.games.yipee.common.game.BrokenBlock;
 import asg.games.yipee.common.game.CommonRandomNumberArray;
 import asg.games.yipee.common.game.GameBoardState;
 import asg.games.yipee.common.game.GamePhase;
@@ -118,8 +120,8 @@ public class YipeeGameBoardGDX implements Disposable {
     @Getter
     private Queue<Integer> powers = LibGDXUtil.newQueue();
     private Queue<Integer> specialPieces = LibGDXUtil.newQueue();
-    Queue<YipeeBrokenBlockGDX> brokenCells = LibGDXUtil.newQueue();
-    Array<YipeeBlockMoveGDX> cellsToDrop = GdxArrays.newArray();
+    Queue<BrokenBlock> brokenCells = LibGDXUtil.newQueue();
+    Array<BlockMove> cellsToDrop = GdxArrays.newArray();
     private int boardNumber = -1;
 
     private int yahooDuration = 0;
@@ -166,7 +168,7 @@ public class YipeeGameBoardGDX implements Disposable {
             setYahooDuration(state.getYahooDuration());
             setPartnerRight(state.isPartnerRight());
             setPowers(LibGDXUtil.iterableToQueue(state.getPowers()));
-            //setBrokenCells(state.getBrokenCells());
+            setBrokenCells(LibGDXUtil.iterableToQueue(state.getBrokenCells()));
             setSpecialPieces(LibGDXUtil.iterableToQueue(state.getSpecialPieces()));
             setHasGameStarted(state.isHasGameStarted());
             setBoardNumber(state.getBoardNumber());
@@ -204,7 +206,8 @@ public class YipeeGameBoardGDX implements Disposable {
         state.setYahooDuration(yahooDuration);
         state.setPartnerRight(isPartnerRight);
         state.setPowers(powers);
-        state.setBrokenCells(brokenCells);
+        state.setBrokenCells(LibGDXUtil.iterableToQueue(brokenCells));
+        state.setCellsToDrop(LibGDXUtil.iterableToQueue(cellsToDrop));
         state.setSpecialPieces(specialPieces);
         state.setHasGameStarted(hasGameStarted);
         state.setBoardNumber(boardNumber);
@@ -1776,7 +1779,7 @@ public class YipeeGameBoardGDX implements Disposable {
             case COLLAPSING:
                 blockAnimationTimer -= delta;
                 if (blockAnimationTimer <= 0) {
-                    for (YipeeBlockMoveGDX move : LibGDXUtil.safeIterable(cellsToDrop)) {
+                    for (BlockMove move : LibGDXUtil.safeIterable(cellsToDrop)) {
                         setCell(move.getTargetRow(), move.getCol(), move.getCellId());
                     }
                     cellsToDrop.clear();

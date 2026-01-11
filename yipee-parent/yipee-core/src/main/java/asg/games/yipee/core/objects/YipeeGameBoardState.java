@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,8 @@
 package asg.games.yipee.core.objects;
 
 import asg.games.yipee.common.enums.Copyable;
+import asg.games.yipee.common.game.BlockMove;
+import asg.games.yipee.common.game.BrokenBlock;
 import asg.games.yipee.common.game.CommonRandomNumberArray;
 import asg.games.yipee.common.game.GameBoardState;
 import asg.games.yipee.common.game.GamePhase;
@@ -24,6 +26,7 @@ import asg.games.yipee.core.game.YipeeBlockEval;
 import asg.games.yipee.core.game.YipeeGameBoard;
 import asg.games.yipee.core.tools.Util;
 import asg.games.yipee.core.tools.YipeePrinter;
+import asg.games.yipee.net.errors.YipeeException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -104,12 +107,12 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
     /**
      * Blocks that have just broken and are waiting for animation.
      */
-    private Queue<YipeeBrokenBlock> brokenCells = new LinkedList<>();
+    private Queue<BrokenBlock> brokenCells = new LinkedList<>();
 
     /**
      * List of blocks that need to fall downward due to breaks.
      */
-    private Queue<YipeeBlockMove> cellsToDrop = new LinkedList<>();
+    private Queue<BlockMove> cellsToDrop = new LinkedList<>();
 
     /**
      * Queued power-up or attack actions available to the player.
@@ -198,9 +201,6 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
      */
     private boolean hasGameStarted;
 
-    /** Debugging name or identifier for the board. */
-    private String name;
-
     /**
      * The current tick count from the server.
      */
@@ -222,8 +222,13 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
     }
 
     @Override
-    public void setBrokenCells(Object brokenCells) {
+    public void setBrokenCells(Iterable<BrokenBlock> brokenCells) {
+        this.brokenCells = Util.iterableToLinkeListQueue(brokenCells);
+    }
 
+    @Override
+    public void setCellsToDrop(Iterable<BlockMove> cellsToDrop) {
+        this.cellsToDrop = Util.iterableToLinkeListQueue(cellsToDrop);
     }
 
     @Override
@@ -231,17 +236,17 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
         this.specialPieces = Util.iterableToLinkeListQueue(specialPieces);
     }
 
-    public Iterable<Object> getCellsToDrop() {
-        return null;
+    public Iterable<BlockMove> getCellsToDrop() {
+        return Util.iterableToLinkeListQueue(cellsToDrop);
     }
 
-
     // Print State
+    @Override
     public String toString() {
         try {
             return YipeePrinter.getYipeeBoardStateString(this);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new YipeeException("Error converting YipeeGameBoardState toString", e);
         }
     }
 
@@ -293,20 +298,6 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
 
         copy.playerCells = StaticArrayUtils.copyIntMatrix(this.playerCells);
         copy.partnerCells = StaticArrayUtils.copyIntMatrix(this.partnerCells);
-
-        Queue<YipeeBrokenBlock> nuBrokenCells = new LinkedList<>();
-        for(YipeeBrokenBlock brokenCell : Util.safeIterable(this.brokenCells)) {
-            YipeeBrokenBlock nuBrokenBlock = new YipeeBrokenBlock(brokenCell.getBlock(), brokenCell.getRow(), brokenCell.getCol());
-            nuBrokenCells.add(nuBrokenBlock);
-        }
-        copy.brokenCells = nuBrokenCells;
-
-        Queue<YipeeBlockMove> nuCellsToDrop = new LinkedList<>();
-        for(YipeeBlockMove cellToDrop : Util.safeIterable(this.cellsToDrop)) {
-            YipeeBlockMove nuCellToDrop = new YipeeBlockMove(cellToDrop.getCellId(), cellToDrop.getBlock(), cellToDrop.getCol(), cellToDrop.getRow(), cellToDrop.getTargetRow());
-            nuCellsToDrop.add(nuCellToDrop);
-        }
-        copy.cellsToDrop = nuCellsToDrop;
 
         // queues of primitives don't need deep copy
         copy.powers = (this.powers != null) ? new LinkedList<>(this.powers) : null;

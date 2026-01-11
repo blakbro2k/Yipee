@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,8 +15,6 @@
  */
 package asg.games.yipee.net;
 
-import asg.games.yipee.common.dto.NetYipeePlayer;
-import asg.games.yipee.common.dto.NetYipeeTable;
 import asg.games.yipee.common.enums.ACCESS_TYPE;
 import asg.games.yipee.common.game.PlayerAction;
 import asg.games.yipee.net.errors.ErrorCode;
@@ -42,8 +40,8 @@ import org.testng.TestException;
 
 public class TestYipeeNetworkObjects {
     private static final Logger logger = LoggerFactory.getLogger(TestYipeeNetworkObjects.class);
-    static NetYipeePlayer testPlayer = new TestNetYipeePlayer("TestPlayer", 1500, 1);
-    static NetYipeeTable testTable = new TestNetYipeeTable(1);
+    static TestNetYipeePlayer testPlayer = new TestNetYipeePlayer("TestPlayer", 1500, 1);
+    static TestNetYipeeTable testTable = new TestNetYipeeTable(1);
 
     static {
         testPlayer.setId("00000002");
@@ -114,19 +112,6 @@ public class TestYipeeNetworkObjects {
             Assertions.assertAll("ErrorResponse",
                 () -> Assertions.assertEquals(o.getCode(), c.getCode(), "Error code mismatch"),
                 () -> Assertions.assertEquals(o.getDetails(), c.getDetails(), "Error details mismatch")
-            );
-        } else if (original instanceof MappedKeyUpdateRequest) {
-            MappedKeyUpdateRequest o = (MappedKeyUpdateRequest) original;
-            MappedKeyUpdateRequest c = (MappedKeyUpdateRequest) copy;
-            Assertions.assertAll("MappedKeyUpdateRequest",
-                () -> Assertions.assertEquals(o.getKeyConfig(), c.getKeyConfig(), "KeyConfig mismatch")
-            );
-        } else if (original instanceof MappedKeyUpdateResponse) {
-            MappedKeyUpdateResponse o = (MappedKeyUpdateResponse) original;
-            MappedKeyUpdateResponse c = (MappedKeyUpdateResponse) copy;
-            Assertions.assertAll("MappedKeyUpdateResponse",
-                () -> Assertions.assertEquals(o.isAccepted(), c.isAccepted(), "Acceptance mismatch"),
-                () -> Assertions.assertEquals(o.getMessage(), c.getMessage(), "Message mismatch")
             );
         } else if (original instanceof PlayerActionRequest) {
             PlayerActionRequest o = (PlayerActionRequest) original;

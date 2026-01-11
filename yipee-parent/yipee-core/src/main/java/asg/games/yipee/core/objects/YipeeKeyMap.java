@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,6 @@
 package asg.games.yipee.core.objects;
 
 
-import asg.games.yipee.common.dto.NetYipeeKeyMap;
 import asg.games.yipee.common.enums.Copyable;
 import asg.games.yipee.common.enums.Disposable;
 import asg.games.yipee.common.enums.YipeeSerializable;
@@ -46,7 +45,7 @@ import java.util.Optional;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class YipeeKeyMap implements Copyable<YipeeKeyMap>, Disposable, YipeeSerializable, NetYipeeKeyMap {
+public class YipeeKeyMap implements Copyable<YipeeKeyMap>, Disposable, YipeeSerializable {
 
     /**
      * Internal mapping from actions to keycodes.
@@ -389,7 +388,7 @@ public class YipeeKeyMap implements Copyable<YipeeKeyMap>, Disposable, YipeeSeri
         try {
             return NetUtil.writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to serialize YipeeKeyMap", e);
+            throw new UnsupportedOperationException("Failed to serialize YipeeKeyMap", e);
         }
     }
 
@@ -403,7 +402,7 @@ public class YipeeKeyMap implements Copyable<YipeeKeyMap>, Disposable, YipeeSeri
         try {
             return NetUtil.readValue(json, YipeeKeyMap.class);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to deserialize YipeeKeyMap", e);
+            throw new UnsupportedOperationException("Failed to deserialize YipeeKeyMap", e);
         }
     }
 }

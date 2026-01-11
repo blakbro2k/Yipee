@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,6 @@
 package asg.games.yipee.net.packets;
 
 
-import asg.games.yipee.common.dto.NetYipeeTable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -24,8 +23,6 @@ import lombok.NoArgsConstructor;
 /**
  * Sent by a client (usually the table owner) to request an update to a table's state.
  * <p>
- * This packet allows the client to propose changes to table settings, player slots,
- * or other mutable fields within the {@link NetYipeeTable} structure.
  *
  * <p>The server will:</p>
  * <ul>
@@ -42,7 +39,14 @@ import lombok.NoArgsConstructor;
 public class TableStateUpdateRequest extends AbstractClientRequest {
 
     /**
-     * The identifier of the table to be updated.
+     * Unique identifier of the table this snapshot describes.
+     *
+     * <p>Used by the client to:
+     * <ul>
+     *   <li>Verify table context and routing</li>
+     *   <li>Associate subsequent updates with the correct table</li>
+     *   <li>Detect stale or mismatched responses</li>
+     * </ul>
      */
     private String tableId;
 
