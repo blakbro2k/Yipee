@@ -16,7 +16,8 @@
 package asg.games.yipee.core.objects;
 
 import asg.games.yipee.common.enums.Copyable;
-import asg.games.yipee.common.enums.YipeeObject;
+import asg.games.yipee.common.game.BlockMove;
+import asg.games.yipee.common.game.BrokenBlock;
 import asg.games.yipee.common.game.CommonRandomNumberArray;
 import asg.games.yipee.common.game.GameBoardState;
 import asg.games.yipee.common.game.GamePhase;
@@ -106,12 +107,12 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
     /**
      * Blocks that have just broken and are waiting for animation.
      */
-    private Queue<YipeeBrokenBlock> brokenCells = new LinkedList<>();
+    private Queue<BrokenBlock> brokenCells = new LinkedList<>();
 
     /**
      * List of blocks that need to fall downward due to breaks.
      */
-    private Queue<YipeeBlockMove> cellsToDrop = new LinkedList<>();
+    private Queue<BlockMove> cellsToDrop = new LinkedList<>();
 
     /**
      * Queued power-up or attack actions available to the player.
@@ -221,8 +222,13 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
     }
 
     @Override
-    public <T> void setBrokenCells(Iterable<YipeeObject> brokenCells) {
-        this.brokenCells = brokenCells;
+    public void setBrokenCells(Iterable<BrokenBlock> brokenCells) {
+        this.brokenCells = Util.iterableToLinkeListQueue(brokenCells);
+    }
+
+    @Override
+    public void setCellsToDrop(Iterable<BlockMove> cellsToDrop) {
+        this.cellsToDrop = Util.iterableToLinkeListQueue(cellsToDrop);
     }
 
     @Override
@@ -230,10 +236,9 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
         this.specialPieces = Util.iterableToLinkeListQueue(specialPieces);
     }
 
-    public Iterable<Object> getCellsToDrop() {
-        return null;
+    public Iterable<BlockMove> getCellsToDrop() {
+        return Util.iterableToLinkeListQueue(cellsToDrop);
     }
-
 
     // Print State
     @Override
@@ -293,20 +298,6 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
 
         copy.playerCells = StaticArrayUtils.copyIntMatrix(this.playerCells);
         copy.partnerCells = StaticArrayUtils.copyIntMatrix(this.partnerCells);
-
-        Queue<YipeeBrokenBlock> nuBrokenCells = new LinkedList<>();
-        for(YipeeBrokenBlock brokenCell : Util.safeIterable(this.brokenCells)) {
-            YipeeBrokenBlock nuBrokenBlock = new YipeeBrokenBlock(brokenCell.getBlock(), brokenCell.getRow(), brokenCell.getCol());
-            nuBrokenCells.add(nuBrokenBlock);
-        }
-        copy.brokenCells = nuBrokenCells;
-
-        Queue<YipeeBlockMove> nuCellsToDrop = new LinkedList<>();
-        for(YipeeBlockMove cellToDrop : Util.safeIterable(this.cellsToDrop)) {
-            YipeeBlockMove nuCellToDrop = new YipeeBlockMove(cellToDrop.getCellId(), cellToDrop.getBlock(), cellToDrop.getCol(), cellToDrop.getRow(), cellToDrop.getTargetRow());
-            nuCellsToDrop.add(nuCellToDrop);
-        }
-        copy.cellsToDrop = nuCellsToDrop;
 
         // queues of primitives don't need deep copy
         copy.powers = (this.powers != null) ? new LinkedList<>(this.powers) : null;

@@ -15,10 +15,10 @@
  */
 package asg.games.yipee.core.objects;
 
+import asg.games.yipee.common.game.BlockMove;
 import lombok.Getter;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
 
@@ -36,9 +36,8 @@ import java.util.Objects;
  */
 @Getter
 @Setter
-public class YipeeBlockMove extends AbstractYipeeObject {
-    private static final Logger logger = LoggerFactory.getLogger(YipeeBlockMove.class);
-
+@Slf4j
+public class YipeeBlockMove extends AbstractYipeeObject implements BlockMove {
     /**
      * The type or value of the block being moved (e.g., color index or power ID).
      */
@@ -77,7 +76,7 @@ public class YipeeBlockMove extends AbstractYipeeObject {
         setCellId(cellID);
         setCol(col);
         setRow(row);
-        this.targetRow = targetRow;
+        setTargetRow(targetRow);
     }
 
     @Override

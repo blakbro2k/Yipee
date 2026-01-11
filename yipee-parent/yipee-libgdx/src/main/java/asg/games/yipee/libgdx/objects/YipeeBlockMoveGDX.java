@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.libgdx.objects;
 
+import asg.games.yipee.common.game.BlockMove;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +32,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-public class YipeeBlockMoveGDX extends AbstractYipeeObjectGDX {
+public class YipeeBlockMoveGDX extends AbstractYipeeObjectGDX implements BlockMove {
 
     /**
      * The type or ID of the block being moved.

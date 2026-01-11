@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.core.objects;
 
+import asg.games.yipee.common.game.BrokenBlock;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -35,7 +36,7 @@ import java.util.Objects;
  */
 @Getter
 @Setter
-public class YipeeBrokenBlock extends AbstractYipeeObject {
+public class YipeeBrokenBlock extends AbstractYipeeObject implements BrokenBlock {
     private static final Logger logger = LoggerFactory.getLogger(YipeeBrokenBlock.class);
 
     /**

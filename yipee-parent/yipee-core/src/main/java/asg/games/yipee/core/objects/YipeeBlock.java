@@ -19,8 +19,7 @@ import asg.games.yipee.common.enums.Disposable;
 import asg.games.yipee.core.game.YipeeBlockEval;
 import lombok.Getter;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
 
@@ -79,9 +78,8 @@ import java.util.Objects;
  */
 @Getter
 @Setter
+@Slf4j
 public class YipeeBlock extends AbstractYipeeObject implements Disposable {
-    private static final Logger logger = LoggerFactory.getLogger(YipeeBlock.class);
-
     public static final int Y_BLOCK = 0;
     public static final int A_BLOCK = 1;
     public static final int H_BLOCK = 2;
@@ -189,7 +187,7 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
      * Sets position to (0, 0), type to CLEAR_BLOCK, and power intensity to 0.
      */
     public void reset() {
-        logger.debug("Resetting block by zeroing out values to default");
+        log.debug("Resetting block by zeroing out values to default");
         this.x = 0;
         this.y = 0;
         this.blockType = CLEAR_BLOCK;
@@ -208,11 +206,11 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
      */
     public int getPowerIntensity() {
         if (powerIntensity <= 1) {
-            logger.debug("Setting power to lower bound: [{}]", POWER_INTENSITY_LOWER_BOUNDS);
+            log.debug("Setting power to lower bound: [{}]", POWER_INTENSITY_LOWER_BOUNDS);
             powerIntensity = POWER_INTENSITY_LOWER_BOUNDS;
         }
         if (powerIntensity > POWER_INTENSITY_UPPER_BOUNDS) {
-            logger.debug("Setting power to upper bound: [{}]", POWER_INTENSITY_UPPER_BOUNDS);
+            log.debug("Setting power to upper bound: [{}]", POWER_INTENSITY_UPPER_BOUNDS);
             powerIntensity = POWER_INTENSITY_UPPER_BOUNDS;
         }
         return powerIntensity;

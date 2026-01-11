@@ -15,8 +15,6 @@
  */
 package asg.games.yipee.common.game;
 
-import asg.games.yipee.common.enums.YipeeObject;
-
 /**
  * Represents the full state of a Yipee game board at a specific point in time.
  *
@@ -340,14 +338,14 @@ public interface GameBoardState {
      *
      * @return implementation-defined broken cell data
      */
-    Iterable<? extends YipeeObject> getBrokenCells();
+    Iterable<BrokenBlock> getBrokenCells();
 
     /**
      * Sets the broken cell data.
      *
      * @param brokenCells implementation-defined representation of broken cells
      */
-    void setBrokenCells(Iterable<? extends YipeeObject> brokenCells);
+    void setBrokenCells(Iterable<BrokenBlock> brokenCells);
 
     /**
      * Returns the current list of special pieces affecting gameplay.
@@ -422,9 +420,16 @@ public interface GameBoardState {
     /**
      * Returns the list of cells that are currently in a dropping animation or transition.
      *
-     * @return iterable of cell descriptors
+     * @return iterable of block move descriptors
      */
-    Iterable<Object> getCellsToDrop();
+    Iterable<BlockMove> getCellsToDrop();
+
+    /**
+     * Sets the list of cells that are currently in a dropping animation or transition.
+     *
+     * @param cellsToDrop iterable of block move descriptors
+     */
+    void setCellsToDrop(Iterable<BlockMove> cellsToDrop);
 
     /**
      * Returns the partner board’s cell matrix.

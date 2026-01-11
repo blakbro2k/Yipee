@@ -16,6 +16,8 @@
 package asg.games.yipee.libgdx.objects;
 
 import asg.games.yipee.common.enums.Copyable;
+import asg.games.yipee.common.game.BlockMove;
+import asg.games.yipee.common.game.BrokenBlock;
 import asg.games.yipee.common.game.CommonRandomNumberArray;
 import asg.games.yipee.common.game.GameBoardState;
 import asg.games.yipee.common.game.GamePhase;
@@ -100,12 +102,12 @@ public class YipeeGameBoardStateGDX extends AbstractYipeeObjectGDX implements Ga
     /**
      * Blocks that have just broken and are waiting for animation.
      */
-    private Queue<YipeeBrokenBlockGDX> brokenCells = LibGDXUtil.newQueue();
+    private Queue<BrokenBlock> brokenCells = LibGDXUtil.newQueue();
 
     /**
      * List of blocks that need to fall downward due to breaks.
      */
-    private Queue<YipeeBlockMoveGDX> cellsToDrop = LibGDXUtil.newQueue();
+    private Queue<BlockMove> cellsToDrop = LibGDXUtil.newQueue();
 
     /**
      * Queued power-up or attack actions available to the player.
@@ -223,13 +225,13 @@ public class YipeeGameBoardStateGDX extends AbstractYipeeObjectGDX implements Ga
     }
 
     @Override
-    public void setBrokenCells(Iterable brokenCells) {
+    public void setBrokenCells(Iterable<BrokenBlock> brokenCells) {
         this.brokenCells = LibGDXUtil.newQueue(brokenCells);
     }
 
     @Override
-    public Iterable<Object> getCellsToDrop() {
-        return null;
+    public void setCellsToDrop(Iterable<BlockMove> cellsToDrop) {
+        this.cellsToDrop = LibGDXUtil.iterableToQueue(cellsToDrop);
     }
 
     @Override
@@ -292,20 +294,6 @@ public class YipeeGameBoardStateGDX extends AbstractYipeeObjectGDX implements Ga
         // deep object copies
         copy.playerCells = StaticArrayUtils.copyIntMatrix(this.playerCells);
         copy.partnerCells = StaticArrayUtils.copyIntMatrix(this.partnerCells);
-
-        Queue<YipeeBrokenBlockGDX> nuBrokenCells = new Queue<>();
-        for(YipeeBrokenBlockGDX brokenCell : LibGDXUtil.safeIterable(this.brokenCells)) {
-            YipeeBrokenBlockGDX nuBrokenBlock = new YipeeBrokenBlockGDX(brokenCell.getBlock(), brokenCell.getRow(), brokenCell.getCol());
-            nuBrokenCells.addFirst(nuBrokenBlock);
-        }
-        copy.brokenCells = nuBrokenCells;
-
-        Queue<YipeeBlockMoveGDX> nuCellsToDrop = new Queue<>();
-        for(YipeeBlockMoveGDX cellToDrop : LibGDXUtil.safeIterable(this.cellsToDrop)) {
-            YipeeBlockMoveGDX nuCellToDrop = new YipeeBlockMoveGDX(cellToDrop.getCellId(), cellToDrop.getBlock(), cellToDrop.getCol(), cellToDrop.getRow(), cellToDrop.getTargetRow());
-            nuCellsToDrop.addFirst(nuCellToDrop);
-        }
-        copy.cellsToDrop = nuCellsToDrop;
 
         // queues of primitives don't need deep copy
         copy.powers = (this.powers != null) ? LibGDXUtil.newQueue(this.powers) : null;
