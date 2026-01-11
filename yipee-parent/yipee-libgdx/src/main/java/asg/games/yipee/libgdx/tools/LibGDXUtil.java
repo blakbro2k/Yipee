@@ -112,14 +112,14 @@ public class LibGDXUtil extends UtilitiesClass {
         return array;
     }
 
-    public static <Type> Queue<Type> newQueue() {
+    public static <T> Queue<T> newQueue() {
         return new Queue<>();
     }
 
-    public static <Type> Queue<Type> newQueue(Iterable<? extends Type> values) {
-        Queue<Type> queue = new Queue<>();
+    public static <T> Queue<T> newQueue(Iterable<T> values) {
+        Queue<T> queue = new Queue<>();
 
-        for(Type value : values) {
+        for (T value : values) {
             queue.addFirst(value);
         }
 
@@ -193,6 +193,14 @@ public class LibGDXUtil extends UtilitiesClass {
                 iterator.remove();
             }
         }
+    }
+
+    public static void clearArray(final Array<?> a) {
+        if (a != null) a.clear();
+    }
+
+    public static void clearQueue(final Queue<?> q) {
+        if (q != null) q.clear();
     }
 
     public static <T> Queue<T> iterableToQueue(Iterable<T> iterable) {

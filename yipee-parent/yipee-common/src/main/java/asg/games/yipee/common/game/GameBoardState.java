@@ -15,6 +15,8 @@
  */
 package asg.games.yipee.common.game;
 
+import asg.games.yipee.common.enums.YipeeObject;
+
 /**
  * Represents the full state of a Yipee game board at a specific point in time.
  *
@@ -338,14 +340,14 @@ public interface GameBoardState {
      *
      * @return implementation-defined broken cell data
      */
-    Object getBrokenCells();
+    Iterable<? extends YipeeObject> getBrokenCells();
 
     /**
      * Sets the broken cell data.
      *
      * @param brokenCells implementation-defined representation of broken cells
      */
-    void setBrokenCells(Object brokenCells);
+    void setBrokenCells(Iterable<? extends YipeeObject> brokenCells);
 
     /**
      * Returns the current list of special pieces affecting gameplay.

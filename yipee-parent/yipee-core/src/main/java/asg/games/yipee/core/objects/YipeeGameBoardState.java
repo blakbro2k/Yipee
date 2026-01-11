@@ -16,6 +16,7 @@
 package asg.games.yipee.core.objects;
 
 import asg.games.yipee.common.enums.Copyable;
+import asg.games.yipee.common.enums.YipeeObject;
 import asg.games.yipee.common.game.CommonRandomNumberArray;
 import asg.games.yipee.common.game.GameBoardState;
 import asg.games.yipee.common.game.GamePhase;
@@ -24,6 +25,7 @@ import asg.games.yipee.core.game.YipeeBlockEval;
 import asg.games.yipee.core.game.YipeeGameBoard;
 import asg.games.yipee.core.tools.Util;
 import asg.games.yipee.core.tools.YipeePrinter;
+import asg.games.yipee.net.errors.YipeeException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -198,9 +200,6 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
      */
     private boolean hasGameStarted;
 
-    /** Debugging name or identifier for the board. */
-    private String name;
-
     /**
      * The current tick count from the server.
      */
@@ -222,8 +221,8 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
     }
 
     @Override
-    public void setBrokenCells(Object brokenCells) {
-
+    public <T> void setBrokenCells(Iterable<YipeeObject> brokenCells) {
+        this.brokenCells = brokenCells;
     }
 
     @Override
@@ -237,11 +236,12 @@ public class YipeeGameBoardState extends AbstractYipeeObject implements GameBoar
 
 
     // Print State
+    @Override
     public String toString() {
         try {
             return YipeePrinter.getYipeeBoardStateString(this);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new YipeeException("Error converting YipeeGameBoardState toString", e);
         }
     }
 

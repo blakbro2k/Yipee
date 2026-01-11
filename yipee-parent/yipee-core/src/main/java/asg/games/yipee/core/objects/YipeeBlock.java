@@ -147,8 +147,8 @@ public class YipeeBlock extends AbstractYipeeObject implements Disposable {
     private static final int POWER_INTENSITY_UPPER_BOUNDS = 7;
 
 
-    public int x; // X-coordinate of the block
-    public int y; // Y-coordinate of the block
+    private int x; // X-coordinate of the block
+    private int y; // Y-coordinate of the block
     private int blockType; // The type of block (e.g., normal, power, or clear)
     private int powerIntensity = 0; // Represents the block's power level (if any)
 

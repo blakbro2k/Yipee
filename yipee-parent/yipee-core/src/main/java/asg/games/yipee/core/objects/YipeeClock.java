@@ -102,7 +102,7 @@ public class YipeeClock extends AbstractYipeeObject {
      */
     public int getSeconds() {
         if (isRunning()) {
-            return Math.round(getElapsedSeconds()) % 60;
+            return getElapsedSeconds() % 60;
         }
         return -1;
     }
@@ -114,7 +114,7 @@ public class YipeeClock extends AbstractYipeeObject {
      */
     public int getMinutes() {
         if (isRunning()) {
-            return Math.round(getElapsedSeconds()) / 60;
+            return getElapsedSeconds() / 60;
         }
         return -1;
     }

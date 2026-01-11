@@ -203,11 +203,6 @@ public class YipeeGameBoardStateGDX extends AbstractYipeeObjectGDX implements Ga
     private boolean hasGameStarted;
 
     /**
-     * Debugging name or identifier for the board.
-     */
-    private String name;
-
-    /**
      * The current tick count from the server.
      */
     private int tick;
@@ -228,8 +223,8 @@ public class YipeeGameBoardStateGDX extends AbstractYipeeObjectGDX implements Ga
     }
 
     @Override
-    public void setBrokenCells(Object brokenCells) {
-
+    public void setBrokenCells(Iterable brokenCells) {
+        this.brokenCells = LibGDXUtil.newQueue(brokenCells);
     }
 
     @Override
@@ -243,6 +238,7 @@ public class YipeeGameBoardStateGDX extends AbstractYipeeObjectGDX implements Ga
     }
 
     // Print State
+    @Override
     public String toString() {
         return YipeeGDXPrinter.getYipeeBoardStateString(this);
     }

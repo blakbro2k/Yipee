@@ -168,7 +168,7 @@ public class YipeeGameBoard implements Disposable {
             setYahooDuration(state.getYahooDuration());
             setPartnerRight(state.isPartnerRight());
             setPowers(Util.iterableToLinkeListQueue(state.getPowers()));
-            //setBrokenCells(state.getBrokenCells());
+            setBrokenCells(Util.iterableToLinkeListQueue(state.getBrokenCells()));
             setSpecialPieces(Util.iterableToLinkeListQueue(state.getSpecialPieces()));
             setHasGameStarted(state.isHasGameStarted());
             setBoardNumber(state.getBoardNumber());
@@ -206,7 +206,7 @@ public class YipeeGameBoard implements Disposable {
         state.setYahooDuration(yahooDuration);
         state.setPartnerRight(isPartnerRight);
         state.setPowers(powers);
-        state.setBrokenCells(NetUtil.writeValueAsString(brokenCells));
+        state.setBrokenCells(brokenCells);
         state.setSpecialPieces(specialPieces);
         state.setHasGameStarted(hasGameStarted);
         state.setBoardNumber(boardNumber);

@@ -204,7 +204,7 @@ public class YipeeGameBoardGDX implements Disposable {
         state.setYahooDuration(yahooDuration);
         state.setPartnerRight(isPartnerRight);
         state.setPowers(powers);
-        state.setBrokenCells(brokenCells);
+        state.setBrokenCells(LibGDXUtil.iterableToQueue(brokenCells));
         state.setSpecialPieces(specialPieces);
         state.setHasGameStarted(hasGameStarted);
         state.setBoardNumber(boardNumber);
