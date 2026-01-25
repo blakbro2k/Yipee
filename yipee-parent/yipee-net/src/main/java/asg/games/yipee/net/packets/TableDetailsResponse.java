@@ -56,7 +56,15 @@ public class TableDetailsResponse extends AbstractServerResponse {
      */
     private String tableId;
 
+    private int tableNumber;
+
     private String roomName;
+
+    private boolean isSoundOn;
+
+    private boolean isRated;
+
+    private String tableAccessType;
 
     /**
      * Current state of all seats at the table.
@@ -64,7 +72,7 @@ public class TableDetailsResponse extends AbstractServerResponse {
      * <p>Each entry describes a seat's occupancy and readiness state,
      * including which player (if any) is seated there.</p>
      */
-    public List<SeatStateUpdateResponse> seats;
+    private List<SeatStateUpdateResponse> seats;
 
     /**
      * List of players currently observing the table without occupying a seat.
@@ -72,5 +80,5 @@ public class TableDetailsResponse extends AbstractServerResponse {
      * <p>Watchers may receive table updates but are not allowed to
      * participate in gameplay actions.</p>
      */
-    public List<NetYipeePlayerDTO> watchers;
+    private List<NetYipeePlayerDTO> watchers;
 }
