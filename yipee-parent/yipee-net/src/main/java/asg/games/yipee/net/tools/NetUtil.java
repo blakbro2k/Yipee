@@ -95,7 +95,7 @@ public class NetUtil {
         request.setTableId(tableId);
         request.setSeatIndex(seatIndex);
         request.setExpiresAt(expiresAt);
-        request.setPlayerId(serverId);
+        request.setServerId(serverId);
         request.setServerTick(serverTick);
         request.setServerTimestamp(serverTimestamp);
         request.setTickRate(tickRate);
