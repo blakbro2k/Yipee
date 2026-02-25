@@ -18,7 +18,6 @@ package asg.games.yipee.net.packets;
 import asg.games.yipee.common.enums.YipeeSerializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 /**
  * Base type for all client-to-server request packets.
@@ -44,9 +43,21 @@ import lombok.NoArgsConstructor;
  * times compare equal.
  */
 @Data
-@NoArgsConstructor
 @EqualsAndHashCode(callSuper = false, exclude = {"timestamp"})
 public abstract class AbstractClientRequest implements YipeeSerializable {
+    protected AbstractClientRequest() {
+        this.packetType = getClass().getSimpleName();
+    }
+
+    /**
+     * Logical discriminator identifying the concrete packet subtype.
+     *
+     * <p>Automatically initialized to {@code getClass().getSimpleName()}.
+     * Used by the client message router to resolve the appropriate
+     * deserialization and handler logic.
+     */
+    private String packetType;
+
     /**
      * Identifier of the game/table context associated with this response.
      *

@@ -37,4 +37,5 @@ public class GameWhoAmIResponse {
     long serverTick;
     long serverTimestamp;
     float tickRate;
+    String gameToken;
 }

@@ -18,7 +18,6 @@ package asg.games.yipee.net.packets;
 import asg.games.yipee.common.enums.YipeeSerializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 /**
  * Base type for all server-to-client response packets.
@@ -45,9 +44,20 @@ import lombok.NoArgsConstructor;
  * treated as equivalent.
  */
 @Data
-@NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class AbstractServerResponse implements YipeeSerializable {
+    protected AbstractServerResponse() {
+        this.packetType = getClass().getSimpleName();
+    }
+
+    /**
+     * Logical discriminator identifying the concrete packet subtype.
+     *
+     * <p>Automatically initialized to {@code getClass().getSimpleName()}.
+     * Used by the client message router to resolve the appropriate
+     * deserialization and handler logic.
+     */
+    private String packetType;
 
     /**
      * Identifier of the server instance that generated this response.

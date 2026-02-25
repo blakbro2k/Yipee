@@ -15,6 +15,7 @@
  */
 package asg.games.yipee.net.tools;
 
+import asg.games.yipee.net.packets.GameAuthTokenResponse;
 import asg.games.yipee.net.wire.CreateTableRequest;
 import asg.games.yipee.net.wire.CreateTableResponse;
 import asg.games.yipee.net.wire.GameWhoAmIResponse;
@@ -97,7 +98,8 @@ public class NetUtil {
             String serverId,
             long serverTick,
             long serverTimestamp,
-            float tickRate
+            float tickRate,
+            String gameToken
     ) {
         GameWhoAmIResponse request = new GameWhoAmIResponse();
         request.setPlayerId(playerId);
@@ -114,6 +116,7 @@ public class NetUtil {
         request.setServerTick(serverTick);
         request.setServerTimestamp(serverTimestamp);
         request.setTickRate(tickRate);
+        request.setGameToken(gameToken);
         return request;
     }
 
@@ -475,6 +478,43 @@ public class NetUtil {
         request.setTableId(tableId);
         request.setWatcherCount(watcherCount);
         request.setWatchers(watchers);
+        return request;
+    }
+
+    public static GameAuthTokenResponse newGameAuthTokenResponse(
+            String playerId,
+            String name,
+            int icon,
+            int rating,
+            String clientId,
+            String tableId,
+            int seatIndex,
+            String expiresAt,
+            String gameToken,
+            String serverId,
+            String gameId,
+            String sessionId,
+            long serverTick,
+            long serverTimestamp,
+            int tickRate
+    ) {
+        GameAuthTokenResponse request = new GameAuthTokenResponse();
+        request.setPlayerId(playerId);
+        request.setName(name);
+        request.setIcon(icon);
+        request.setRating(rating);
+        request.setClientId(clientId);
+        request.setTableId(tableId);
+        request.setSeatIndex(seatIndex);
+        request.setExpiresAt(expiresAt);
+        request.setGameToken(gameToken);
+        request.setServerId(serverId);
+        request.setGameId(gameId);
+        request.setTableId(tableId);
+        request.setSessionId(sessionId);
+        request.setServerTick(serverTick);
+        request.setServerTimestamp(serverTimestamp);
+        request.setTickRate(tickRate);
         return request;
     }
 }
