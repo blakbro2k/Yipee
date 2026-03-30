@@ -309,17 +309,11 @@ public class NetUtil {
     }
 
     public static SeatDetailSummary newSeatDetailSummary(
-            String seatId,
-            int seatNumber,
-            boolean seatReady,
-            boolean occupied,
+            SeatSummary seatSummary,
             PlayerSummary playerSummary
     ) {
         SeatDetailSummary request = new SeatDetailSummary();
-        request.setSeatId(seatId);
-        request.setSeatNumber(seatNumber);
-        request.setSeatReady(seatReady);
-        request.setOccupied(occupied);
+        request.setSeatSummary(seatSummary);
         request.setPlayerSummary(playerSummary);
         return request;
     }
@@ -428,11 +422,13 @@ public class NetUtil {
     public static TableDetailResponse newTableDetailResponse(
             String roomId,
             String roomName,
+            String loungeName,
             TableDetailsSummary tableDetailsSummary
     ) {
         TableDetailResponse request = new TableDetailResponse();
         request.setRoomId(roomId);
         request.setRoomName(roomName);
+        request.setLoungeName(loungeName);
         request.setTableDetailsSummary(tableDetailsSummary);
         return request;
     }
@@ -488,6 +484,9 @@ public class NetUtil {
             int rating,
             String clientId,
             String tableId,
+            String roomId,
+            String roomName,
+            String loungeName,
             int seatIndex,
             String expiresAt,
             String gameToken,
@@ -505,6 +504,9 @@ public class NetUtil {
         request.setRating(rating);
         request.setClientId(clientId);
         request.setTableId(tableId);
+        request.setRoomId(roomId);
+        request.setRoomName(roomName);
+        request.setLoungeName(loungeName);
         request.setSeatIndex(seatIndex);
         request.setExpiresAt(expiresAt);
         request.setGameToken(gameToken);

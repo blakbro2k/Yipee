@@ -58,7 +58,11 @@ public class TableDetailsResponse extends AbstractServerResponse {
 
     private int tableNumber;
 
+    private String roomId;
+
     private String roomName;
+
+    private String loungeName;
 
     private boolean isSoundOn;
 

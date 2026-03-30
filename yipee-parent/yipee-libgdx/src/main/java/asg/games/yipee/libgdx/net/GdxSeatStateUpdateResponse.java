@@ -28,6 +28,7 @@ public class GdxSeatStateUpdateResponse {
     public long serverTick;
     public long serverTimestamp;
     public int tickRate;
+    public int seatNumber;
 
     public String tableId;
 
@@ -39,9 +40,11 @@ public class GdxSeatStateUpdateResponse {
 
     public boolean occupied;
     public boolean ready;
+    public boolean seatReady;
 
     public GdxNetYipeePlayerDTO player; // can be null
     public String playerId;             // can be null
+    public String seatId;             // can be null
 
     public String packetType; // "SeatStateUpdateResponse"
 }

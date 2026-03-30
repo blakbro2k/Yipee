@@ -29,4 +29,5 @@ public class SeatSummary {
     boolean occupied;
     String playerId;
     String playerName;
+    String parentTableId;
 }

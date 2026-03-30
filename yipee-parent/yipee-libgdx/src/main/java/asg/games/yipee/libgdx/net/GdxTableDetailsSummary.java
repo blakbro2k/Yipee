@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.net.wire;
+package asg.games.yipee.libgdx.net;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Setter
 @Getter
 @NoArgsConstructor
-public class TableDetailResponse {
-    String roomId;
-    String roomName;
-    String loungeName;
-    TableDetailsSummary tableDetailsSummary;
+public class GdxTableDetailsSummary {
+    GdxTableSummary table;          // existing lightweight summary
+    List<GdxSeatDetailSummary> seats;     // existing seat summaries
+    List<GdxPlayerSummary> watchers;    // just the names of watchers
 }

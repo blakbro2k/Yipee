@@ -100,6 +100,12 @@ public class GameAuthTokenResponse extends AbstractServerResponse {
      */
     private int seatIndex;
 
+    private String roomId;
+
+    private String roomName;
+
+    private String loungeName;
+
     /**
      * ISO-8601 timestamp indicating when the launch token expires.
      * <p>
