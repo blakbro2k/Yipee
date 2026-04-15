@@ -33,7 +33,7 @@ import asg.games.yipee.core.tools.RandomUtil;
 import asg.games.yipee.core.tools.TimeUtils;
 import asg.games.yipee.core.tools.Util;
 import asg.games.yipee.core.tools.YipeePrinter;
-import asg.games.yipee.net.errors.YipeeException;
+import asg.games.yipee.common.errors.YipeeException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.Getter;
 import lombok.Setter;

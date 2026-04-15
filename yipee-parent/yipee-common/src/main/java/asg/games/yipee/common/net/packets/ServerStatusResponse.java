@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.libgdx.net;
+package asg.games.yipee.common.net.packets;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
-@Setter
-@Getter
+@Data
 @NoArgsConstructor
-public class GdxSeatSummary {
-    String seatId;
-    int seatNumber;
-    boolean seatReady;
-    boolean occupied;
-    String playerId;
-    String playerName;
-    String parentTableId;
+public class ServerStatusResponse {
+    private String status;
+    private String service;
+    private String serverId;
+    private String timestamp;
+    private String version;
+    private String motd;
 }

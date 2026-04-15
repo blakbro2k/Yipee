@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package asg.games.yipee.libgdx.net;
+package asg.games.yipee.common.net.packets;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,12 +22,9 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class GdxSeatSummary {
-    String seatId;
-    int seatNumber;
-    boolean seatReady;
-    boolean occupied;
+public class PlayerSummary {
     String playerId;
-    String playerName;
-    String parentTableId;
+    String name;
+    int icon;
+    int rating;
 }

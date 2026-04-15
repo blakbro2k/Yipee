@@ -26,7 +26,7 @@ import asg.games.yipee.core.game.YipeeBlockEval;
 import asg.games.yipee.core.game.YipeeGameBoard;
 import asg.games.yipee.core.tools.Util;
 import asg.games.yipee.core.tools.YipeePrinter;
-import asg.games.yipee.net.errors.YipeeException;
+import asg.games.yipee.common.errors.YipeeException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

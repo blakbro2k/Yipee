@@ -1,0 +1,72 @@
+/**
+ * Copyright 2024 See AUTHORS file.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package asg.games.yipee.common.net.wire;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
+/**
+ * Response sent by the server before the game starts.
+ *
+ * <p>This informs all clients of a synchronized countdown and provides
+ * the deterministic seed needed to initialize their local prediction engines.</p>
+ *
+ * <p>Used for synchronizing game start time and ensuring all players
+ * begin with the same RNG-based logic and initial state.</p>
+ *
+ * <p><b>Direction:</b> Server → Client</p>
+ */
+@Data
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+public class GameStartResponse extends AbstractServerResponse {
+
+    /**
+     * Number of seconds remaining before the game starts.
+     * <p>
+     * Clients should use this to display a countdown UI.
+     * When it reaches 0, the game logic begins on all sides.
+     */
+    public int countdownSecondsRemaining;
+
+    /**
+     * A shared RNG seed used by both client and server to ensure
+     * deterministic gameplay logic (e.g., piece drops).
+     * <p>
+     * This must be used to initialize all YipeeGameBoard instances
+     * involved in the match for consistent simulation and prediction.
+     */
+    public long gameSeed;
+
+    /**
+     * Server response that GameStartRequest was valid and the seat now marked ready.
+     * It does not mean the match is starting immediately.
+     */
+    public boolean accepted;
+
+    /**
+     * Unique identifier of the table this snapshot describes.
+     *
+     * <p>Used by the client to:
+     * <ul>
+     *   <li>Verify table context and routing</li>
+     *   <li>Associate subsequent updates with the correct table</li>
+     *   <li>Detect stale or mismatched responses</li>
+     * </ul>
+     */
+    public String tableId;
+}

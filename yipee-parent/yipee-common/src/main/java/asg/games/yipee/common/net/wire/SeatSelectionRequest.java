@@ -1,0 +1,62 @@
+/**
+ * Copyright 2024 See AUTHORS file.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package asg.games.yipee.common.net.wire;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
+/**
+ * Sent by the client to select a seat at an already assigned table.
+ *
+ * <p>This request is typically issued after a successful handshake and table assignment
+ * from the CMS (e.g., WordPress), allowing the game server to place the player into a
+ * specific seat or register them as a spectator.</p>
+ *
+ * <p><b>Direction:</b> Client → Server</p>
+ */
+@Data
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+public class SeatSelectionRequest extends AbstractClientRequest {
+
+    /**
+     * Unique identifier of the table this snapshot describes.
+     *
+     * <p>Used by the client to:
+     * <ul>
+     *   <li>Verify table context and routing</li>
+     *   <li>Associate subsequent updates with the correct table</li>
+     *   <li>Detect stale or mismatched responses</li>
+     * </ul>
+     */
+    public String tableId;
+
+    /**
+     * The index of the seat being requested (0–7).
+     */
+    public int seatIndex;
+
+    /**
+     * Indicates whether the player is joining as a spectator.
+     */
+    public boolean spectator;
+
+    /**
+     * The player initiating the seat selection.
+     */
+    public String playerId;
+}
