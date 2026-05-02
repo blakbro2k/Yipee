@@ -46,7 +46,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class AbstractServerResponse implements YipeeSerializable {
-    protected AbstractServerResponse() {
+    public AbstractServerResponse() {
         this.packetType = getClass().getSimpleName();
     }
 
@@ -57,7 +57,7 @@ public class AbstractServerResponse implements YipeeSerializable {
      * Used by the client message router to resolve the appropriate
      * deserialization and handler logic.
      */
-    private String packetType;
+    public String packetType;
 
     /**
      * Identifier of the server instance that generated this response.
@@ -65,7 +65,7 @@ public class AbstractServerResponse implements YipeeSerializable {
      * <p>This value is stable for the lifetime of the running YipeeWebServer and
      * can be used by clients during debugging or multi-server deployments.
      */
-    private String serverId;
+    public String serverId;
 
     /**
      * Identifier of the game/table context associated with this response.
@@ -91,6 +91,14 @@ public class AbstractServerResponse implements YipeeSerializable {
      * with the server's deterministic game loop.
      */
     public long serverTick;
+
+    public long getServerTick() {
+        return serverTick;
+    }
+
+    public void setServerTick(long serverTick) {
+        this.serverTick = serverTick;
+    }
 
     /**
      * Local system time (server-side) in milliseconds when the response was sent.

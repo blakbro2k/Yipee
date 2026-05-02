@@ -53,7 +53,7 @@ public class SeatStateUpdateResponse extends AbstractServerResponse {
      * The updated authoritative table state after the server processed changes.
      * Clients should use this to synchronize their local table view.
      */
-    List<GameBoardState> states;
+    public List<GameBoardState> states;
 
     /**
      * The index of the seat being requested (0–7).
