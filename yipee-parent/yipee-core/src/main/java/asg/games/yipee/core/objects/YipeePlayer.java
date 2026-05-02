@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,23 +15,17 @@
  */
 package asg.games.yipee.core.objects;
 
-import asg.games.yipee.common.dto.NetYipeeKeyMap;
-import asg.games.yipee.common.dto.NetYipeePlayer;
 import asg.games.yipee.common.enums.Copyable;
 import asg.games.yipee.common.enums.Disposable;
 import asg.games.yipee.core.persistence.Updatable;
-import asg.games.yipee.core.tools.NetUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -56,7 +50,7 @@ import java.util.Set;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "YT_PLAYERS")
-public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePlayer>, Updatable<YipeePlayer>, Disposable, NetYipeePlayer {
+public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePlayer>, Updatable<YipeePlayer>, Disposable {
     private static final Logger logger = LoggerFactory.getLogger(YipeePlayer.class);
 
     @JsonIgnore
@@ -69,14 +63,6 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
 
     @Column(name = "icon", nullable = false, columnDefinition = "INT DEFAULT 1")
     private int icon;
-
-    @Lob
-    @Column(name = "serialized_key_config", columnDefinition = "TEXT")
-    @JsonIgnore
-    private String serializedKeyConfig;
-
-    @Transient
-    private NetYipeeKeyMap keyConfig = new YipeeKeyMap(this.getId());
 
     @ManyToMany(mappedBy = "players", fetch = FetchType.LAZY)
     @JsonIgnore
@@ -122,48 +108,6 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
     }
 
     /**
-     * Gets the {@code YipeeKeyMap} which holds the player key configuration map
-     * @return
-     */
-    public NetYipeeKeyMap getKeyConfig() {
-        if (keyConfig == null && serializedKeyConfig != null) {
-            synchronized (this) {
-                if (keyConfig == null) {
-                    try {
-                        keyConfig = NetUtil.readValue(serializedKeyConfig, YipeeKeyMap.class);
-                        // If playerId was not set at creation, patch it here
-                        if (keyConfig.getPlayerId() == null && getId() != null) {
-                            keyConfig.setPlayerId(getId());
-                        }
-                    } catch (JsonProcessingException e) {
-                        logger.error("Failed to deserialize keyConfig", e);
-                        throw new RuntimeException("Failed to deserialize keyConfig", e);
-                    }
-                }
-            }
-        }
-        return keyConfig;
-    }
-
-    /**
-     * Sets the {@code YipeeKeyMap} which holds the player key configuration map
-     * @param keyConfig
-     */
-    public void setKeyConfig(NetYipeeKeyMap keyConfig) {
-        if (keyConfig != null && keyConfig.getPlayerId() == null && getId() != null) {
-            keyConfig.setPlayerId(getId());
-        }
-        this.keyConfig = keyConfig;
-        try {
-            this.serializedKeyConfig = NetUtil.writeValueAsString(keyConfig);
-            logger.debug("Serialized keyConfig: {}", serializedKeyConfig);
-        } catch (JsonProcessingException e) {
-            logger.error("Failed to serialize keyConfig", e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
      * Increases the player's rating by the specified amount.
      *
      * @param inc the amount to add to the current rating (must be non-negative)
@@ -199,9 +143,7 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
 
     @Override
     public YipeePlayer deepCopy() {
-        YipeePlayer copy = copy();
-        copy.setKeyConfig(this.getKeyConfig() != null ? this.getKeyConfig().deepCopy() : null);
-        return copy;
+        return copy(); // intentionally excludes rooms
     }
 
     /**
@@ -210,7 +152,6 @@ public class YipeePlayer extends AbstractYipeeObject implements Copyable<YipeePl
      */
     @Override
     public void dispose() {
-        keyConfig.dispose();
     }
 
     @Override

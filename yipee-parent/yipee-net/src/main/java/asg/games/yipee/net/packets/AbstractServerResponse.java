@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,7 +18,6 @@ package asg.games.yipee.net.packets;
 import asg.games.yipee.common.enums.YipeeSerializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 /**
  * Base type for all server-to-client response packets.
@@ -45,9 +44,20 @@ import lombok.NoArgsConstructor;
  * treated as equivalent.
  */
 @Data
-@NoArgsConstructor
-@EqualsAndHashCode(callSuper = false, exclude = {"serverTimestamp"})
+@EqualsAndHashCode(callSuper = false)
 public class AbstractServerResponse implements YipeeSerializable {
+    protected AbstractServerResponse() {
+        this.packetType = getClass().getSimpleName();
+    }
+
+    /**
+     * Logical discriminator identifying the concrete packet subtype.
+     *
+     * <p>Automatically initialized to {@code getClass().getSimpleName()}.
+     * Used by the client message router to resolve the appropriate
+     * deserialization and handler logic.
+     */
+    private String packetType;
 
     /**
      * Identifier of the server instance that generated this response.

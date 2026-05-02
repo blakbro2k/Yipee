@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,8 @@
 package asg.games.yipee.core.game;
 
 import asg.games.yipee.common.enums.Disposable;
+import asg.games.yipee.common.game.BlockMove;
+import asg.games.yipee.common.game.BrokenBlock;
 import asg.games.yipee.common.game.CommonRandomNumberArray;
 import asg.games.yipee.common.game.GameBoardState;
 import asg.games.yipee.common.game.GamePhase;
@@ -31,6 +33,7 @@ import asg.games.yipee.core.tools.RandomUtil;
 import asg.games.yipee.core.tools.TimeUtils;
 import asg.games.yipee.core.tools.Util;
 import asg.games.yipee.core.tools.YipeePrinter;
+import asg.games.yipee.net.errors.YipeeException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.Getter;
 import lombok.Setter;
@@ -120,8 +123,8 @@ public class YipeeGameBoard implements Disposable {
     private boolean fastDown;
     private Queue<Integer> powers = new LinkedList<>();
     private Queue<Integer> specialPieces = new LinkedList<>();
-    Queue<YipeeBrokenBlock> brokenCells = new LinkedList<>();
-    Queue<YipeeBlockMove> cellsToDrop = new LinkedList<>();
+    Queue<BrokenBlock> brokenCells = new LinkedList<>();
+    Queue<BlockMove> cellsToDrop = new LinkedList<>();
     private int boardNumber = -1;
 
     private int yahooDuration = 0;
@@ -168,7 +171,8 @@ public class YipeeGameBoard implements Disposable {
             setYahooDuration(state.getYahooDuration());
             setPartnerRight(state.isPartnerRight());
             setPowers(Util.iterableToLinkeListQueue(state.getPowers()));
-            //setBrokenCells(state.getBrokenCells());
+            setBrokenCells(Util.iterableToLinkeListQueue(state.getBrokenCells()));
+            setCellsToDrop(Util.iterableToLinkeListQueue(state.getCellsToDrop()));
             setSpecialPieces(Util.iterableToLinkeListQueue(state.getSpecialPieces()));
             setHasGameStarted(state.isHasGameStarted());
             setBoardNumber(state.getBoardNumber());
@@ -206,7 +210,8 @@ public class YipeeGameBoard implements Disposable {
         state.setYahooDuration(yahooDuration);
         state.setPartnerRight(isPartnerRight);
         state.setPowers(powers);
-        state.setBrokenCells(NetUtil.writeValueAsString(brokenCells));
+        state.setBrokenCells(brokenCells);
+        state.setCellsToDrop(cellsToDrop);
         state.setSpecialPieces(specialPieces);
         state.setHasGameStarted(hasGameStarted);
         state.setBoardNumber(boardNumber);
@@ -1709,7 +1714,7 @@ public class YipeeGameBoard implements Disposable {
         try {
             return YipeePrinter.toStringYipeeBoard(this);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new YipeeException("Issue with YipeeGameBoard toString()", e);
         }
     }
 
@@ -1785,7 +1790,7 @@ public class YipeeGameBoard implements Disposable {
             case COLLAPSING:
                 blockAnimationTimer -= delta;
                 if (blockAnimationTimer <= 0) {
-                    for (YipeeBlockMove move : Util.safeIterable(cellsToDrop)) {
+                    for (BlockMove move : Util.safeIterable(cellsToDrop)) {
                         setCell(move.getTargetRow(), move.getCol(), move.getCellId());
                     }
                     cellsToDrop.clear();

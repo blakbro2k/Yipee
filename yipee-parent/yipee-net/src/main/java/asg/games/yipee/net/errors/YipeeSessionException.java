@@ -15,7 +15,30 @@
  */
 package asg.games.yipee.net.errors;
 
+/**
+ * Thrown when a request is associated with an invalid or inactive session.
+ * <p>
+ * This exception indicates a failure in the client session lifecycle rather
+ * than an authentication or authorization problem.
+ * <p>
+ * Typical causes include:
+ * <ul>
+ *   <li>Using an expired or unknown session ID</li>
+ *   <li>Issuing requests after disconnecting or leaving a game</li>
+ *   <li>Session-to-player or session-to-game mismatches</li>
+ * </ul>
+ * <p>
+ * When propagated through the networking layer, this exception is mapped
+ * to {@link ErrorCode#INVALID_SESSION} by {@link ErrorMapper}.
+ */
 public class YipeeSessionException extends YipeeException {
+
+    /**
+     * Constructs a new {@code YipeeSessionException} with a descriptive message
+     * explaining the session failure.
+     *
+     * @param msg human-readable explanation of the invalid session condition
+     */
     public YipeeSessionException(String msg) {
         super(msg);
     }

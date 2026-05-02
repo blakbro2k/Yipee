@@ -93,6 +93,5 @@
         <mapping class="asg.games.yipee.common.dto.NetYipeePlayer" id="3002"/>
         <mapping class="asg.games.yipee.common.dto.NetYipeeTable" id="3003"/>
         <mapping class="asg.games.yipee.common.dto.NetYipeeSeat" id="3003"/>
-        <mapping class="asg.games.yipee.common.dto.NetYipeeKeyMap" id="3003"/>
     </mappedClasses>
 </packet-config>

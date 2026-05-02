@@ -84,9 +84,27 @@ public class GameAuthTokenResponse extends AbstractServerResponse {
     public String clientId;
 
     /**
-     * Identifier of the table the player is attempting to join.
+     * Unique identifier of the table this snapshot describes.
+     *
+     * <p>Used by the client to:
+     * <ul>
+     *   <li>Verify table context and routing</li>
+     *   <li>Associate subsequent updates with the correct table</li>
+     *   <li>Detect stale or mismatched responses</li>
+     * </ul>
      */
-    public String tableId;
+    private String tableId;
+
+    /**
+     * The index of the seat that was requested.
+     */
+    private int seatIndex;
+
+    private String roomId;
+
+    private String roomName;
+
+    private String loungeName;
 
     /**
      * ISO-8601 timestamp indicating when the launch token expires.
@@ -95,4 +113,15 @@ public class GameAuthTokenResponse extends AbstractServerResponse {
      * be rejected by the server during the game handshake.
      */
     public String expiresAt;
+
+    /**
+     * Server-minted JWT used for authenticated game API and game transport calls after launch.
+     *
+     * <p>This token is derived from the validated launch token and represents the
+     * authenticated game session context (e.g., scope {@code game_session}).
+     *
+     * <p><b>Client behavior:</b> store this value and use it as the {@code Authorization: Bearer ...}
+     * token for subsequent {@code /api/game/*} calls and (optionally) WebSocket authentication.</p>
+     */
+    private String gameToken;
 }

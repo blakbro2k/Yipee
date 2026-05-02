@@ -1,12 +1,12 @@
 /**
  * Copyright 2024 See AUTHORS file.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,9 +15,7 @@
  */
 package asg.games.yipee.libgdx.objects;
 
-import asg.games.yipee.common.dto.NetYipeePlayer;
 import asg.games.yipee.common.enums.Copyable;
-import asg.games.yipee.libgdx.tools.NetUtil;
 import com.badlogic.gdx.utils.Disposable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -31,15 +29,13 @@ import lombok.Setter;
  * Implements {@link Disposable} to clean up input configuration when no longer needed.
  * </p>
  *
- * <p>This class is designed for use in the LibGDX client layer and interacts with
- * networked data via {@link NetYipeePlayer}.</p>
  *
  * @author Blakbro2k
  */
 @Setter
 @Getter
 @EqualsAndHashCode(callSuper = true)
-public class YipeePlayerGDX extends AbstractYipeeObjectGDX implements Copyable<YipeePlayerGDX>, Disposable, NetYipeePlayer {
+public class YipeePlayerGDX extends AbstractYipeeObjectGDX implements Copyable<YipeePlayerGDX>, Disposable {
     /**
      * Default player rating value (Elo-style)
      */
@@ -55,12 +51,6 @@ public class YipeePlayerGDX extends AbstractYipeeObjectGDX implements Copyable<Y
 
     /** Player avatar or badge index */
     private int icon;
-
-    /** Serialized form of the player's key mapping, used for network transmission */
-    private String serializedKeyConfig;
-
-    /** Deserialized form of the player's key mapping, used by the client for input */
-    private YipeeKeyMapGDX keyConfig = new YipeeKeyMapGDX(this.getId());
 
     /**
      * Default constructor for serialization and framework use
@@ -96,47 +86,6 @@ public class YipeePlayerGDX extends AbstractYipeeObjectGDX implements Copyable<Y
         setName(name);
         setRating(rating);
         setIcon(icon);
-    }
-
-    /**
-     * Lazily initializes and returns the player's key configuration.
-     * If the deserialized key config is missing, attempts to construct from the JSON string.
-     *
-     * @return player's key configuration
-     */
-    public YipeeKeyMapGDX getKeyConfig() {
-        if (keyConfig == null && serializedKeyConfig != null) {
-            synchronized (this) {
-                if (keyConfig == null) {
-                    try {
-                        keyConfig = NetUtil.fromJsonClient(serializedKeyConfig, YipeeKeyMapGDX.class);
-                        if (keyConfig.getPlayerId() == null && getId() != null) {
-                            keyConfig.setPlayerId(getId());
-                        }
-                    } catch (RuntimeException e) {
-                        throw new RuntimeException("Failed to deserialize keyConfig", e);
-                    }
-                }
-            }
-        }
-        return keyConfig;
-    }
-
-    /**
-     * Sets the player's key configuration and automatically serializes it.
-     *
-     * @param keyConfig the key map to assign
-     */
-    public void setKeyConfig(YipeeKeyMapGDX keyConfig) {
-        if (keyConfig != null && keyConfig.getPlayerId() == null && getId() != null) {
-            keyConfig.setPlayerId(getId());
-        }
-        this.keyConfig = keyConfig;
-        try {
-            this.serializedKeyConfig = (keyConfig != null) ? NetUtil.toJsonClient(keyConfig) : null;
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Failed to serialize keyConfig", e);
-        }
     }
 
     /**
@@ -180,9 +129,7 @@ public class YipeePlayerGDX extends AbstractYipeeObjectGDX implements Copyable<Y
      */
     @Override
     public YipeePlayerGDX deepCopy() {
-        YipeePlayerGDX copy = copy();
-        copy.setKeyConfig(this.getKeyConfig() != null ? this.getKeyConfig().deepCopy() : null);
-        return copy;
+        return copy();
     }
 
     /**
@@ -191,8 +138,5 @@ public class YipeePlayerGDX extends AbstractYipeeObjectGDX implements Copyable<Y
      */
     @Override
     public void dispose() {
-        if (keyConfig != null) {
-            keyConfig.dispose();
-        }
     }
 }

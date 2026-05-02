@@ -1,5 +1,6 @@
 [![Maven Package](https://github.com/blakbro2k/Yipee/actions/workflows/maven-publish.yml/badge.svg)](https://github.com/blakbro2k/Yipee/actions/workflows/maven-publish.yml)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-donate-FFDD00?logo=buymeacoffee)](https://buymeacoffee.com/boaten01y)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=blakbro2k_Yipee&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=blakbro2k_Yipee)
 
 # Yipee! Towers  
 **_A modern, from-scratch recreation of Yahoo! Towers — multiplayer puzzle action, rebuilt for today’s platforms._**
